@@ -361,6 +361,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
   <div id="admin-view">
     <div class="admin-tabs">
       <button class="admin-tab active" id="atab-courses"      onclick="switchAdminTab('courses')">📚 Courses</button>
+      <button class="admin-tab"        id="atab-cprogress"    onclick="switchAdminTab('cprogress')">📊 Course Progress</button>
       <button class="admin-tab"        id="atab-exams"        onclick="switchAdminTab('exams')">🎓 Exams</button>
       <button class="admin-tab"        id="atab-nominations"  onclick="switchAdminTab('nominations')">Nominations</button>
       <button class="admin-tab"        id="atab-monitor"      onclick="switchAdminTab('monitor')">Live Monitor</button>
@@ -376,6 +377,56 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
           <div class="spinner"></div>Loading courses…
         </div>
         <div id="admin-course-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;"></div>
+      </div>
+    </div>
+
+    <!-- COURSE PROGRESS TAB -->
+    <div class="admin-tab-content" id="atc-cprogress">
+      <div class="atc-inner">
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px;">Course Progress</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:24px;">Per-learner progress across the Grafana Essentials course.</div>
+
+        <!-- Stats row -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;" id="cp-stats-row">
+          <div class="stat-card"><div class="stat-label">Total Learners</div><div class="stat-val" id="cp-stat-total">—</div></div>
+          <div class="stat-card"><div class="stat-label">Passed</div><div class="stat-val green" id="cp-stat-passed">—</div></div>
+          <div class="stat-card"><div class="stat-label">Avg Best Score</div><div class="stat-val yellow" id="cp-stat-avg">—</div></div>
+          <div class="stat-card"><div class="stat-label">Course Completed</div><div class="stat-val" id="cp-stat-completed">—</div></div>
+        </div>
+
+        <!-- Filters -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <input type="text" id="cp-search" placeholder="🔍 Search by name or email…"
+            style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;outline:none;flex:1;min-width:200px;transition:border-color .2s;"
+            oninput="cpApplyFilters()" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"/>
+          <button class="tbl-btn" id="cpf-all"     onclick="cpSetFilter('all')"     style="background:var(--gold);color:#1a1a1a;border-color:var(--gold);">All</button>
+          <button class="tbl-btn" id="cpf-passed"  onclick="cpSetFilter('passed')"  >✅ Passed</button>
+          <button class="tbl-btn" id="cpf-failed"  onclick="cpSetFilter('failed')"  >❌ Not Passed</button>
+          <button class="tbl-btn" id="cpf-notaken" onclick="cpSetFilter('notaken')" >⏳ Not Taken</button>
+          <button onclick="cpExportCSV()" style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#34d399;padding:7px 16px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600;margin-left:auto;transition:all .2s;" onmouseover="this.style.background='var(--success)';this.style.color='#fff'" onmouseout="this.style.background='rgba(16,185,129,.1)';this.style.color='#34d399'">📥 Export CSV</button>
+        </div>
+
+        <!-- Table -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+          <div id="cp-loading" style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:60px 0;color:var(--muted);font-size:14px;">
+            <div class="spinner"></div>Loading learner data…
+          </div>
+          <table class="exam-list-table" id="cp-table" style="display:none;">
+            <thead>
+              <tr>
+                <th>Learner</th>
+                <th>Progress</th>
+                <th>M1</th><th>M2</th><th>M3</th><th>M4</th>
+                <th>Best Score</th>
+                <th>Attempts</th>
+                <th>Last Active</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="cp-tbody"></tbody>
+          </table>
+          <div id="cp-empty" style="display:none;text-align:center;padding:48px;color:var(--muted);font-size:14px;">No learners found matching your filter.</div>
+        </div>
       </div>
     </div>
 
@@ -940,14 +991,15 @@ async function initAdmin() {
 
 window.switchAdminTab = tab => {
   adminTab = tab;
-  ['courses','exams','nominations','monitor','reports'].forEach(t => {
+  ['courses','cprogress','exams','nominations','monitor','reports'].forEach(t => {
     $(`atab-${t}`).className = 'admin-tab' + (tab===t ? ' active' : '');
     $(`atc-${t}`).className  = 'admin-tab-content' + (tab===t ? ' active' : '');
   });
-  if (tab === 'courses')      loadAdminCourses();
-  if (tab === 'monitor')      loadProctorSessions();
-  if (tab === 'reports')      loadReports();
-  if (tab === 'nominations')  populateNomExamSelect();
+  if (tab === 'courses')     loadAdminCourses();
+  if (tab === 'cprogress')   loadCourseProgress();
+  if (tab === 'monitor')     loadProctorSessions();
+  if (tab === 'reports')     loadReports();
+  if (tab === 'nominations') populateNomExamSelect();
 };
 
 async function loadAdminCourses() {
@@ -1236,6 +1288,224 @@ function toast(msg, type='') {
   t.classList.add('show'); clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
 }
+/* ══════════════════════════════════════
+   COURSE PROGRESS TAB
+═══════════════════════════════════════ */
+const CP_MODULE_TOTALS = {m1:8, m2:10, m3:8, m4:6};
+const CP_TOTAL = 32;
+let _cpData = [];
+let _cpFilter = 'all';
+
+async function loadCourseProgress() {
+  $('cp-loading').style.display = 'flex';
+  $('cp-table').style.display   = 'none';
+  $('cp-empty').style.display   = 'none';
+  try {
+    const [usersSnap, progressSnap, resultsSnap] = await Promise.all([
+      getDocs(collection(db, 'users')),
+      getDocs(collection(db, 'progress')),
+      getDocs(collection(db, 'results'))
+    ]);
+    const progressMap = {};
+    progressSnap.forEach(d => progressMap[d.id] = d.data());
+    const resultsMap  = {};
+    resultsSnap.forEach(d => resultsMap[d.id]  = d.data());
+
+    _cpData = [];
+    usersSnap.forEach(d => {
+      const u   = d.data();
+      const uid = d.id;
+      const prog = progressMap[uid] || {};
+      const res  = resultsMap[uid]  || null;
+      let totalDone = 0;
+      const modProgress = {};
+      for (const [key, tot] of Object.entries(CP_MODULE_TOTALS)) {
+        const done = (prog[key] || []).length;
+        totalDone += done;
+        modProgress[key] = {done, total: tot, pct: Math.round((done / tot) * 100)};
+      }
+      _cpData.push({
+        uid, name: u.name || 'Unknown', email: u.email || '',
+        photoURL: u.photoURL || '', lastSeen: u.lastSeen,
+        totalDone, modProgress,
+        bestScore:      res?.bestScore,
+        bestPassed:     res?.bestPassed,
+        attemptCount:   res?.attemptCount  || 0,
+        moduleBreakdown:res?.moduleBreakdown || null,
+        attempts:       res?.attempts       || []
+      });
+    });
+    _cpData.sort((a, b) => b.totalDone - a.totalDone);
+    cpUpdateStats();
+    cpApplyFilters();
+  } catch(err) {
+    $('cp-loading').style.display = 'none';
+    toast('Error loading course progress data', 'error');
+    console.error('loadCourseProgress:', err);
+  }
+}
+
+function cpUpdateStats() {
+  const total     = _cpData.length;
+  const passed    = _cpData.filter(u => u.bestPassed).length;
+  const withScore = _cpData.filter(u => u.bestScore !== undefined);
+  const avg       = withScore.length > 0
+    ? Math.round(withScore.reduce((s, u) => s + u.bestScore, 0) / withScore.length) : 0;
+  const completed = _cpData.filter(u => u.totalDone >= CP_TOTAL).length;
+  $('cp-stat-total').textContent     = total;
+  $('cp-stat-passed').textContent    = passed;
+  $('cp-stat-avg').textContent       = withScore.length > 0 ? avg + '%' : '—';
+  $('cp-stat-completed').textContent = completed;
+}
+
+window.cpSetFilter = f => {
+  _cpFilter = f;
+  ['all','passed','failed','notaken'].forEach(id => {
+    const btn = $(`cpf-${id}`);
+    if (id === f) {
+      btn.style.background   = 'var(--gold)';
+      btn.style.color        = '#1a1a1a';
+      btn.style.borderColor  = 'var(--gold)';
+    } else {
+      btn.style.background  = '';
+      btn.style.color       = '';
+      btn.style.borderColor = '';
+    }
+  });
+  cpApplyFilters();
+};
+
+window.cpApplyFilters = () => {
+  const search = ($('cp-search').value || '').toLowerCase();
+  const filtered = _cpData.filter(u => {
+    const matchSearch = !search ||
+      u.name.toLowerCase().includes(search) ||
+      u.email.toLowerCase().includes(search);
+    let matchFilter = true;
+    if      (_cpFilter === 'passed')  matchFilter = u.bestPassed === true;
+    else if (_cpFilter === 'failed')  matchFilter = u.bestPassed === false;
+    else if (_cpFilter === 'notaken') matchFilter = u.attemptCount === 0;
+    return matchSearch && matchFilter;
+  });
+  cpRenderTable(filtered);
+};
+
+function cpRenderTable(data) {
+  $('cp-loading').style.display = 'none';
+  const tbody = $('cp-tbody');
+  tbody.innerHTML = '';
+
+  if (!data.length) {
+    $('cp-table').style.display = 'none';
+    $('cp-empty').style.display = 'block';
+    return;
+  }
+  $('cp-table').style.display = 'table';
+  $('cp-empty').style.display = 'none';
+
+  const modNames = ['Fundamentals', 'Prometheus', 'Alerting', 'Plugins'];
+  const modKeys  = ['m1', 'm2', 'm3', 'm4'];
+
+  data.forEach((u, i) => {
+    const overallPct = Math.round((u.totalDone / CP_TOTAL) * 100);
+    const lastSeen   = u.lastSeen?.seconds
+      ? new Date(u.lastSeen.seconds * 1000).toLocaleDateString() : '—';
+    const scoreBadge = u.bestScore !== undefined
+      ? `<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;white-space:nowrap;
+           background:${u.bestPassed ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.15)'};
+           color:${u.bestPassed ? 'var(--success)' : 'var(--danger)'};
+           border:1px solid ${u.bestPassed ? 'rgba(16,185,129,.3)' : 'rgba(239,68,68,.3)'};">
+           ${u.bestScore}% ${u.bestPassed ? '✅ Pass' : '❌ Fail'}</span>`
+      : `<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;background:var(--surface);color:var(--muted);border:1px solid var(--border);">Not Taken</span>`;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div style="display:flex;align-items:center;gap:9px;">
+          ${u.photoURL ? `<img src="${esc(u.photoURL)}" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);" onerror="this.style.display='none'" alt=""/>` : `<div style="width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;">${esc(u.name.charAt(0).toUpperCase())}</div>`}
+          <div><div style="font-weight:600;font-size:13px;">${esc(u.name)}</div><div style="font-size:11px;color:var(--muted);">${esc(u.email)}</div></div>
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="background:var(--surface);border-radius:99px;height:5px;width:80px;overflow:hidden;display:inline-block;">
+            <div style="height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),#d97706);width:${overallPct}%;"></div>
+          </div>
+          <span style="font-size:12px;color:var(--muted);">${u.totalDone}/${CP_TOTAL} (${overallPct}%)</span>
+        </div>
+      </td>
+      ${modKeys.map(k => `<td style="font-size:12px;color:${u.modProgress[k].pct>=100?'var(--success)':'var(--muted)'};">${u.modProgress[k].done}/${u.modProgress[k].total}</td>`).join('')}
+      <td>${scoreBadge}</td>
+      <td style="font-size:12px;color:var(--muted);">${u.attemptCount}/3</td>
+      <td style="font-size:12px;color:var(--muted);">${lastSeen}</td>
+      <td><button class="tbl-btn" id="cp-expand-${i}" onclick="cpToggleDrilldown(${i})">Details</button></td>`;
+    tbody.appendChild(tr);
+
+    // Drilldown row
+    const modGridHTML = modKeys.map((k, mi) => {
+      const mp  = u.modProgress[k];
+      const mbp = u.moduleBreakdown?.[k];
+      return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">M${mi+1}: ${modNames[mi]}</div>
+        <div style="font-size:14px;font-weight:700;color:${mp.pct>=100?'var(--success)':'var(--gold)'};">${mp.done}/${mp.total} sections</div>
+        ${mbp ? `<div style="font-size:12px;color:var(--muted);margin-top:4px;">Quiz: ${mbp.correct}/${mbp.total} (${mbp.pct}%)</div>` : ''}
+      </div>`;
+    }).join('');
+
+    const attemptsHTML = u.attempts.length > 0
+      ? u.attempts.map((a, ai) => {
+          const d = a.date?.seconds ? new Date(a.date.seconds * 1000).toLocaleDateString() : 'N/A';
+          return `<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);">
+            <span>Attempt ${ai+1} — ${d}</span>
+            <span style="font-weight:700;color:${a.passed?'var(--success)':'var(--danger)'};">${a.score}% ${a.passed?'✅':'❌'}</span>
+          </div>`;
+        }).join('')
+      : '<div style="font-size:12px;color:var(--muted);">No attempts yet</div>';
+
+    const dtr = document.createElement('tr');
+    dtr.id = `cp-drilldown-${i}`;
+    dtr.style.display = 'none';
+    dtr.innerHTML = `<td colspan="10" style="background:var(--surface);padding:0;">
+      <div style="padding:16px 20px;border-top:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Module Breakdown</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">${modGridHTML}</div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Attempt History</div>
+        ${attemptsHTML}
+      </div>
+    </td>`;
+    tbody.appendChild(dtr);
+  });
+}
+
+window.cpToggleDrilldown = i => {
+  const row = $(`cp-drilldown-${i}`);
+  const btn = $(`cp-expand-${i}`);
+  const isOpen = row.style.display !== 'none';
+  row.style.display = isOpen ? 'none' : 'table-row';
+  btn.textContent   = isOpen ? 'Details' : 'Close';
+};
+
+window.cpExportCSV = () => {
+  const headers = ['Name','Email','Total Done','M1','M2','M3','M4','Best Score','Passed','Attempts','Last Seen'];
+  const rows = _cpData.map(u => [
+    u.name, u.email, u.totalDone,
+    u.modProgress.m1.done, u.modProgress.m2.done,
+    u.modProgress.m3.done, u.modProgress.m4.done,
+    u.bestScore !== undefined ? u.bestScore + '%' : 'N/A',
+    u.bestPassed !== undefined ? (u.bestPassed ? 'Yes' : 'No') : 'N/A',
+    u.attemptCount,
+    u.lastSeen?.seconds ? new Date(u.lastSeen.seconds * 1000).toLocaleDateString() : 'N/A'
+  ]);
+  const csv  = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `grafana-essentials-progress-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 window.addEventListener('beforeunload', cleanup);
 </script>
 </body>
