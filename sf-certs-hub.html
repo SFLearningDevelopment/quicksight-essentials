@@ -361,14 +361,27 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
   <!-- ADMIN VIEW -->
   <div id="admin-view">
     <div class="admin-tabs">
-      <button class="admin-tab active" id="atab-exams"        onclick="switchAdminTab('exams')">Exams</button>
+      <button class="admin-tab active" id="atab-courses"      onclick="switchAdminTab('courses')">📚 Courses</button>
+      <button class="admin-tab"        id="atab-exams"        onclick="switchAdminTab('exams')">🎓 Exams</button>
       <button class="admin-tab"        id="atab-nominations"  onclick="switchAdminTab('nominations')">Nominations</button>
       <button class="admin-tab"        id="atab-monitor"      onclick="switchAdminTab('monitor')">Live Monitor</button>
       <button class="admin-tab"        id="atab-reports"      onclick="switchAdminTab('reports')">Reports</button>
     </div>
 
+    <!-- COURSES TAB -->
+    <div class="admin-tab-content active" id="atc-courses">
+      <div class="atc-inner">
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;">Course Catalogue</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:24px;">All courses from Firestore. Click a course to open it in a new tab.</div>
+        <div id="admin-course-loading" style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:60px 0;color:var(--muted);font-size:14px;">
+          <div class="spinner"></div>Loading courses…
+        </div>
+        <div id="admin-course-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;"></div>
+      </div>
+    </div>
+
     <!-- EXAMS TAB -->
-    <div class="admin-tab-content active" id="atc-exams">
+    <div class="admin-tab-content" id="atc-exams">
       <div class="atc-inner">
         <button class="add-exam-btn" id="add-exam-btn">+ New Exam</button>
         <div class="exam-form-wrap" id="exam-form-wrap">
@@ -914,6 +927,7 @@ function buildSessionCard(s) {
 let editingExamId = null;
 
 async function initAdmin() {
+  await loadAdminCourses();
   await loadAdminExams();
   $('add-exam-btn').addEventListener('click', () => openExamForm());
   $('cancel-exam-btn').addEventListener('click', () => $('exam-form-wrap').classList.remove('open'));
@@ -929,14 +943,72 @@ async function initAdmin() {
 
 window.switchAdminTab = tab => {
   adminTab = tab;
-  ['exams','nominations','monitor','reports'].forEach(t => {
+  ['courses','exams','nominations','monitor','reports'].forEach(t => {
     $(`atab-${t}`).className = 'admin-tab' + (tab===t ? ' active' : '');
     $(`atc-${t}`).className  = 'admin-tab-content' + (tab===t ? ' active' : '');
   });
+  if (tab === 'courses')      loadAdminCourses();
   if (tab === 'monitor')      loadProctorSessions();
   if (tab === 'reports')      loadReports();
   if (tab === 'nominations')  populateNomExamSelect();
 };
+
+async function loadAdminCourses() {
+  const grid    = $('admin-course-grid');
+  const loading = $('admin-course-loading');
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (loading) loading.style.display = 'flex';
+  try {
+    const snap = await getDocs(collection(db, 'courses'));
+    const courses = [];
+    snap.forEach(d => courses.push({id: d.id, ...d.data()}));
+    courses.sort((a,b) => (a.order||0) - (b.order||0));
+    if (loading) loading.style.display = 'none';
+    if (!courses.length) {
+      grid.innerHTML = '<div style="color:var(--muted);font-size:14px;text-align:center;padding:60px 0;grid-column:1/-1;">No courses found.</div>';
+      return;
+    }
+    for (const c of courses) {
+      const ac = c.accentColor || '#3b82f6';
+      const statusDot = c.status==='live' ? '🟢' : c.status==='review' ? '🟡' : '⚫';
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;';
+      card.innerHTML = `
+        <div style="height:8px;background:linear-gradient(90deg,${esc(ac)},${esc(lighten(ac))})"></div>
+        <div style="padding:20px;flex:1;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:${esc(ac)};background:${esc(ac)}22;padding:3px 10px;border-radius:50px;">${esc(c.category||'Course')}</span>
+            <span style="font-size:11px;color:var(--muted);">${statusDot} ${esc(c.status||'draft')}</span>
+          </div>
+          <div style="font-size:26px;">${esc(c.icon||'📘')}</div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">${esc(c.title)}</div>
+          <div style="color:var(--muted);font-size:13px;line-height:1.5;flex:1;">${esc(c.description||'')}</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            ${c.duration ? `<span style="font-size:12px;color:var(--muted);">⏱ ${esc(c.duration)}</span>` : ''}
+            ${c.level    ? `<span style="font-size:12px;color:var(--muted);">📶 ${esc(c.level)}</span>`    : ''}
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;padding-top:12px;border-top:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--muted);">Click to open course</span>
+            <span style="font-size:13px;color:${esc(ac)};">→</span>
+          </div>
+        </div>`;
+      card.addEventListener('mouseenter', () => { card.style.transform='translateY(-3px)'; card.style.boxShadow='0 12px 32px rgba(0,0,0,.4)'; card.style.borderColor=ac; });
+      card.addEventListener('mouseleave', () => { card.style.transform=''; card.style.boxShadow=''; card.style.borderColor=''; });
+      if (c.url) {
+        card.addEventListener('click', () => window.open(c.url, '_blank'));
+      } else {
+        card.style.cursor = 'default';
+        card.querySelector('span:last-child').textContent = 'No URL set';
+      }
+      grid.appendChild(card);
+    }
+  } catch(err) {
+    if (loading) loading.style.display = 'none';
+    grid.innerHTML = '<div style="color:var(--muted);font-size:14px;text-align:center;padding:60px 0;grid-column:1/-1;">Error loading courses.</div>';
+    console.error('loadAdminCourses:', err);
+  }
+}
 
 async function loadAdminExams() {
   $('exam-table-body').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">Loading…</td></tr>';
