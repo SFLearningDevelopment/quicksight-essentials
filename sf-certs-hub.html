@@ -469,14 +469,20 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
           <!-- Step 1: Category selector -->
           <div style="margin-bottom:20px;">
             <label class="fg" style="margin-bottom:8px;display:block;"><span style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;">Step 1 — Select Category</span></label>
-            <div style="display:flex;gap:12px;">
-              <button id="nom-cat-course" onclick="nomSetCategory('course')"
-                style="flex:1;padding:14px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;">
-                📚 Courses
+            <div style="display:flex;gap:14px;">
+              <button id="nom-cat-course" onclick="nomSetCategory('course')" style="flex:1;padding:20px 16px;border-radius:12px;border:1px solid rgba(59,130,246,.25);background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(59,130,246,.03));color:var(--text);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:center;gap:14px;">
+                <span style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📚</span>
+                <div>
+                  <div style="font-size:15px;font-weight:700;">Courses</div>
+                  <div style="font-size:11px;color:var(--muted);font-weight:400;margin-top:2px;">Nominate for course access</div>
+                </div>
               </button>
-              <button id="nom-cat-exam" onclick="nomSetCategory('exam')"
-                style="flex:1;padding:14px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;">
-                🎓 Exams
+              <button id="nom-cat-exam" onclick="nomSetCategory('exam')" style="flex:1;padding:20px 16px;border-radius:12px;border:1px solid rgba(245,158,11,.25);background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(245,158,11,.03));color:var(--text);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:center;gap:14px;">
+                <span style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🎓</span>
+                <div>
+                  <div style="font-size:15px;font-weight:700;">Exams</div>
+                  <div style="font-size:11px;color:var(--muted);font-weight:400;margin-top:2px;">Nominate for certification exam</div>
+                </div>
               </button>
             </div>
           </div>
@@ -1201,21 +1207,27 @@ async function populateNomExamSelect() {
 }
 
 function nomResetCategoryButtons() {
-  ['course','exam'].forEach(cat => {
-    const btn = $(`nom-cat-${cat}`);
-    btn.style.background   = 'var(--surface)';
-    btn.style.color        = 'var(--muted)';
-    btn.style.borderColor  = 'var(--border)';
-  });
+  $('nom-cat-course').style.borderColor  = 'rgba(59,130,246,.25)';
+  $('nom-cat-course').style.background   = 'linear-gradient(135deg,rgba(59,130,246,.08),rgba(59,130,246,.03))';
+  $('nom-cat-course').style.boxShadow    = 'none';
+  $('nom-cat-exam').style.borderColor    = 'rgba(245,158,11,.25)';
+  $('nom-cat-exam').style.background     = 'linear-gradient(135deg,rgba(245,158,11,.08),rgba(245,158,11,.03))';
+  $('nom-cat-exam').style.boxShadow      = 'none';
 }
 
 window.nomSetCategory = async cat => {
   nomCategory = cat;
   nomResetCategoryButtons();
-  const activeBtn = $(`nom-cat-${cat}`);
-  activeBtn.style.background  = cat === 'course' ? 'rgba(59,130,246,.12)' : 'rgba(245,158,11,.12)';
-  activeBtn.style.color       = cat === 'course' ? 'var(--highlight)' : 'var(--gold)';
-  activeBtn.style.borderColor = cat === 'course' ? 'var(--accent)' : 'var(--gold)';
+
+  if (cat === 'course') {
+    $('nom-cat-course').style.borderColor = '#3b82f6';
+    $('nom-cat-course').style.background  = 'linear-gradient(135deg,rgba(59,130,246,.22),rgba(59,130,246,.08))';
+    $('nom-cat-course').style.boxShadow   = '0 0 0 3px rgba(59,130,246,.15)';
+  } else {
+    $('nom-cat-exam').style.borderColor   = 'var(--gold)';
+    $('nom-cat-exam').style.background    = 'linear-gradient(135deg,rgba(245,158,11,.22),rgba(245,158,11,.08))';
+    $('nom-cat-exam').style.boxShadow     = '0 0 0 3px rgba(245,158,11,.15)';
+  }
 
   $('nom-select-label').textContent = cat === 'course'
     ? 'Step 2 — Select Course' : 'Step 2 — Select Exam';
@@ -1243,6 +1255,12 @@ window.nomSetCategory = async cat => {
       o.textContent = e.title;
       sel.appendChild(o);
     });
+  }
+
+  // Auto-select first option and load its nominations
+  if (sel.options.length > 1) {
+    sel.selectedIndex = 1;
+    await onNomItemChange();
   }
 };
 
