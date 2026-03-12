@@ -22,7 +22,10 @@ body::before{content:'';position:fixed;inset:0;background:
   pointer-events:none;z-index:0;}
 
 /* ══ CHOICE SCREEN ══ */
-#choice-screen{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:var(--navy);}
+#loading-splash{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--navy);}
+#loading-splash.hidden{display:none;}
+.splash-spinner{width:32px;height:32px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--accent);animation:spin .8s linear infinite;}
+#choice-screen{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:var(--navy);}
 .choice-wrap{display:flex;flex-direction:column;align-items:center;gap:40px;padding:20px;width:100%;max-width:780px;}
 .choice-brand{display:flex;align-items:center;gap:14px;}
 .choice-badge{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:#fff;}
@@ -312,6 +315,13 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 }
 </style></head>
 <body>
+
+<!-- LOADING SPLASH -->
+<div id="loading-splash">
+  <div class="c-badge" style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;color:#fff;">SF</div>
+  <div class="splash-spinner"></div>
+  <div style="color:var(--muted);font-size:14px;font-family:'Syne',sans-serif;">Loading…</div>
+</div>
 
 <!-- CHOICE SCREEN -->
 <div id="choice-screen">
@@ -660,14 +670,21 @@ $('signout-btn').addEventListener('click', () => {
   $('choice-screen').style.display = 'flex';
 });
 
+// Hide splash and show choice screen after 5s if Firebase is slow
+const authTimeout = setTimeout(() => {
+  $('loading-splash').classList.add('hidden');
+  $('choice-screen').style.display = 'flex';
+}, 5000);
+
 onAuthStateChanged(auth, async user => {
+  clearTimeout(authTimeout);
+  $('loading-splash').classList.add('hidden');
+
   if (!user) {
-    // Not signed in — restore choice screen only if app/admin screen was showing
-    if ($('app').style.display === 'block' || $('admin-choice-screen').style.display === 'flex') {
-      $('app').style.display = 'none';
-      $('admin-choice-screen').style.display = 'none';
-      $('choice-screen').style.display = 'flex';
-    }
+    // Not signed in — show choice screen
+    $('app').style.display = 'none';
+    $('admin-choice-screen').style.display = 'none';
+    $('choice-screen').style.display = 'flex';
     return;
   }
 
