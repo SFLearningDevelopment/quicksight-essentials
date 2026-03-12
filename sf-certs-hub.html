@@ -20,60 +20,40 @@ body::before{content:'';position:fixed;inset:0;background:
   radial-gradient(ellipse 60% 40% at 90% 100%,rgba(245,158,11,.07) 0%,transparent 55%);
   pointer-events:none;z-index:0;}
 
-/* ══ SCREENS ══ */
-.screen{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:var(--navy);}
-.screen.hidden{display:none;}
+/* ══ LOADING SPLASH ══ */
+#loading-splash{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:var(--navy);flex-direction:column;gap:16px;}
+#loading-splash.hidden{display:none;}
+.splash-badge{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--gold),#d97706);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:4px;}
+.splash-spinner{width:32px;height:32px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--gold);animation:spin .8s linear infinite;}
+.splash-text{color:var(--muted);font-size:14px;}
 
-/* ══ CHOICE ══ */
-.choice-wrap{display:flex;flex-direction:column;align-items:center;gap:40px;padding:20px;width:100%;max-width:780px;}
-.choice-brand{display:flex;align-items:center;gap:14px;}
-.c-badge{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:#fff;}
-.c-brand-text{font-family:'Syne',sans-serif;font-weight:700;font-size:22px;}
-.c-brand-text span{color:var(--accent);}
-.choice-headline{font-family:'Syne',sans-serif;font-size:clamp(20px,3vw,30px);font-weight:800;text-align:center;line-height:1.2;}
-.choice-headline em{font-style:normal;color:var(--gold);}
-.choice-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;}
-.ch-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 28px;display:flex;flex-direction:column;align-items:flex-start;gap:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;animation:fadeUp .5s ease both;}
-.ch-card:nth-child(2){animation-delay:.1s;}
-.ch-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;}
-.ch-card.learn::before{background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(59,130,246,.12) 0%,transparent 70%);}
-.ch-card.certify::before{background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(245,158,11,.10) 0%,transparent 70%);}
-.ch-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(0,0,0,.5);}
-.ch-card:hover::before{opacity:1;}
-.ch-card.learn:hover{border-color:rgba(59,130,246,.5);}
-.ch-card.certify:hover{border-color:rgba(245,158,11,.4);}
-.ch-icon{font-size:40px;line-height:1;}
-.ch-label{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
-.ch-desc{color:var(--muted);font-size:14px;line-height:1.6;}
-.ch-arrow{margin-top:auto;font-size:20px;color:var(--accent);}
-.ch-card.certify .ch-arrow{color:var(--gold);}
-@media(max-width:600px){.choice-cards{grid-template-columns:1fr;}}
-
-/* ══ AUTH ══ */
-.auth-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:48px 52px;display:flex;flex-direction:column;align-items:center;gap:24px;max-width:420px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,.5);animation:fadeUp .4s ease both;}
+/* ══ AUTH SCREEN ══ */
+#auth-screen{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:var(--navy);}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:48px 52px;display:flex;flex-direction:column;align-items:center;gap:24px;max-width:420px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,.5);animation:fadeUp .4s ease both;text-align:center;}
 .auth-logo{display:flex;align-items:center;gap:12px;}
-.a-badge{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff;}
+.a-badge{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--gold),#d97706);display:flex;align-items:center;justify-content:center;font-size:22px;}
 .a-brand{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;}
-.a-brand span{color:var(--accent);}
+.a-brand span{color:var(--gold);}
 .auth-divider{width:100%;height:1px;background:var(--border);}
 .mode-badge{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 14px;border-radius:50px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:#fbbf24;}
-.auth-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;text-align:center;line-height:1.3;}
-.auth-sub{color:var(--muted);font-size:14px;text-align:center;line-height:1.6;}
+.auth-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;line-height:1.3;}
+.auth-sub{color:var(--muted);font-size:14px;line-height:1.6;}
 #google-btn{display:flex;align-items:center;gap:12px;background:#fff;color:#1a1a1a;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:500;cursor:pointer;width:100%;justify-content:center;transition:box-shadow .2s,transform .15s;box-shadow:0 2px 8px rgba(0,0,0,.3);}
 #google-btn:hover{box-shadow:0 6px 20px rgba(0,0,0,.4);transform:translateY(-1px);}
+#google-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
 #google-btn img{width:20px;height:20px;}
-.auth-back{font-size:13px;color:var(--muted);cursor:pointer;transition:color .2s;}
-.auth-back:hover{color:var(--accent);}
-#auth-error{color:#f87171;font-size:13px;text-align:center;display:none;}
-#denied-box{display:none;flex-direction:column;align-items:center;gap:16px;text-align:center;}
+#auth-error{color:#f87171;font-size:13px;display:none;}
+#denied-box{display:none;flex-direction:column;align-items:center;gap:16px;}
 .denied-icon{font-size:48px;}
 #denied-box h2{font-family:'Syne',sans-serif;}
 #denied-box p{color:var(--muted);font-size:14px;line-height:1.6;}
 #switch-btn{background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-size:14px;cursor:pointer;transition:all .2s;}
 #switch-btn:hover{color:var(--text);border-color:var(--accent);}
+.hub-back{font-size:13px;color:var(--muted);cursor:pointer;transition:color .2s;text-decoration:none;display:inline-block;}
+.hub-back:hover{color:var(--accent);}
 
 /* ══ CAMERA CONSENT ══ */
-#camera-screen{flex-direction:column;gap:0;}
+#camera-screen{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:var(--navy);}
 .consent-card{background:var(--card);border:1px solid rgba(245,158,11,.3);border-radius:20px;padding:48px 52px;max-width:480px;width:90%;display:flex;flex-direction:column;gap:20px;animation:fadeUp .4s ease both;}
 .consent-icon{font-size:52px;text-align:center;}
 .consent-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;text-align:center;}
@@ -84,7 +64,6 @@ body::before{content:'';position:fixed;inset:0;background:
 .btn-consent-allow:hover{background:#059669;}
 .btn-consent-deny{background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:13px;font-size:14px;cursor:pointer;transition:all .2s;}
 .btn-consent-deny:hover{background:rgba(239,68,68,.15);}
-#exam-name-for-consent{font-weight:700;color:var(--text);}
 
 /* ══ NAV ══ */
 nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:68px;background:rgba(10,22,40,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
@@ -96,7 +75,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .chip-admin{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);color:#fbbf24;}
 .chip-proctor{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#34d399;}
 .nav-right{display:flex;align-items:center;gap:12px;}
-.nav-link{font-size:13px;color:var(--muted);text-decoration:none;padding:6px 14px;border-radius:7px;border:1px solid var(--border);transition:all .2s;display:none;}
+.nav-link{font-size:13px;color:var(--muted);text-decoration:none;padding:6px 14px;border-radius:7px;border:1px solid var(--border);transition:all .2s;}
 .nav-link:hover{color:var(--accent);border-color:var(--accent);}
 #user-chip{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:5px 14px 5px 6px;}
 #user-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;}
@@ -116,6 +95,8 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .cert-title{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:800;line-height:1.15;margin-bottom:12px;}
 .cert-title em{font-style:normal;color:var(--gold);}
 .cert-sub{color:var(--muted);font-size:16px;max-width:540px;line-height:1.65;}
+#exam-loading{display:flex;flex-direction:column;align-items:center;gap:16px;padding:80px 0;color:var(--muted);font-size:14px;}
+.spinner{width:32px;height:32px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--gold);animation:spin .8s linear infinite;}
 #exam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;}
 .exam-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s,border-color .2s;animation:fadeUp .4s ease both;}
 .exam-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.4);}
@@ -146,16 +127,13 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .btn-take{background:var(--gold);color:#1a1a1a;}
 .btn-take:hover{background:#d97706;}
 .btn-disabled{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border);cursor:not-allowed;}
-#exam-loading{display:flex;flex-direction:column;align-items:center;gap:16px;padding:80px 0;color:var(--muted);font-size:14px;}
-.spinner{width:32px;height:32px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--gold);animation:spin .8s linear infinite;}
 
-/* ══ PROCTOR DASHBOARD ══ */
+/* ══ PROCTOR VIEW ══ */
 #proctor-view{display:none;}
 .proctor-main{max-width:1200px;margin:0 auto;padding:40px 32px 80px;}
-.proctor-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:gap;}
 .proctor-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;}
 .proctor-sub{color:var(--muted);font-size:14px;margin-top:4px;}
-.proctor-stats{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;}
+.proctor-stats{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;margin-top:20px;}
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 22px;min-width:140px;}
 .stat-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
 .stat-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;}
@@ -185,12 +163,17 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .no-flags{color:var(--muted);font-size:12px;text-align:center;padding:12px 0;}
 .session-attempts{font-size:12px;color:var(--muted);margin-top:10px;}
 .proctor-empty{text-align:center;padding:80px 0;color:var(--muted);}
-.proctor-empty svg{opacity:.25;margin-bottom:12px;}
 .proctor-empty h3{font-family:'Syne',sans-serif;color:var(--text);margin-bottom:6px;}
 .refresh-btn{background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;transition:all .2s;}
 .refresh-btn:hover{color:var(--text);border-color:var(--accent);}
 
-/* ══ ADMIN EXAM VIEW ══ */
+/* ── Proctor "waiting" state when no session assigned yet ── */
+.proctor-standby{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:48px 32px;text-align:center;max-width:480px;margin:60px auto 0;}
+.proctor-standby-icon{font-size:48px;margin-bottom:16px;}
+.proctor-standby h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:10px;}
+.proctor-standby p{color:var(--muted);font-size:14px;line-height:1.65;}
+
+/* ══ ADMIN VIEW ══ */
 #admin-view{display:none;}
 .admin-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 40px;gap:4px;background:var(--surface);}
 .admin-tab{padding:14px 20px;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;}
@@ -198,7 +181,6 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .admin-tab-content{display:none;}
 .admin-tab-content.active{display:block;}
 .atc-inner{max-width:1100px;margin:0 auto;padding:36px 32px 80px;}
-/* exam management */
 .exam-list-table{width:100%;border-collapse:separate;border-spacing:0;}
 .exam-list-table th{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
 .exam-list-table td{padding:12px 14px;border-bottom:1px solid rgba(59,130,246,.07);font-size:13px;vertical-align:middle;}
@@ -209,7 +191,6 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .tbl-del:hover{background:rgba(239,68,68,.08);border-color:var(--danger);}
 .add-exam-btn{background:var(--gold);color:#1a1a1a;border:none;border-radius:9px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;margin-bottom:20px;}
 .add-exam-btn:hover{background:#d97706;}
-/* exam form modal */
 .exam-form-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:24px;display:none;}
 .exam-form-wrap.open{display:block;}
 .exam-form-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:18px;}
@@ -222,7 +203,6 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .fg textarea{resize:vertical;min-height:72px;}
 .save-btn{background:var(--gold);color:#1a1a1a;border:none;border-radius:9px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;margin-top:4px;}
 .save-btn:hover{background:#d97706;}
-/* nominations */
 .nom-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-top:20px;}
 .nom-section-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px;}
 .nom-select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:14px;color:var(--text);outline:none;margin-bottom:12px;transition:border-color .2s;}
@@ -259,7 +239,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 @media(max-width:768px){
   nav{padding:0 20px;}
   .cert-main,.proctor-main{padding:32px 20px 60px;}
-  .admin-tabs{padding:0 16px;}
+  .admin-tabs{padding:0 16px;overflow-x:auto;}
   .atc-inner{padding:24px 16px 60px;}
   #exam-grid{grid-template-columns:1fr;}
   .form-grid{grid-template-columns:1fr;}
@@ -268,36 +248,18 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 </head>
 <body>
 
-<!-- CHOICE SCREEN -->
-<div class="screen" id="choice-screen">
-  <div class="choice-wrap">
-    <div class="choice-brand">
-      <div class="c-badge">SF</div>
-      <div class="c-brand-text"><span>SF</span> Learning &amp; Development</div>
-    </div>
-    <div class="choice-headline">What do you want to<br><em>do today?</em></div>
-    <div class="choice-cards">
-      <div class="ch-card learn" onclick="goLearn()">
-        <div class="ch-icon">📚</div>
-        <div class="ch-label">Learn</div>
-        <div class="ch-desc">Access your nominated courses, track progress, and build new skills.</div>
-        <div class="ch-arrow">→</div>
-      </div>
-      <div class="ch-card certify" onclick="goCertify()">
-        <div class="ch-icon">🎓</div>
-        <div class="ch-label">Get Certified</div>
-        <div class="ch-desc">Take your certification evaluation exam and earn your SF certification badge.</div>
-        <div class="ch-arrow">→</div>
-      </div>
-    </div>
-  </div>
+<!-- LOADING SPLASH — shown while Firebase resolves auth state -->
+<div id="loading-splash">
+  <div class="splash-badge">🎓</div>
+  <div class="splash-spinner"></div>
+  <div class="splash-text">Loading Certifications Hub…</div>
 </div>
 
-<!-- AUTH SCREEN -->
-<div class="screen hidden" id="auth-screen">
+<!-- AUTH SCREEN — only shown when no session exists -->
+<div id="auth-screen">
   <div class="auth-card" id="signin-box">
     <div class="auth-logo">
-      <div class="a-badge">SF</div>
+      <div class="a-badge">🎓</div>
       <div class="a-brand"><span>SF</span> Certifications</div>
     </div>
     <div class="auth-divider"></div>
@@ -309,9 +271,9 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
       Continue with Google
     </button>
     <div id="auth-error">Sign-in failed. Please use your @sourcefuse.com account.</div>
-    <span class="auth-back" onclick="backToChoice()">← Back</span>
+    <a href="https://sflearningdevelopment.github.io/sf-learning-hub/index.html" class="hub-back">← Back to Learning Hub</a>
   </div>
-  <div class="auth-card" id="denied-box" style="display:none;flex-direction:column;">
+  <div class="auth-card" id="denied-box">
     <div class="denied-icon">🔒</div>
     <h2>Access Restricted</h2>
     <p>This hub is for SourceFuse employees only. Please sign in with your <strong>@sourcefuse.com</strong> account.</p>
@@ -320,7 +282,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 </div>
 
 <!-- CAMERA CONSENT SCREEN -->
-<div class="screen hidden" id="camera-screen">
+<div id="camera-screen">
   <div class="consent-card">
     <div class="consent-icon">📷</div>
     <div class="consent-title">Camera Access Required</div>
@@ -329,7 +291,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
       A proctor will be able to view your session. Face-away events will be logged and flagged automatically.
     </div>
     <div class="consent-warning">
-      ⚠️ <strong>Denying camera access will consume one exam attempt</strong> and the session will not start. You will not be able to proceed without enabling your camera.
+      ⚠️ <strong>Denying camera access will consume one exam attempt</strong> and the session will not start.
     </div>
     <div class="consent-btns">
       <button class="btn-consent-allow" id="consent-allow-btn">✓ Allow Camera &amp; Start Exam</button>
@@ -349,7 +311,8 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
       </div>
     </div>
     <div class="nav-right">
-      <a href="index.html" class="nav-link" id="learn-link">📚 Learning Hub</a>
+      <!-- Hidden for proctors; shown for students/admins -->
+      <a href="https://sflearningdevelopment.github.io/sf-learning-hub/index.html" class="nav-link" id="hub-link" style="display:none;">📚 Learning Hub</a>
       <div id="user-chip">
         <img id="user-avatar" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="">
         <span id="user-name"></span>
@@ -371,20 +334,20 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
     </div>
   </div>
 
-  <!-- PROCTOR VIEW -->
+  <!-- PROCTOR VIEW — ONLY assigned candidate session, nothing else -->
   <div id="proctor-view">
     <div class="proctor-main">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px;">
         <div>
-          <div class="proctor-title">Live Exam Monitor</div>
-          <div class="proctor-sub">Real-time view of active candidate sessions. Page auto-refreshes every 30 seconds.</div>
+          <div class="proctor-title">🎯 Live Exam Monitor</div>
+          <div class="proctor-sub" id="proctor-candidate-label">Loading assigned candidate…</div>
         </div>
         <button class="refresh-btn" id="refresh-btn">⟳ Refresh Now</button>
       </div>
       <div class="proctor-stats">
-        <div class="stat-card"><div class="stat-label">Active Sessions</div><div class="stat-val green" id="stat-active">—</div></div>
-        <div class="stat-card"><div class="stat-label">Flagged Events</div><div class="stat-val red" id="stat-flags">—</div></div>
-        <div class="stat-card"><div class="stat-label">Avg Progress</div><div class="stat-val yellow" id="stat-progress">—</div></div>
+        <div class="stat-card"><div class="stat-label">Session Status</div><div class="stat-val green" id="stat-active">—</div></div>
+        <div class="stat-card"><div class="stat-label">Flags Raised</div><div class="stat-val red" id="stat-flags">—</div></div>
+        <div class="stat-card"><div class="stat-label">Progress</div><div class="stat-val yellow" id="stat-progress">—</div></div>
       </div>
       <div id="live-sessions"></div>
     </div>
@@ -393,10 +356,10 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
   <!-- ADMIN VIEW -->
   <div id="admin-view">
     <div class="admin-tabs">
-      <button class="admin-tab active" id="atab-exams" onclick="switchAdminTab('exams')">Exams</button>
-      <button class="admin-tab" id="atab-nominations" onclick="switchAdminTab('nominations')">Nominations</button>
-      <button class="admin-tab" id="atab-monitor" onclick="switchAdminTab('monitor')">Live Monitor</button>
-      <button class="admin-tab" id="atab-reports" onclick="switchAdminTab('reports')">Reports</button>
+      <button class="admin-tab active" id="atab-exams"        onclick="switchAdminTab('exams')">Exams</button>
+      <button class="admin-tab"        id="atab-nominations"  onclick="switchAdminTab('nominations')">Nominations</button>
+      <button class="admin-tab"        id="atab-monitor"      onclick="switchAdminTab('monitor')">Live Monitor</button>
+      <button class="admin-tab"        id="atab-reports"      onclick="switchAdminTab('reports')">Reports</button>
     </div>
 
     <!-- EXAMS TAB -->
@@ -424,7 +387,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
         </div>
         <table class="exam-list-table">
           <thead><tr><th>Exam</th><th>Course Link</th><th>Pass</th><th>Attempts</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody id="exam-table-body"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr></tbody>
+          <tbody id="exam-table-body"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">Loading…</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -448,7 +411,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
       </div>
     </div>
 
-    <!-- MONITOR TAB (admin sees all sessions) -->
+    <!-- MONITOR TAB -->
     <div class="admin-tab-content" id="atc-monitor">
       <div class="atc-inner">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
@@ -470,8 +433,8 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
     <div class="admin-tab-content" id="atc-reports">
       <div class="atc-inner">
         <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;">Exam Reports</div>
-        <div style="color:var(--muted);font-size:13px;margin-bottom:24px;">Flag reports for completed sessions. Select a session to view the full proctoring log.</div>
-        <div id="report-list"><div style="color:var(--muted);font-size:14px;text-align:center;padding:40px 0;">Loading…</div></div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:24px;">Completed session logs with proctoring flags.</div>
+        <div id="report-list"><div style="color:var(--muted);font-size:14px;text-align:center;padding:40px 0">Loading…</div></div>
       </div>
     </div>
   </div>
@@ -485,144 +448,203 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChang
   from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
 import {
   getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc, addDoc,
-  serverTimestamp, query, where, orderBy, onSnapshot, Timestamp
+  serverTimestamp, query, where
 } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js';
 
 const FB = {
-  <!-- firebase-config: referrer-restricted, public-facing client key -->
-  apiKey:"AIzaSyA-8fatW5D7uR69rcuGFPH54IFqrz0PhU0",
-  authDomain:"sfcertification-grafana.firebaseapp.com",
-  projectId:"sfcertification-grafana",
-  appId:"1:227322696511:web:12e7ced7dd3d45fa06798a"
+  apiKey:     "AIzaSyA-8fatW5D7uR69rcuGFPH54IFqrz0PhU0",
+  authDomain: "sfcertification-grafana.firebaseapp.com",
+  projectId:  "sfcertification-grafana",
+  appId:      "1:227322696511:web:12e7ced7dd3d45fa06798a"
 };
 const ADMINS = ['jv.ravichandran@sourcefuse.com','noushin.khan@sourcefuse.com'];
 const DOMAIN = 'sourcefuse.com';
-const FACE_GRACE_MS = 3000; // 3-second grace before logging face-away event
+const FACE_GRACE_MS = 3000;
+const HUB_URL = 'https://sflearningdevelopment.github.io/sf-learning-hub/index.html';
 
 const fbApp = initializeApp(FB);
 const auth  = getAuth(fbApp);
 const db    = getFirestore(fbApp);
 
-let me=null, myRole=null;
-let exams=[], selExamForConsent=null;
-let faceStream=null, faceDetector=null, faceGraceTimer=null, faceAwayStart=null;
-let sessionDocId=null;
-let proctorRefreshTimer=null;
-let adminTab='exams';
+// Google provider with domain hint
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ hd: DOMAIN });
+
+let me = null, myRole = null;
+let exams = [], selExamForConsent = null;
+let faceStream = null, faceGraceTimer = null, faceAwayStart = null;
+let sessionDocId = null;
+let proctorRefreshTimer = null;
+let adminTab = 'exams';
 
 /* ══════════════════════════════════════
-   CHOICE / AUTH / NAV
+   AUTH
 ═══════════════════════════════════════ */
-window.goLearn = () => window.location.href='index.html';
-window.goCertify = () => {
-  hide('choice-screen'); show('auth-screen');
-};
-window.backToChoice = () => { hide('auth-screen'); show('choice-screen'); };
-
-function show(id){ const el=$(id); if(el){ el.classList.remove('hidden'); el.style.display=''; } }
-function hide(id){ const el=$(id); if(el){ el.classList.add('hidden'); el.style.display='none'; } }
-
-$('google-btn').addEventListener('click', async () => {
-  try { await signInWithPopup(auth, new GoogleAuthProvider()); }
-  catch { $('auth-error').style.display='block'; }
-});
-$('switch-btn').addEventListener('click', () => signOut(auth));
-$('signout-btn').addEventListener('click', () => {
-  signOut(auth); cleanup();
-  $('app').style.display='none';
-  show('choice-screen');
-});
+// Hard timeout: if onAuthStateChanged hasn't fired in 5s, show auth screen
+const authTimeout = setTimeout(() => {
+  if (!$('loading-splash').classList.contains('hidden')) {
+    $('loading-splash').classList.add('hidden');
+    $('auth-screen').style.display = 'flex';
+    $('signin-box').style.display  = 'flex';
+    $('denied-box').style.display  = 'none';
+  }
+}, 5000);
 
 onAuthStateChanged(auth, async user => {
-  if (!user) return;
-  if (user.email.split('@')[1] !== DOMAIN) {
-    show('auth-screen');
-    $('signin-box').style.display='none';
-    $('denied-box').style.display='flex';
+  clearTimeout(authTimeout);
+  $('loading-splash').classList.add('hidden');
+
+  if (!user) {
+    // No session — show sign-in
+    $('auth-screen').style.display = 'flex';
+    $('signin-box').style.display  = 'flex';
+    $('denied-box').style.display  = 'none';
+    $('app').style.display = 'none';
     return;
   }
-  me = user;
-  hide('auth-screen'); hide('choice-screen');
-  $('app').style.display='block';
-  $('user-name').textContent = user.displayName||user.email;
-  if (user.photoURL) $('user-avatar').src=user.photoURL;
 
-  if (ADMINS.includes(user.email)) {
-    myRole='admin';
-  } else {
-    const snap=await getDoc(doc(db,'users',user.email));
-    myRole=snap.exists()?(snap.data().role||'student'):'student';
+  // Wrong domain — sign out and show denied
+  if (user.email.split('@')[1] !== DOMAIN) {
+    await signOut(auth);
+    $('auth-screen').style.display = 'flex';
+    $('signin-box').style.display  = 'none';
+    $('denied-box').style.display  = 'flex';
+    return;
   }
 
-  $('chip-admin').style.display  =myRole==='admin'?'inline-flex':'none';
-  $('chip-proctor').style.display=myRole==='proctor'?'inline-flex':'none';
-  $('learn-link').style.display  =myRole!=='proctor'?'inline-flex':'none';
+  // Valid user — set up session
+  me = user;
+  $('auth-screen').style.display = 'none';
+  $('app').style.display         = 'block';
+  $('user-name').textContent     = user.displayName || user.email;
+  if (user.photoURL) $('user-avatar').src = user.photoURL;
+
+  if (ADMINS.includes(user.email)) {
+    myRole = 'admin';
+  } else {
+    const snap = await getDoc(doc(db, 'users', user.email));
+    myRole = snap.exists() ? (snap.data().role || 'student') : 'student';
+  }
+
+  // Show chips
+  $('chip-admin').style.display   = myRole === 'admin'   ? 'inline-flex' : 'none';
+  $('chip-proctor').style.display = myRole === 'proctor' ? 'inline-flex' : 'none';
+
+  // Hub link: visible for students and admins; HIDDEN for proctors
+  // Proctors should stay focused on their proctoring task only
+  $('hub-link').style.display = myRole === 'proctor' ? 'none' : 'inline-flex';
 
   route();
 });
 
-function route() {
-  hideAll();
-  if (myRole==='admin')         { $('admin-view').style.display='block'; initAdmin(); }
-  else if (myRole==='proctor')  { $('proctor-view').style.display='block'; loadProctorSessions(false); }
-  else                          { $('student-view').style.display='block'; loadExams(); }
-}
+$('google-btn').addEventListener('click', async () => {
+  const btn   = $('google-btn');
+  const errEl = $('auth-error');
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+  try {
+    await signInWithPopup(auth, googleProvider);
+    // onAuthStateChanged handles the rest
+  } catch(e) {
+    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
+      errEl.textContent = 'Sign-in cancelled. Please try again.';
+    } else if (e.code === 'auth/popup-blocked') {
+      errEl.textContent = 'Pop-up blocked — please allow pop-ups for this site.';
+    } else {
+      errEl.textContent = 'Sign-in failed: ' + (e.message || 'Unknown error');
+    }
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G"> Continue with Google';
+  }
+});
 
-function hideAll(){
-  ['student-view','proctor-view','admin-view'].forEach(id=>$(''+id).style.display='none');
+$('switch-btn').addEventListener('click', () => signOut(auth));
+
+$('signout-btn').addEventListener('click', () => {
+  cleanup();
+  signOut(auth);
+  $('app').style.display = 'none';
+  // Redirect to hub instead of showing choice screen (no choice screen in this file)
+  window.location.href = HUB_URL;
+});
+
+/* ══════════════════════════════════════
+   ROUTING
+═══════════════════════════════════════ */
+function route() {
+  $('student-view').style.display = 'none';
+  $('proctor-view').style.display = 'none';
+  $('admin-view').style.display   = 'none';
+
+  if      (myRole === 'admin')   { $('admin-view').style.display   = 'block'; initAdmin(); }
+  else if (myRole === 'proctor') { $('proctor-view').style.display = 'block'; initProctor(); }
+  else                           { $('student-view').style.display = 'block'; loadExams(); }
 }
 
 /* ══════════════════════════════════════
    STUDENT — EXAM LISTING
 ═══════════════════════════════════════ */
 async function loadExams() {
-  $('exam-loading').style.display='flex'; $('exam-grid').innerHTML='';
+  $('exam-loading').style.display = 'flex';
+  $('exam-grid').innerHTML = '';
   try {
-    const snap=await getDocs(collection(db,'exams'));
-    exams=[];
-    snap.forEach(d=>{ if(d.data().status==='live') exams.push({id:d.id,...d.data()}); });
-    $('exam-loading').style.display='none';
-    if(!exams.length){
-      $('exam-grid').innerHTML='<div style="text-align:center;padding:80px 0;color:var(--muted)"><h3 style="font-family:Syne,sans-serif;color:var(--text);margin-bottom:8px">No exams available yet</h3><p>Check back soon.</p></div>';
+    const snap = await getDocs(collection(db, 'exams'));
+    exams = [];
+    snap.forEach(d => { if (d.data().status === 'live') exams.push({id:d.id,...d.data()}); });
+    $('exam-loading').style.display = 'none';
+    if (!exams.length) {
+      $('exam-grid').innerHTML = '<div style="text-align:center;padding:80px 0;color:var(--muted)"><h3 style="font-family:Syne,sans-serif;color:var(--text);margin-bottom:8px">No exams available yet</h3><p>Check back soon.</p></div>';
       return;
     }
-    for(const e of exams) $('exam-grid').appendChild(await buildExamCard(e));
-  } catch(err) { $('exam-loading').style.display='none'; toast('Error loading exams','error'); }
+    for (const e of exams) $('exam-grid').appendChild(await buildExamCard(e));
+  } catch(err) {
+    $('exam-loading').style.display = 'none';
+    toast('Error loading exams', 'error');
+  }
 }
 
 async function buildExamCard(exam) {
-  // Check nomination
-  let nominated=false;
-  try{ const s=await getDoc(doc(db,'exams',exam.id,'nominations',me.email)); nominated=s.exists()&&s.data().nominated; }catch{}
+  let nominated = false;
+  try {
+    const s = await getDoc(doc(db, 'exams', exam.id, 'nominations', me.email));
+    nominated = s.exists() && s.data().nominated;
+  } catch{}
 
-  // Check course completion if linked
-  let courseComplete=true;
-  if(exam.linkedCourseId){
-    try{ const s=await getDoc(doc(db,'progress',me.uid)); courseComplete=s.exists()&&s.data()[`course_${exam.linkedCourseId}`]===true; }catch{}
+  let courseComplete = true;
+  if (exam.linkedCourseId) {
+    try {
+      const s = await getDoc(doc(db, 'progress', me.uid));
+      courseComplete = s.exists() && s.data()[`course_${exam.linkedCourseId}`] === true;
+    } catch{}
   }
 
-  // Check attempt count
-  let attemptCount=0, bestScore=null, maxAttempts=exam.maxAttempts||3;
-  try{
-    const s=await getDoc(doc(db,'examResults',me.uid));
-    if(s.exists()&&s.data()[exam.id]){
-      attemptCount=s.data()[exam.id].attemptCount||0;
-      var bs=s.data()[exam.id].bestScore; bestScore=(bs!==undefined&&bs!==null)?bs:null;
+  let attemptCount = 0, bestScore = null;
+  const maxAttempts = exam.maxAttempts || 3;
+  try {
+    const s = await getDoc(doc(db, 'examResults', me.uid));
+    if (s.exists() && s.data()[exam.id]) {
+      attemptCount = s.data()[exam.id].attemptCount || 0;
+      const bs = s.data()[exam.id].bestScore;
+      bestScore = (bs !== undefined && bs !== null) ? bs : null;
     }
-  }catch{}
-  const attemptsLeft=Math.max(0,maxAttempts-attemptCount);
-  const canTake=nominated&&courseComplete&&attemptsLeft>0;
+  } catch{}
 
-  const card=document.createElement('div');
-  card.className='exam-card';
-  const ac=exam.accentColor||'#f59e0b';
-  const dots=Array.from({length:maxAttempts},(_,i)=>`<div class="a-dot ${i<attemptCount?'used':'avail'}"></div>`).join('');
-  const notices=[];
-  if(!nominated) notices.push(`<div class="notice-box notice-not-nom">You are not nominated for this exam. Please request your manager to nominate you.</div>`);
-  else if(!courseComplete&&exam.linkedCourseId) notices.push(`<div class="notice-box notice-course-lock">⚠️ You must complete the linked course before taking this exam.</div>`);
-  else if(attemptsLeft===0) notices.push(`<div class="notice-box notice-no-attempts">You have used all ${maxAttempts} attempts for this exam.</div>`);
+  const attemptsLeft = Math.max(0, maxAttempts - attemptCount);
+  const canTake = nominated && courseComplete && attemptsLeft > 0;
+  const ac = exam.accentColor || '#f59e0b';
+  const dots = Array.from({length: maxAttempts}, (_,i) =>
+    `<div class="a-dot ${i < attemptCount ? 'used' : 'avail'}"></div>`).join('');
 
-  card.innerHTML=`
+  const notices = [];
+  if (!nominated) notices.push(`<div class="notice-box notice-not-nom">You are not nominated for this exam. Contact your manager.</div>`);
+  else if (!courseComplete && exam.linkedCourseId) notices.push(`<div class="notice-box notice-course-lock">⚠️ Complete the linked course before attempting this exam.</div>`);
+  else if (attemptsLeft === 0) notices.push(`<div class="notice-box notice-no-attempts">All ${maxAttempts} attempts used for this exam.</div>`);
+
+  const card = document.createElement('div');
+  card.className = 'exam-card';
+  card.innerHTML = `
     <div class="exam-banner" style="background:linear-gradient(90deg,${ac},${lighten(ac)})"></div>
     <div class="exam-body">
       <div class="exam-meta">
@@ -635,9 +657,9 @@ async function buildExamCard(exam) {
     </div>
     <div class="exam-footer">
       <div class="exam-info">
-        ${exam.duration?`<div class="exam-info-item">⏱ ${esc(exam.duration)} min</div>`:''}
-        ${exam.passmark?`<div class="exam-info-item">🎯 Pass: ${esc(String(exam.passmark))}%</div>`:''}
-        ${bestScore!==null?`<div class="exam-info-item">⭐ Best: ${bestScore}%</div>`:''}
+        ${exam.duration ? `<div class="exam-info-item">⏱ ${esc(exam.duration)} min</div>` : ''}
+        ${exam.passmark  ? `<div class="exam-info-item">🎯 Pass: ${esc(String(exam.passmark))}%</div>` : ''}
+        ${bestScore !== null ? `<div class="exam-info-item">⭐ Best: ${bestScore}%</div>` : ''}
       </div>
       <div class="attempts-bar">
         <span>Attempts: ${attemptCount}/${maxAttempts}</span>
@@ -645,13 +667,11 @@ async function buildExamCard(exam) {
       </div>
       ${notices.join('')}
       ${canTake
-        ?`<button class="exam-btn btn-take" data-examid="${esc(exam.id)}">Start Exam →</button>`
-        :`<button class="exam-btn btn-disabled" disabled>🔒 Unavailable</button>`}
+        ? `<button class="exam-btn btn-take">Start Exam →</button>`
+        : `<button class="exam-btn btn-disabled" disabled>🔒 Unavailable</button>`}
     </div>`;
 
-  if(canTake){
-    card.querySelector('.btn-take').addEventListener('click',()=>startConsentFlow(exam));
-  }
+  if (canTake) card.querySelector('.btn-take').addEventListener('click', () => startConsentFlow(exam));
   return card;
 }
 
@@ -659,193 +679,211 @@ async function buildExamCard(exam) {
    CAMERA CONSENT FLOW
 ═══════════════════════════════════════ */
 function startConsentFlow(exam) {
-  selExamForConsent=exam;
-  $('exam-name-for-consent').textContent=exam.title;
-  $('app').style.display='none';
-  show('camera-screen');
+  selExamForConsent = exam;
+  $('exam-name-for-consent').textContent = exam.title;
+  $('app').style.display       = 'none';
+  $('camera-screen').style.display = 'flex';
 }
 
 $('consent-allow-btn').addEventListener('click', async () => {
   try {
-    faceStream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
-    hide('camera-screen');
-    $('app').style.display='block';
-    // Create session record
+    faceStream = await navigator.mediaDevices.getUserMedia({video:true, audio:false});
+    $('camera-screen').style.display = 'none';
+    $('app').style.display = 'block';
     await createSessionDoc(selExamForConsent.id);
-    // Start face monitoring, then redirect to exam
     startFaceMonitoring();
-    if(selExamForConsent.url) window.location.href=selExamForConsent.url;
-    else toast('Exam started — camera active.','success');
+    if (selExamForConsent.url) window.location.href = selExamForConsent.url;
+    else toast('Exam started — camera active.', 'success');
   } catch(err) {
-    toast('Camera access denied by browser. Please enable camera permissions.','error');
+    toast('Camera access denied by browser. Please enable camera permissions.', 'error');
   }
 });
 
 $('consent-deny-btn').addEventListener('click', async () => {
-  if(!selExamForConsent) return;
-  // Consume one attempt
+  if (!selExamForConsent) return;
   await logDeniedConsent(selExamForConsent.id);
-  hide('camera-screen');
-  $('app').style.display='block';
+  $('camera-screen').style.display = 'none';
+  $('app').style.display = 'block';
   await loadExams();
-  toast('Camera denied — one attempt consumed.','error');
+  toast('Camera denied — one attempt consumed.', 'error');
 });
 
 async function createSessionDoc(examId) {
-  const ref=await addDoc(collection(db,'examSessions'),{
-    candidateEmail:me.email, candidateName:me.displayName||me.email,
-    candidateUid:me.uid, examId, startedAt:serverTimestamp(),
-    status:'active', flags:[], questionProgress:0, totalQuestions:0
+  const ref = await addDoc(collection(db, 'examSessions'), {
+    candidateEmail: me.email, candidateName: me.displayName||me.email,
+    candidateUid: me.uid, examId, startedAt: serverTimestamp(),
+    status: 'active', flags: [], questionProgress: 0, totalQuestions: 0
   });
-  sessionDocId=ref.id;
+  sessionDocId = ref.id;
 }
 
 async function logDeniedConsent(examId) {
-  const ref=doc(db,'examResults',me.uid);
-  const snap=await getDoc(ref);
-  const existing=snap.exists()?snap.data():{};
-  const examData=existing[examId]||{attemptCount:0,bestScore:null,attempts:[]};
-  examData.attemptCount=(examData.attemptCount||0)+1;
-  examData.attempts=[...(examData.attempts||[]),{
-    at:new Date().toISOString(),score:null,passed:false,cameraConsentDenied:true
+  const ref  = doc(db, 'examResults', me.uid);
+  const snap = await getDoc(ref);
+  const existing = snap.exists() ? snap.data() : {};
+  const examData = existing[examId] || {attemptCount:0, bestScore:null, attempts:[]};
+  examData.attemptCount = (examData.attemptCount || 0) + 1;
+  examData.attempts = [...(examData.attempts||[]), {
+    at: new Date().toISOString(), score: null, passed: false, cameraConsentDenied: true
   }];
-  existing[examId]=examData;
-  await setDoc(ref,existing);
-  await addDoc(collection(db,'examSessions'),{
-    candidateEmail:me.email, candidateName:me.displayName||me.email,
-    candidateUid:me.uid, examId, startedAt:serverTimestamp(),
-    status:'denied_consent', flags:[], cameraConsentDenied:true
+  existing[examId] = examData;
+  await setDoc(ref, existing);
+  await addDoc(collection(db, 'examSessions'), {
+    candidateEmail: me.email, candidateName: me.displayName||me.email,
+    candidateUid: me.uid, examId, startedAt: serverTimestamp(),
+    status: 'denied_consent', flags: [], cameraConsentDenied: true
   });
 }
 
 /* ══════════════════════════════════════
-   FACE DETECTION (face-api.js)
+   FACE DETECTION
 ═══════════════════════════════════════ */
 async function startFaceMonitoring() {
-  if(!faceStream||!sessionDocId) return;
+  if (!faceStream || !sessionDocId) return;
   try {
-    // Dynamically load face-api.js
     await loadScript('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js');
     await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model');
-    const video=document.createElement('video');
-    video.srcObject=faceStream; video.muted=true;
+    const video = document.createElement('video');
+    video.srcObject = faceStream; video.muted = true;
     await video.play();
     monitorFace(video);
-  } catch(e) {
-    console.warn('Face monitoring unavailable:',e);
-  }
+  } catch(e) { console.warn('Face monitoring unavailable:', e); }
 }
 
 function monitorFace(video) {
   const check = async () => {
-    if(!faceStream) return;
+    if (!faceStream) return;
     try {
-      const det=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions());
-      if(!det) {
-        // No face detected
-        if(!faceAwayStart) {
-          faceAwayStart=Date.now();
-          faceGraceTimer=setTimeout(async()=>{
-            // Still no face after grace period — log event
+      const det = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions());
+      if (!det) {
+        if (!faceAwayStart) {
+          faceAwayStart = Date.now();
+          faceGraceTimer = setTimeout(async () => {
             await logFaceEvent('face_away');
-            faceAwayStart=null;
+            faceAwayStart = null;
           }, FACE_GRACE_MS);
         }
       } else {
-        // Face back
-        if(faceGraceTimer){ clearTimeout(faceGraceTimer); faceGraceTimer=null; }
-        if(faceAwayStart){ faceAwayStart=null; }
+        if (faceGraceTimer) { clearTimeout(faceGraceTimer); faceGraceTimer = null; }
+        faceAwayStart = null;
       }
     } catch{}
-    setTimeout(check,1000);
+    setTimeout(check, 1000);
   };
   check();
 }
 
 async function logFaceEvent(type) {
-  if(!sessionDocId) return;
+  if (!sessionDocId) return;
   try {
-    const ref=doc(db,'examSessions',sessionDocId);
-    const snap=await getDoc(ref);
-    const flags=(snap.exists()?snap.data().flags:[])||[];
-    flags.push({type, at:new Date().toISOString(), ts:Date.now()});
-    await setDoc(ref,{flags,lastFlagAt:serverTimestamp()},{merge:true});
-  } catch(e){ console.warn('flag log failed',e); }
+    const ref  = doc(db, 'examSessions', sessionDocId);
+    const snap = await getDoc(ref);
+    const flags = (snap.exists() ? snap.data().flags : []) || [];
+    flags.push({type, at: new Date().toISOString(), ts: Date.now()});
+    await setDoc(ref, {flags, lastFlagAt: serverTimestamp()}, {merge:true});
+  } catch(e) { console.warn('flag log failed', e); }
 }
 
 function cleanup() {
-  if(faceStream){ faceStream.getTracks().forEach(t=>t.stop()); faceStream=null; }
-  if(faceGraceTimer){ clearTimeout(faceGraceTimer); faceGraceTimer=null; }
-  if(proctorRefreshTimer){ clearInterval(proctorRefreshTimer); proctorRefreshTimer=null; }
+  if (faceStream) { faceStream.getTracks().forEach(t => t.stop()); faceStream = null; }
+  if (faceGraceTimer) { clearTimeout(faceGraceTimer); faceGraceTimer = null; }
+  if (proctorRefreshTimer) { clearInterval(proctorRefreshTimer); proctorRefreshTimer = null; }
 }
 
 /* ══════════════════════════════════════
-   PROCTOR — LIVE SESSIONS
+   PROCTOR — ASSIGNED CANDIDATE ONLY
+   Proctors see ONLY their assigned candidate's live session.
+   No exams list, no course data, no admin panel.
 ═══════════════════════════════════════ */
-async function loadProctorSessions(isAdmin=false) {
-  const container=isAdmin?$('admin-sessions'):$('live-sessions');
-  if(!container) return;
-  container.innerHTML='<div style="color:var(--muted);font-size:14px;text-align:center;padding:40px 0">Loading sessions…</div>';
-  try {
-    let sessions=[];
-    if(isAdmin){
-      // Admin sees all active sessions
-      const snap=await getDocs(query(collection(db,'examSessions'),where('status','==','active')));
-      snap.forEach(d=>sessions.push({id:d.id,...d.data()}));
-    } else {
-      // Proctor sees only their assigned candidate (or all if admin-proctor)
-      const mySnap=await getDoc(doc(db,'users',me.email));
-      const assigned=mySnap.exists()?mySnap.data().assignedCandidate:null;
-      const snap=await getDocs(query(collection(db,'examSessions'),where('status','==','active')));
-      snap.forEach(d=>{
-        const s={id:d.id,...d.data()};
-        if(!assigned||s.candidateEmail===assigned) sessions.push(s);
-      });
-    }
+async function initProctor() {
+  await loadProctorSession();
+  // Auto-refresh every 30 seconds
+  proctorRefreshTimer = setInterval(loadProctorSession, 30000);
+  $('refresh-btn').addEventListener('click', loadProctorSession);
+}
 
-    // Update stats
-    const totalFlags=sessions.reduce((a,s)=>(a+(s.flags||[]).length),0);
-    const avgProg=sessions.length?Math.round(sessions.reduce((a,s)=>(a+(s.questionProgress||0)),0)/sessions.length):0;
-    if(!isAdmin){
-      $('stat-active').textContent=sessions.length;
-      $('stat-flags').textContent=totalFlags;
-      $('stat-progress').textContent=`${avgProg}%`;
-    } else {
-      $('a-stat-active').textContent=sessions.length;
-      $('a-stat-flags').textContent=totalFlags;
-    }
+async function loadProctorSession() {
+  const container = $('live-sessions');
+  container.innerHTML = '<div style="color:var(--muted);font-size:14px;text-align:center;padding:40px 0">Loading session…</div>';
 
-    container.innerHTML='';
-    if(!sessions.length){
-      container.innerHTML=`<div class="proctor-empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg><h3>No active sessions</h3><p>No candidates are currently in an exam.</p></div>`;
-      return;
-    }
+  // Get this proctor's assigned candidate from Firestore
+  const mySnap   = await getDoc(doc(db, 'users', me.email));
+  const assigned = mySnap.exists() ? mySnap.data().assignedCandidate : null;
 
-    for(const s of sessions) container.appendChild(buildSessionCard(s));
-  } catch(e){ container.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px">Error loading sessions.</div>'; }
+  if (!assigned) {
+    // No candidate assigned yet — show standby screen
+    $('proctor-candidate-label').textContent = 'No candidate assigned yet.';
+    $('stat-active').textContent   = '—';
+    $('stat-flags').textContent    = '—';
+    $('stat-progress').textContent = '—';
+    container.innerHTML = `
+      <div class="proctor-standby">
+        <div class="proctor-standby-icon">⏳</div>
+        <h2>Standing By</h2>
+        <p>You have not been assigned an exam candidate yet.<br>
+           Please wait for your L&amp;D administrator to assign you a candidate before the exam starts.</p>
+      </div>`;
+    return;
+  }
+
+  $('proctor-candidate-label').textContent = `Monitoring: ${assigned}`;
+
+  // Fetch only the active session for this candidate
+  const snap = await getDocs(query(
+    collection(db, 'examSessions'),
+    where('candidateEmail', '==', assigned),
+    where('status', '==', 'active')
+  ));
+
+  const sessions = [];
+  snap.forEach(d => sessions.push({id: d.id, ...d.data()}));
+
+  // Update stats
+  const totalFlags = sessions.reduce((a, s) => a + (s.flags||[]).length, 0);
+  const avgProg    = sessions.length
+    ? Math.round(sessions.reduce((a,s) => a + (s.questionProgress||0), 0) / sessions.length)
+    : 0;
+
+  $('stat-active').textContent   = sessions.length > 0 ? 'Active' : 'Waiting';
+  $('stat-flags').textContent    = totalFlags;
+  $('stat-progress').textContent = sessions.length ? `${avgProg}%` : '—';
+
+  container.innerHTML = '';
+  if (!sessions.length) {
+    container.innerHTML = `
+      <div class="proctor-standby">
+        <div class="proctor-standby-icon">👁</div>
+        <h2>Waiting for Candidate</h2>
+        <p><strong>${esc(assigned)}</strong> has not started their exam yet.<br>
+           This page will auto-refresh every 30 seconds.</p>
+      </div>`;
+    return;
+  }
+
+  for (const s of sessions) container.appendChild(buildSessionCard(s));
 }
 
 function buildSessionCard(s) {
-  const flags=s.flags||[];
-  const hasAlert=flags.length>0;
-  const initials=(s.candidateName||s.candidateEmail||'?').charAt(0).toUpperCase();
-  const startTs=s.startedAt?s.startedAt.toDate?s.startedAt.toDate():new Date(s.startedAt):null;
-  const elapsedMins=startTs?Math.floor((Date.now()-startTs)/60000):0;
-  const prog=s.questionProgress||0;
-  const total=s.totalQuestions||0;
-  const progPct=total>0?Math.round(prog/total*100):0;
+  const flags      = s.flags || [];
+  const hasAlert   = flags.length > 0;
+  const initials   = (s.candidateName||s.candidateEmail||'?').charAt(0).toUpperCase();
+  const startTs    = s.startedAt ? (s.startedAt.toDate ? s.startedAt.toDate() : new Date(s.startedAt)) : null;
+  const elapsedMins = startTs ? Math.floor((Date.now() - startTs) / 60000) : 0;
+  const prog       = s.questionProgress || 0;
+  const total      = s.totalQuestions   || 0;
+  const progPct    = total > 0 ? Math.round(prog / total * 100) : 0;
+  const recentFlags = flags.slice(-4).reverse();
 
-  const card=document.createElement('div');
-  card.className='session-card'+(hasAlert?' alert':'');
-  const recentFlags=flags.slice(-4).reverse();
-  card.innerHTML=`
+  const card = document.createElement('div');
+  card.className = 'session-card' + (hasAlert ? ' alert' : '');
+  card.innerHTML = `
     <div class="session-head">
       <div class="session-avatar">${esc(initials)}</div>
       <div class="session-info">
         <div class="session-name">${esc(s.candidateName||s.candidateEmail)}</div>
         <div class="session-email">${esc(s.candidateEmail||'')}</div>
       </div>
-      <span class="session-status ${hasAlert?'ss-alert':'ss-active'}">${hasAlert?'⚠ Flagged':'● Live'}</span>
+      <span class="session-status ${hasAlert ? 'ss-alert' : 'ss-active'}">${hasAlert ? '⚠ Flagged' : '● Live'}</span>
     </div>
     <div class="session-body">
       <div class="session-progress">
@@ -853,10 +891,12 @@ function buildSessionCard(s) {
         <span class="session-timer ${elapsedMins>40?'urgent':''}">${elapsedMins}m elapsed</span>
       </div>
       <div class="progress-bar-wrap"><div class="progress-bar" style="width:${progPct}%"></div></div>
-      ${flags.length>0
-        ?`<div class="session-flags">${recentFlags.map(f=>`<div class="flag-item">⚠ ${esc(f.type==='face_away'?'Face not detected':'Event')}<span class="flag-time">${new Date(f.at).toLocaleTimeString()}</span></div>`).join('')}</div>`
-        :`<div class="no-flags">✓ No flags — session clean</div>`}
-      <div class="session-attempts" style="margin-top:8px">Total flags: <strong>${flags.length}</strong> · Exam: ${esc(s.examId||'—')}</div>
+      ${flags.length
+        ? `<div class="session-flags">${recentFlags.map(f =>
+            `<div class="flag-item">⚠ ${esc(f.type==='face_away'?'Face not detected':'Event')}<span class="flag-time">${new Date(f.at).toLocaleTimeString()}</span></div>`
+          ).join('')}</div>`
+        : `<div class="no-flags">✓ No flags — session clean</div>`}
+      <div class="session-attempts" style="margin-top:8px">Total flags: <strong>${flags.length}</strong></div>
     </div>`;
   return card;
 }
@@ -864,112 +904,125 @@ function buildSessionCard(s) {
 /* ══════════════════════════════════════
    ADMIN — EXAMS TAB
 ═══════════════════════════════════════ */
+let editingExamId = null;
+
 async function initAdmin() {
   await loadAdminExams();
-  $('add-exam-btn').addEventListener('click',()=>openExamForm());
-  $('cancel-exam-btn').addEventListener('click',()=>{ $('exam-form-wrap').classList.remove('open'); });
-  $('save-exam-btn').addEventListener('click',saveExam);
-  $('nom-exam-select').addEventListener('change',onNomExamChange);
-  $('nom-add-btn').addEventListener('click',addExamNom);
-  $('refresh-btn')&&$('refresh-btn').addEventListener('click',()=>loadProctorSessions(false));
-  $('admin-refresh-btn')&&$('admin-refresh-btn').addEventListener('click',()=>loadProctorSessions(true));
-  proctorRefreshTimer=setInterval(()=>{
-    if(myRole==='proctor')loadProctorSessions(false);
-    if(myRole==='admin'&&adminTab==='monitor')loadProctorSessions(true);
-  },30000);
+  $('add-exam-btn').addEventListener('click', () => openExamForm());
+  $('cancel-exam-btn').addEventListener('click', () => $('exam-form-wrap').classList.remove('open'));
+  $('save-exam-btn').addEventListener('click', saveExam);
+  $('nom-exam-select').addEventListener('change', onNomExamChange);
+  $('nom-add-btn').addEventListener('click', addExamNom);
+  $('admin-refresh-btn').addEventListener('click', () => loadProctorSessions());
+
+  proctorRefreshTimer = setInterval(() => {
+    if (adminTab === 'monitor') loadProctorSessions();
+  }, 30000);
 }
 
 window.switchAdminTab = tab => {
-  adminTab=tab;
-  ['exams','nominations','monitor','reports'].forEach(t=>{
-    $(`atab-${t}`).className='admin-tab'+(tab===t?' active':'');
-    $(`atc-${t}`).className='admin-tab-content'+(tab===t?' active':'');
+  adminTab = tab;
+  ['exams','nominations','monitor','reports'].forEach(t => {
+    $(`atab-${t}`).className = 'admin-tab' + (tab===t ? ' active' : '');
+    $(`atc-${t}`).className  = 'admin-tab-content' + (tab===t ? ' active' : '');
   });
-  if(tab==='monitor') loadProctorSessions(true);
-  if(tab==='reports') loadReports();
-  if(tab==='nominations') populateNomExamSelect();
+  if (tab === 'monitor')      loadProctorSessions();
+  if (tab === 'reports')      loadReports();
+  if (tab === 'nominations')  populateNomExamSelect();
 };
 
-let editingExamId=null;
-async function loadAdminExams(){
-  $('exam-table-body').innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">Loading…</td></tr>';
-  const snap=await getDocs(collection(db,'exams'));
-  exams=[]; snap.forEach(d=>exams.push({id:d.id,...d.data()}));
+async function loadAdminExams() {
+  $('exam-table-body').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">Loading…</td></tr>';
+  const snap = await getDocs(collection(db, 'exams'));
+  exams = []; snap.forEach(d => exams.push({id:d.id,...d.data()}));
   renderExamTable();
 }
 
-function renderExamTable(){
-  const tbody=$('exam-table-body'); tbody.innerHTML='';
-  if(!exams.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">No exams yet. Click <strong>+ New Exam</strong>.</td></tr>';return;}
-  for(const e of exams){
-    const tr=document.createElement('tr');
-    const statusBadge=e.status==='live'?'<span style="color:#34d399">● Live</span>':'<span style="color:var(--muted)">⚫ Draft</span>';
-    tr.innerHTML=`
+function renderExamTable() {
+  const tbody = $('exam-table-body'); tbody.innerHTML = '';
+  if (!exams.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">No exams yet. Click <strong>+ New Exam</strong>.</td></tr>';
+    return;
+  }
+  for (const e of exams) {
+    const tr = document.createElement('tr');
+    const statusBadge = e.status==='live'
+      ? '<span style="color:#34d399">● Live</span>'
+      : '<span style="color:var(--muted)">⚫ Draft</span>';
+    tr.innerHTML = `
       <td><strong>${esc(e.icon||'🎓')} ${esc(e.title)}</strong><br><span style="font-size:11px;color:var(--muted)">${esc(e.category||'')}</span></td>
       <td style="font-size:12px;color:var(--muted)">${esc(e.linkedCourseId||'—')}</td>
       <td>${esc(String(e.passmark||70))}%</td>
       <td>${esc(String(e.maxAttempts||3))}</td>
       <td>${statusBadge}</td>
       <td style="display:flex;gap:6px;">
-        <button class="tbl-btn" data-id="${e.id}">Edit</button>
-        <button class="tbl-btn tbl-del" data-id="${e.id}">Del</button>
+        <button class="tbl-btn">Edit</button>
+        <button class="tbl-btn tbl-del">Del</button>
       </td>`;
-    tr.querySelectorAll('.tbl-btn')[0].addEventListener('click',()=>openExamForm(e));
-    tr.querySelectorAll('.tbl-btn')[1].addEventListener('click',()=>confirmDelExam(e.id,e.title));
+    tr.querySelectorAll('.tbl-btn')[0].addEventListener('click', () => openExamForm(e));
+    tr.querySelectorAll('.tbl-btn')[1].addEventListener('click', () => confirmDelExam(e.id, e.title));
     tbody.appendChild(tr);
   }
 }
 
-function openExamForm(exam=null){
-  editingExamId=exam?exam.id:null;
-  $('exam-form-title').textContent=exam?'Edit Exam':'New Exam';
-  $('ef-title').value=exam?exam.title:''; $('ef-category').value=exam?exam.category||'':'';
-  $('ef-desc').value=exam?exam.description||'':''; $('ef-url').value=exam?exam.url||'':'';
-  $('ef-courseid').value=exam?exam.linkedCourseId||'':'';
-  $('ef-duration').value=exam?exam.duration||'':'';
-  $('ef-pass').value=exam?exam.passmark||70:70;
-  $('ef-attempts').value=exam?exam.maxAttempts||3:3;
-  $('ef-icon').value=exam?exam.icon||'🎓':'🎓';
-  $('ef-status').value=exam?exam.status||'draft':'draft';
+function openExamForm(exam=null) {
+  editingExamId = exam ? exam.id : null;
+  $('exam-form-title').textContent = exam ? 'Edit Exam' : 'New Exam';
+  $('ef-title').value    = exam ? exam.title           : '';
+  $('ef-category').value = exam ? exam.category||''    : '';
+  $('ef-desc').value     = exam ? exam.description||'' : '';
+  $('ef-url').value      = exam ? exam.url||''         : '';
+  $('ef-courseid').value = exam ? exam.linkedCourseId||'' : '';
+  $('ef-duration').value = exam ? exam.duration||''    : '';
+  $('ef-pass').value     = exam ? exam.passmark||70    : 70;
+  $('ef-attempts').value = exam ? exam.maxAttempts||3  : 3;
+  $('ef-icon').value     = exam ? exam.icon||'🎓'      : '🎓';
+  $('ef-status').value   = exam ? exam.status||'draft' : 'draft';
   $('exam-form-wrap').classList.add('open');
   $('exam-form-wrap').scrollIntoView({behavior:'smooth'});
 }
 
-async function saveExam(){
-  const data={
-    title:$('ef-title').value.trim()||'Untitled', category:$('ef-category').value.trim(),
-    description:$('ef-desc').value.trim(), url:$('ef-url').value.trim(),
-    linkedCourseId:$('ef-courseid').value.trim(), duration:parseInt($('ef-duration').value)||45,
-    passmark:parseInt($('ef-pass').value)||70, maxAttempts:parseInt($('ef-attempts').value)||3,
-    icon:$('ef-icon').value.trim()||'🎓', status:$('ef-status').value, updatedAt:serverTimestamp()
+async function saveExam() {
+  const data = {
+    title:        $('ef-title').value.trim()||'Untitled',
+    category:     $('ef-category').value.trim(),
+    description:  $('ef-desc').value.trim(),
+    url:          $('ef-url').value.trim(),
+    linkedCourseId: $('ef-courseid').value.trim(),
+    duration:     parseInt($('ef-duration').value)||45,
+    passmark:     parseInt($('ef-pass').value)||70,
+    maxAttempts:  parseInt($('ef-attempts').value)||3,
+    icon:         $('ef-icon').value.trim()||'🎓',
+    status:       $('ef-status').value,
+    updatedAt:    serverTimestamp()
   };
-  const btn=$('save-exam-btn'); btn.disabled=true; btn.textContent='Saving…';
-  try{
-    if(editingExamId){
-      await setDoc(doc(db,'exams',editingExamId),data,{merge:true});
-      const i=exams.findIndex(e=>e.id===editingExamId);
-      if(i>=0)Object.assign(exams[i],data);
+  const btn = $('save-exam-btn'); btn.disabled=true; btn.textContent='Saving…';
+  try {
+    if (editingExamId) {
+      await setDoc(doc(db,'exams',editingExamId), data, {merge:true});
+      const i = exams.findIndex(e=>e.id===editingExamId);
+      if (i>=0) Object.assign(exams[i], data);
     } else {
-      const ref=await addDoc(collection(db,'exams'),{...data,createdAt:serverTimestamp()});
+      const ref = await addDoc(collection(db,'exams'), {...data, createdAt:serverTimestamp()});
       exams.push({id:ref.id,...data});
     }
     $('exam-form-wrap').classList.remove('open');
     renderExamTable(); toast('Exam saved!','success');
-  }catch{toast('Error saving.','error');}
+  } catch { toast('Error saving.','error'); }
   btn.disabled=false; btn.textContent='Save Exam';
 }
 
-function confirmDelExam(id,title){
-  const ov=document.createElement('div'); ov.className='modal-overlay';
+function confirmDelExam(id, title) {
+  const ov = document.createElement('div'); ov.className='modal-overlay';
   ov.innerHTML=`<div class="modal"><h3>Delete Exam?</h3><p>Permanently delete <strong>${esc(title)}</strong> and all nominations?</p><div class="modal-btns"><button class="btn-cancel">Cancel</button><button class="btn-del">Delete</button></div></div>`;
   document.body.appendChild(ov);
-  ov.querySelector('.btn-cancel').addEventListener('click',()=>ov.remove());
-  ov.querySelector('.btn-del').addEventListener('click',async()=>{
+  ov.querySelector('.btn-cancel').addEventListener('click', () => ov.remove());
+  ov.querySelector('.btn-del').addEventListener('click', async () => {
     ov.remove();
-    const ns=await getDocs(collection(db,'exams',id,'nominations'));
-    for(const d of ns.docs) await deleteDoc(d.ref);
+    const ns = await getDocs(collection(db,'exams',id,'nominations'));
+    for (const d of ns.docs) await deleteDoc(d.ref);
     await deleteDoc(doc(db,'exams',id));
-    exams=exams.filter(e=>e.id!==id);
+    exams = exams.filter(e=>e.id!==id);
     renderExamTable(); toast('Deleted.','success');
   });
 }
@@ -977,109 +1030,131 @@ function confirmDelExam(id,title){
 /* ══════════════════════════════════════
    ADMIN — NOMINATIONS
 ═══════════════════════════════════════ */
-async function populateNomExamSelect(){
-  const sel=$('nom-exam-select');
-  sel.innerHTML='<option value="">— Select an exam —</option>';
-  if(!exams.length) await loadAdminExams();
-  for(const e of exams){
-    const o=document.createElement('option'); o.value=e.id; o.textContent=e.title; sel.appendChild(o);
+async function populateNomExamSelect() {
+  const sel = $('nom-exam-select');
+  sel.innerHTML = '<option value="">— Select an exam —</option>';
+  if (!exams.length) await loadAdminExams();
+  for (const e of exams) {
+    const o = document.createElement('option'); o.value=e.id; o.textContent=e.title; sel.appendChild(o);
   }
 }
 
-async function onNomExamChange(){
-  const id=$('nom-exam-select').value;
-  if(!id){$('nom-area').style.display='none';return;}
-  $('nom-area').style.display='block';
+async function onNomExamChange() {
+  const id = $('nom-exam-select').value;
+  if (!id) { $('nom-area').style.display='none'; return; }
+  $('nom-area').style.display = 'block';
   await loadExamNominations(id);
 }
 
-async function loadExamNominations(examId){
-  $('nom-list-container').innerHTML='<div class="nom-empty">Loading…</div>';
-  const snap=await getDocs(collection(db,'exams',examId,'nominations'));
-  const noms=[]; snap.forEach(d=>noms.push({email:d.id,...d.data()}));
-  if(!noms.length){$('nom-list-container').innerHTML='<div class="nom-empty">No users nominated.</div>';return;}
-  const list=document.createElement('div'); list.className='nom-list';
-  for(const n of noms){
-    const it=document.createElement('div'); it.className='nom-item';
+async function loadExamNominations(examId) {
+  $('nom-list-container').innerHTML = '<div class="nom-empty">Loading…</div>';
+  const snap = await getDocs(collection(db,'exams',examId,'nominations'));
+  const noms = []; snap.forEach(d => noms.push({email:d.id,...d.data()}));
+  if (!noms.length) { $('nom-list-container').innerHTML='<div class="nom-empty">No users nominated.</div>'; return; }
+  const list = document.createElement('div'); list.className='nom-list';
+  for (const n of noms) {
+    const it = document.createElement('div'); it.className='nom-item';
     it.innerHTML=`<span>${esc(n.email)}</span><button class="nom-rem">×</button>`;
-    it.querySelector('.nom-rem').addEventListener('click',()=>removeExamNom(examId,n.email));
+    it.querySelector('.nom-rem').addEventListener('click', () => removeExamNom(examId,n.email));
     list.appendChild(it);
   }
   $('nom-list-container').innerHTML=''; $('nom-list-container').appendChild(list);
 }
 
-async function addExamNom(){
-  const examId=$('nom-exam-select').value;
-  const email=$('nom-email-input').value.trim().toLowerCase();
-  if(!examId||!email){toast('Select an exam and enter an email.','error');return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Invalid email.','error');return;}
-  await setDoc(doc(db,'exams',examId,'nominations',email),{nominated:true,nominatedAt:serverTimestamp(),nominatedBy:me.email});
+async function addExamNom() {
+  const examId = $('nom-exam-select').value;
+  const email  = $('nom-email-input').value.trim().toLowerCase();
+  if (!examId || !email) { toast('Select an exam and enter an email.','error'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Invalid email.','error'); return; }
+  await setDoc(doc(db,'exams',examId,'nominations',email), {nominated:true,nominatedAt:serverTimestamp(),nominatedBy:me.email});
   $('nom-email-input').value='';
   await loadExamNominations(examId); toast(`${email} nominated!`,'success');
 }
 
-async function removeExamNom(examId,email){
+async function removeExamNom(examId, email) {
   await deleteDoc(doc(db,'exams',examId,'nominations',email));
   await loadExamNominations(examId); toast(`Removed ${email}.`,'success');
 }
 
 /* ══════════════════════════════════════
-   REPORTS TAB
+   ADMIN — LIVE MONITOR (all sessions)
 ═══════════════════════════════════════ */
-async function loadReports(){
+async function loadProctorSessions() {
+  const container = $('admin-sessions');
+  if (!container) return;
+  container.innerHTML='<div style="color:var(--muted);font-size:14px;text-align:center;padding:40px 0">Loading sessions…</div>';
+  try {
+    const snap = await getDocs(query(collection(db,'examSessions'), where('status','==','active')));
+    const sessions = []; snap.forEach(d => sessions.push({id:d.id,...d.data()}));
+    const totalFlags = sessions.reduce((a,s) => a+(s.flags||[]).length, 0);
+    $('a-stat-active').textContent = sessions.length;
+    $('a-stat-flags').textContent  = totalFlags;
+    container.innerHTML = '';
+    if (!sessions.length) {
+      container.innerHTML='<div class="proctor-empty"><h3>No active sessions</h3><p>No candidates are currently in an exam.</p></div>';
+      return;
+    }
+    for (const s of sessions) container.appendChild(buildSessionCard(s));
+  } catch { container.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px">Error loading sessions.</div>'; }
+}
+
+/* ══════════════════════════════════════
+   REPORTS
+═══════════════════════════════════════ */
+async function loadReports() {
   $('report-list').innerHTML='<div style="color:var(--muted);text-align:center;padding:40px 0">Loading…</div>';
-  const snap=await getDocs(collection(db,'examSessions'));
+  const snap = await getDocs(collection(db,'examSessions'));
   const sessions=[]; snap.forEach(d=>sessions.push({id:d.id,...d.data()}));
-  const completed=sessions.filter(s=>s.status!=='active');
-  if(!completed.length){
-    $('report-list').innerHTML='<div style="color:var(--muted);text-align:center;padding:40px 0">No completed sessions yet.</div>'; return;
+  const completed = sessions.filter(s=>s.status!=='active');
+  if (!completed.length) {
+    $('report-list').innerHTML='<div style="color:var(--muted);text-align:center;padding:40px 0">No completed sessions yet.</div>';
+    return;
   }
-  const rows=completed.map(s=>{
-    const flags=s.flags||[];
-    const at=s.startedAt?s.startedAt.toDate?s.startedAt.toDate().toLocaleString():new Date(s.startedAt).toLocaleString():'—';
+  $('report-list').innerHTML = completed.map(s => {
+    const flags = s.flags||[];
+    const at    = s.startedAt ? (s.startedAt.toDate ? s.startedAt.toDate().toLocaleString() : new Date(s.startedAt).toLocaleString()) : '—';
     return `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <div><strong>${esc(s.candidateEmail||'—')}</strong> <span style="color:var(--muted);font-size:12px;">· ${esc(s.examId||'—')}</span></div>
         <span style="font-size:12px;color:var(--muted)">${at}</span>
       </div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:${flags.length?'10px':'0'}">Status: <span style="color:${s.status==='denied_consent'?'var(--danger)':'var(--muted)'}">${esc(s.status||'—')}</span> · Flags: <strong style="color:${flags.length>0?'var(--danger)':'var(--success)'}">${flags.length}</strong></div>
-      ${flags.length?`<div style="display:flex;flex-direction:column;gap:4px;">${flags.map(f=>`<div style="font-size:12px;color:#fca5a5;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.15);border-radius:5px;padding:5px 9px;">⚠ ${esc(f.type)} · ${new Date(f.at).toLocaleTimeString()}</div>`).join('')}</div>`:'' }
+      <div style="font-size:13px;color:var(--muted);margin-bottom:${flags.length?'10px':'0'}">
+        Status: <span style="color:${s.status==='denied_consent'?'var(--danger)':'var(--muted)'}">${esc(s.status||'—')}</span>
+        · Flags: <strong style="color:${flags.length>0?'var(--danger)':'var(--success)'}">${flags.length}</strong>
+      </div>
+      ${flags.length ? `<div style="display:flex;flex-direction:column;gap:4px;">${flags.map(f=>
+        `<div style="font-size:12px;color:#fca5a5;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.15);border-radius:5px;padding:5px 9px;">
+          ⚠ ${esc(f.type)} · ${new Date(f.at).toLocaleTimeString()}
+        </div>`).join('')}</div>` : ''}
     </div>`;
   }).join('');
-  $('report-list').innerHTML=rows;
 }
-
-/* ══════════════════════════════════════
-   PROCTOR — AUTO REFRESH
-═══════════════════════════════════════ */
-if(myRole==='proctor'){
-  proctorRefreshTimer=setInterval(()=>loadProctorSessions(false),30000);
-}
-$('refresh-btn')&&$('refresh-btn').addEventListener('click',()=>loadProctorSessions(false));
 
 /* ══════════════════════════════════════
    UTILS
 ═══════════════════════════════════════ */
-function $(id){return document.getElementById(id);}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&#34;');}
-function lighten(hex){
-  try{let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-  r=Math.min(255,r+60);g=Math.min(255,g+60);b=Math.min(255,b+60);
-  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');}catch{return hex;}
+function $(id)  { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&#34;'); }
+function lighten(hex) {
+  try {
+    let r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+    r=Math.min(255,r+60); g=Math.min(255,g+60); b=Math.min(255,b+60);
+    return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+  } catch { return hex; }
 }
-function loadScript(src){
-  return new Promise((res,rej)=>{
-    const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;
+function loadScript(src) {
+  return new Promise((res,rej) => {
+    const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej;
     document.head.appendChild(s);
   });
 }
 let toastTimer;
-function toast(msg,type=''){
+function toast(msg, type='') {
   const t=$('toast'); t.textContent=msg; t.className=type;
   t.classList.add('show'); clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
 }
-window.addEventListener('beforeunload',cleanup);
+window.addEventListener('beforeunload', cleanup);
 </script>
 </body>
 </html>
