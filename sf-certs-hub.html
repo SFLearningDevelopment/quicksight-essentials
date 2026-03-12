@@ -1235,7 +1235,8 @@ window.nomSetCategory = async cat => {
   const sel = $('nom-item-select');
   sel.innerHTML = '<option value="">— Loading… —</option>';
   $('nom-step2').style.display = 'block';
-  $('nom-area').style.display  = 'none';
+  $('nom-area').style.display  = 'none';  // hidden until item selected
+  $('nom-list-container').innerHTML = '';
 
   if (cat === 'course') {
     const snap = await getDocs(collection(db, 'courses'));
@@ -1257,11 +1258,7 @@ window.nomSetCategory = async cat => {
     });
   }
 
-  // Auto-select first option and load its nominations
-  if (sel.options.length > 1) {
-    sel.selectedIndex = 1;
-    await onNomItemChange();
-  }
+  // Do NOT auto-select — wait for user to choose from dropdown
 };
 
 async function onNomItemChange() {
