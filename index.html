@@ -652,8 +652,21 @@ onAuthStateChanged(auth, async user => {
     myRole = snap.exists() ? (snap.data().role || 'student') : 'student';
   }
 
-  // Admins always go to the admin choice screen first
+  // Admins — check if a specific view was requested via query param
   if (myRole === 'admin') {
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get('view');
+    if (view === 'courses') {
+      // Skip choice screen, go straight to course admin view
+      $('app').style.display = 'block';
+      showChips();
+      hide('student-view'); hide('reviewer-view');
+      show('admin-view');
+      loadAdminCourses();
+      // Clean up URL
+      history.replaceState({}, '', window.location.pathname);
+      return;
+    }
     const firstName = (user.displayName || user.email).split(' ')[0].split('@')[0];
     $('admin-first-name').textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1);
     $('admin-choice-screen').style.display = 'flex';
