@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Cache busting v202603120909 -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -446,6 +450,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
       </div>
     </div>
     <div class="nav-right">
+      <button class="nav-link" id="admin-console-btn" style="display:none;cursor:pointer;background:none;" onclick="backToAdminConsole()">⚙ Admin Console</button>
       <a href="sf-certs-hub.html" class="nav-link" id="certs-link">🎓 Certifications</a>
       <button class="nav-link" id="learner-view-btn" style="display:none;cursor:pointer;background:none;" onclick="toggleLearnerView()">📚 Learner View</button>
       <div id="user-chip">
@@ -733,7 +738,11 @@ onAuthStateChanged(auth, async user => {
 
 let inLearnerView = false;
 
-window.adminNav = function(section) {
+window.backToAdminConsole = function() {
+  $('app').style.display = 'none';
+  inLearnerView = false;
+  $('admin-choice-screen').style.display = 'flex';
+};
   $('admin-choice-screen').style.display = 'none';
   if (section === 'console' || section === 'certifications') {
     window.location.href = 'sf-certs-hub.html'; return;
@@ -795,6 +804,8 @@ function showChips() {
   $('certs-link').style.display    = (myRole==='student' || myRole==='reviewer') ? 'inline-flex' : 'none';
   // Admins and reviewers can toggle into learner view
   $('learner-view-btn').style.display = (myRole==='admin' || myRole==='reviewer') ? 'inline-flex' : 'none';
+  // Admins get a back button to their console
+  $('admin-console-btn').style.display = myRole==='admin' ? 'inline-flex' : 'none';
 }
 
 function route() {
