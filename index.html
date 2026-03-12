@@ -109,6 +109,7 @@ body::before{content:'';position:fixed;inset:0;background:
 .admin-signout:hover{color:#f87171;border-color:rgba(239,68,68,.4);}
 @media(max-width:780px){.admin-cards{grid-template-columns:1fr 1fr;}}
 @media(max-width:500px){.admin-cards{grid-template-columns:1fr;}}
+@media(max-width:500px){.admin-cards{grid-template-columns:1fr;}}
 
 /* ══ AUTH SCREEN ══ */
 .auth-badge{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff;}
@@ -364,17 +365,17 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
     <div class="admin-cards">
 
       <div class="admin-card ac-blue" onclick="adminNav('courses')">
-        <span class="admin-card-tag tag-blue">Courses</span>
+        <span class="admin-card-tag tag-blue">Manage</span>
         <div class="admin-card-icon">📚</div>
-        <div class="admin-card-label">Add New Courses</div>
+        <div class="admin-card-label">Courses</div>
         <div class="admin-card-desc">Create, edit, and publish learning courses. Manage nominations and set access controls.</div>
         <div class="admin-card-arrow">→</div>
       </div>
 
       <div class="admin-card ac-gold" onclick="adminNav('certifications')">
-        <span class="admin-card-tag tag-gold">Certifications</span>
+        <span class="admin-card-tag tag-gold">Manage</span>
         <div class="admin-card-icon">🎓</div>
-        <div class="admin-card-label">Add New Certifications</div>
+        <div class="admin-card-label">Certifications & Exams</div>
         <div class="admin-card-desc">Set up certification exams, configure attempt limits, and link them to courses.</div>
         <div class="admin-card-arrow">→</div>
       </div>
@@ -403,8 +404,15 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
         <div class="admin-card-arrow">→</div>
       </div>
 
+      <div class="admin-card ac-red" onclick="adminSignOut()" style="border-color:rgba(239,68,68,.2);">
+        <span class="admin-card-tag tag-red">Account</span>
+        <div class="admin-card-icon">🚪</div>
+        <div class="admin-card-label">Sign Out</div>
+        <div class="admin-card-desc">Sign out of your SourceFuse account and return to the login screen.</div>
+        <div class="admin-card-arrow" style="color:#f87171;">→</div>
+      </div>
+
     </div>
-    <button class="admin-signout" onclick="adminSignOut()">Sign out</button>
   </div>
 </div>
 
@@ -708,6 +716,8 @@ window.chooseMode = function(mode) {
     route();
   }
 };
+
+
 
 window.backToAdminConsole = function() {
   $('app').style.display = 'none';
