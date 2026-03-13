@@ -809,7 +809,7 @@ function route() {
   hide('student-view'); hide('admin-view'); hide('reviewer-view');
   inLearnerView = false;
   if      (myRole==='admin')    { show('admin-view');    loadAdminCourses(); }
-  else if (myRole==='reviewer') { show('reviewer-view'); loadReviewQueue(); }
+  else if (myRole==='reviewer') { window.location.href = 'reviewer.html'; }
   else if (myRole==='proctor')  { window.location.href = 'sf-certs-hub.html'; }
   else                          { show('student-view');  loadStudentCourses(); }
 }
