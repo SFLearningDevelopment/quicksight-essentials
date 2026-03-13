@@ -439,6 +439,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
       </div>
     </div>
 
+    <!-- EXAMS TAB -->EXAMS TAB -->
     <div class="admin-tab-content" id="atc-exams">
       <div class="atc-inner">
         <button class="add-exam-btn" id="add-exam-btn">+ New Exam</button>
@@ -539,8 +540,17 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
     <!-- REPORTS TAB -->
     <div class="admin-tab-content" id="atc-reports">
       <div class="atc-inner">
-        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;">Exam Reports</div>
-        <div style="color:var(--muted);font-size:13px;margin-bottom:24px;">Completed session logs with proctoring flags.</div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;">Reports</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:28px;">Exam session logs and course review submissions.</div>
+
+        <!-- Course Reviews Report -->
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">📋 Course Reviews</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:16px;">Review submissions by reviewers across all courses.</div>
+        <div id="course-reviews-list" style="margin-bottom:40px;"><div style="color:var(--muted);text-align:center;padding:30px 0;">Loading…</div></div>
+
+        <!-- Exam Session Reports -->
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">🎓 Exam Sessions</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:16px;">Completed session logs with proctoring flags.</div>
         <div id="report-list"><div style="color:var(--muted);font-size:14px;text-align:center;padding:40px 0">Loading…</div></div>
       </div>
     </div>
@@ -1058,10 +1068,21 @@ async function loadAdminCourses() {
       return;
     }
     for (const c of courses) {
+      let reviewData = null;
+      try {
+        const revSnap = await getDoc(doc(db, 'courses', c.id, 'review', 'data'));
+        if (revSnap.exists()) reviewData = revSnap.data();
+      } catch {}
+      const reviewCompleted = reviewData?.reviewCompleted || false;
+      const goLive          = reviewData?.goLive          || false;
+      const reviewerName    = reviewData?.reviewerName    || '—';
       const ac = c.accentColor || '#3b82f6';
       const statusDot = c.status==='live' ? '🟢' : c.status==='review' ? '🟡' : '⚫';
+      const revBadge = (flag, label) => flag
+        ? `<span style="font-size:10px;padding:2px 8px;border-radius:50px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2);font-weight:600;">✓ ${label}</span>`
+        : `<span style="font-size:10px;padding:2px 8px;border-radius:50px;background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.15);font-weight:600;">✗ ${label}</span>`;
       const card = document.createElement('div');
-      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;';
+      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s,border-color .2s;';
       card.innerHTML = `
         <div style="height:8px;background:linear-gradient(90deg,${esc(ac)},${esc(lighten(ac))})"></div>
         <div style="padding:20px;flex:1;display:flex;flex-direction:column;gap:10px;">
@@ -1072,23 +1093,32 @@ async function loadAdminCourses() {
           <div style="font-size:26px;">${esc(c.icon||'📘')}</div>
           <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">${esc(c.title)}</div>
           <div style="color:var(--muted);font-size:13px;line-height:1.5;flex:1;">${esc(c.description||'')}</div>
+          <div style="padding:10px 12px;background:var(--surface);border-radius:8px;border:1px solid var(--border);">
+            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;">Review Status</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+              ${revBadge(reviewCompleted,'Review Completed')}
+              ${revBadge(goLive,'Go Live')}
+            </div>
+            <div style="font-size:11px;color:var(--muted);">${reviewData ? 'Reviewer: '+esc(reviewerName) : 'No review submitted yet.'}</div>
+          </div>
           <div style="display:flex;gap:16px;flex-wrap:wrap;">
             ${c.duration ? `<span style="font-size:12px;color:var(--muted);">⏱ ${esc(c.duration)}</span>` : ''}
             ${c.level    ? `<span style="font-size:12px;color:var(--muted);">📶 ${esc(c.level)}</span>`    : ''}
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;padding-top:12px;border-top:1px solid var(--border);">
-            <span style="font-size:12px;color:var(--muted);">Click to open course</span>
-            <span style="font-size:13px;color:${esc(ac)};">→</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px;padding-top:12px;border-top:1px solid var(--border);">
+            <label style="font-size:12px;color:var(--muted);flex-shrink:0;">Status:</label>
+            <select data-course-id="${esc(c.id)}" data-review-completed="${reviewCompleted}" data-golive="${goLive}" data-current="${esc(c.status||'draft')}"
+              style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:5px 8px;font-size:12px;outline:none;cursor:pointer;"
+              onchange="adminUpdateCourseStatus(this)">
+              <option value="draft"  ${c.status==='draft'  ?'selected':''}>⚫ Draft</option>
+              <option value="review" ${c.status==='review' ?'selected':''}>🟡 In Review</option>
+              <option value="live"   ${c.status==='live'   ?'selected':''}>🟢 Live</option>
+            </select>
+            ${c.url ? `<button onclick="window.open('${esc(c.url)}','_blank')" style="font-size:11px;padding:5px 10px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:#60a5fa;border-radius:6px;cursor:pointer;white-space:nowrap;">Open →</button>` : ''}
           </div>
         </div>`;
       card.addEventListener('mouseenter', () => { card.style.transform='translateY(-3px)'; card.style.boxShadow='0 12px 32px rgba(0,0,0,.4)'; card.style.borderColor=ac; });
       card.addEventListener('mouseleave', () => { card.style.transform=''; card.style.boxShadow=''; card.style.borderColor=''; });
-      if (c.url) {
-        card.addEventListener('click', () => window.open(c.url, '_blank'));
-      } else {
-        card.style.cursor = 'default';
-        card.querySelector('span:last-child').textContent = 'No URL set';
-      }
       grid.appendChild(card);
     }
   } catch(err) {
@@ -1097,6 +1127,37 @@ async function loadAdminCourses() {
     console.error('loadAdminCourses:', err);
   }
 }
+
+window.adminUpdateCourseStatus = async function(selectEl) {
+  const courseId        = selectEl.dataset.courseId;
+  const newStatus       = selectEl.value;
+  const reviewCompleted = selectEl.dataset.reviewCompleted === 'true';
+  const goLive          = selectEl.dataset.golive === 'true';
+  const prev            = selectEl.dataset.current;
+  if (newStatus === 'live') {
+    if (!reviewCompleted && !goLive) {
+      toast('Cannot go Live — review is not complete and reviewer has not given Go Live consent.', 'error');
+      selectEl.value = prev; return;
+    }
+    if (!reviewCompleted) {
+      toast('Cannot go Live — course review has not been marked complete by the reviewer.', 'error');
+      selectEl.value = prev; return;
+    }
+    if (!goLive) {
+      toast('Cannot go Live — reviewer has not given Go Live consent.', 'error');
+      selectEl.value = prev; return;
+    }
+  }
+  try {
+    await setDoc(doc(db,'courses',courseId), {status:newStatus, updatedAt:serverTimestamp()}, {merge:true});
+    selectEl.dataset.current = newStatus;
+    toast(`Course status updated to ${newStatus}.`, 'success');
+  } catch(err) {
+    toast('Error updating status.','error');
+    selectEl.value = prev;
+    console.error(err);
+  }
+};
 
 async function loadAdminExams() {
   $('exam-table-body').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">Loading…</td></tr>';
@@ -1350,6 +1411,7 @@ async function loadProctorSessions() {
    REPORTS
 ═══════════════════════════════════════ */
 async function loadReports() {
+  loadCourseReviews(); // load in parallel
   $('report-list').innerHTML='<div style="color:var(--muted);text-align:center;padding:40px 0">Loading…</div>';
   const snap = await getDocs(collection(db,'examSessions'));
   const sessions=[]; snap.forEach(d=>sessions.push({id:d.id,...d.data()}));
@@ -1376,6 +1438,72 @@ async function loadReports() {
         </div>`).join('')}</div>` : ''}
     </div>`;
   }).join('');
+}
+
+async function loadCourseReviews() {
+  const container = $('course-reviews-list');
+  if (!container) return;
+  container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px 0;">Loading…</div>';
+  try {
+    const coursesSnap = await getDocs(collection(db, 'courses'));
+    const rows = [];
+    for (const d of coursesSnap.docs) {
+      const course = d.data();
+      const revSnap = await getDoc(doc(db, 'courses', d.id, 'review', 'data'));
+      if (!revSnap.exists()) continue;
+      const rev = revSnap.data();
+      rows.push({ courseId: d.id, courseTitle: course.title || d.id, rev });
+    }
+    if (!rows.length) {
+      container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px 0;">No course reviews submitted yet.</div>';
+      return;
+    }
+    rows.sort((a,b) => (b.rev.updatedAt?.seconds||0) - (a.rev.updatedAt?.seconds||0));
+
+    const flagBadge = (val, trueLabel, falseLabel) => val
+      ? `<span style="font-size:11px;padding:2px 9px;border-radius:50px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2);font-weight:600;">✓ ${trueLabel}</span>`
+      : `<span style="font-size:11px;padding:2px 9px;border-radius:50px;background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.15);font-weight:600;">✗ ${falseLabel}</span>`;
+
+    container.innerHTML = `
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Course</th>
+              <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Reviewer</th>
+              <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Email</th>
+              <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Last Updated</th>
+              <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Review Status</th>
+              <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Overall Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(({courseTitle, rev}) => {
+              const updatedAt = rev.updatedAt
+                ? new Date(rev.updatedAt.seconds*1000).toLocaleString() : '—';
+              return `<tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:12px 14px;font-weight:600;">${esc(courseTitle)}</td>
+                <td style="padding:12px 14px;">${esc(rev.reviewerName||'—')}</td>
+                <td style="padding:12px 14px;color:var(--muted);">${esc(rev.reviewedBy||'—')}</td>
+                <td style="padding:12px 14px;color:var(--muted);white-space:nowrap;">${updatedAt}</td>
+                <td style="padding:12px 14px;">
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    ${flagBadge(rev.reviewCompleted,'Complete','Incomplete')}
+                    ${flagBadge(rev.goLive,'Go Live','Not Approved')}
+                  </div>
+                </td>
+                <td style="padding:12px 14px;color:var(--muted);max-width:260px;">
+                  ${rev.overallNotes ? `<span title="${esc(rev.overallNotes)}">${esc(rev.overallNotes.slice(0,80))}${rev.overallNotes.length>80?'…':''}</span>` : '—'}
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  } catch(err) {
+    container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px 0;">Error loading course reviews.</div>';
+    console.error('loadCourseReviews:', err);
+  }
 }
 
 /* ══════════════════════════════════════
