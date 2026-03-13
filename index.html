@@ -816,11 +816,14 @@ async function loadStudentCourses() {
 }
 
 async function buildCard(c) {
-  let nom = false;
-  try {
-    const s = await getDoc(doc(db,'courses',c.id,'nominations',me.email));
-    nom = s.exists() && s.data().nominated;
-  } catch{}
+  // Admins always have full access — skip nomination check
+  let nom = myRole === 'admin';
+  if (!nom) {
+    try {
+      const s = await getDoc(doc(db,'courses',c.id,'nominations',me.email));
+      nom = s.exists() && s.data().nominated;
+    } catch{}
+  }
   const ac = c.accentColor || '#3b82f6';
   const el = document.createElement('div');
   el.className = 'course-card' + (nom ? '' : ' locked');
