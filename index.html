@@ -416,11 +416,27 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
         <div class="admin-card-arrow" style="color:#f87171;">→</div>
       </div>
 
-      <div class="admin-card" onclick="previewAsStudent()" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);grid-column:1/-1;">
-        <span class="admin-card-tag" style="background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);">Testing</span>
-        <div class="admin-card-icon">🧪</div>
-        <div class="admin-card-label">Preview as Student</div>
-        <div class="admin-card-desc">View the platform as a student would see it — courses, exams, and progress. Your admin role is preserved.</div>
+      <div class="admin-card" onclick="previewAsStudent()" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);">
+        <span class="admin-card-tag" style="background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);">Preview</span>
+        <div class="admin-card-icon">📚</div>
+        <div class="admin-card-label">Preview as Learner</div>
+        <div class="admin-card-desc">See the platform as a student — courses, exams, and progress. Your admin role is preserved.</div>
+        <div class="admin-card-arrow" style="color:#818cf8;">→</div>
+      </div>
+
+      <div class="admin-card" onclick="previewAsReviewer()" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);">
+        <span class="admin-card-tag" style="background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);">Preview</span>
+        <div class="admin-card-icon">🔍</div>
+        <div class="admin-card-label">Preview as Reviewer</div>
+        <div class="admin-card-desc">See the course review queue as a reviewer would — approve and go-live decisions.</div>
+        <div class="admin-card-arrow" style="color:#818cf8;">→</div>
+      </div>
+
+      <div class="admin-card" onclick="previewAsProctor()" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);">
+        <span class="admin-card-tag" style="background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);">Preview</span>
+        <div class="admin-card-icon">👁</div>
+        <div class="admin-card-label">Preview as Proctor</div>
+        <div class="admin-card-desc">See the proctoring dashboard as an assigned proctor monitoring a live exam session.</div>
         <div class="admin-card-arrow" style="color:#818cf8;">→</div>
       </div>
 
@@ -1699,6 +1715,26 @@ function buildStudentExamCard(exam, myResults, myProgress) {
   return el;
 }
 
+function showPreviewBanner(label) {
+  let banner = $('preview-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'preview-banner';
+    banner.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;background:rgba(99,102,241,.95);color:#fff;padding:10px 22px;border-radius:50px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap;';
+    document.body.appendChild(banner);
+  }
+  banner.innerHTML = '🧪 ' + label + ' Preview &nbsp;·&nbsp; <button onclick="exitPreview()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:50px;cursor:pointer;font-size:12px;font-weight:600;">Exit Preview</button>';
+  banner.style.display = 'flex';
+}
+
+window.exitPreview = function() {
+  const banner = $('preview-banner');
+  if (banner) banner.style.display = 'none';
+  hide('student-view'); hide('reviewer-view'); hide('admin-view'); hide('examresults-view');
+  $('app').style.display = 'none';
+  $('admin-choice-screen').style.display = 'flex';
+};
+
 window.previewAsStudent = function() {
   $('admin-choice-screen').style.display = 'none';
   $('app').style.display = 'block';
@@ -1706,24 +1742,25 @@ window.previewAsStudent = function() {
   hide('admin-view'); hide('reviewer-view'); hide('examresults-view');
   show('student-view');
   loadStudentCourses();
-  // Show a persistent banner so admin knows they're in preview mode
-  let banner = $('student-preview-banner');
-  if (!banner) {
-    banner = document.createElement('div');
-    banner.id = 'student-preview-banner';
-    banner.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;background:rgba(99,102,241,.95);color:#fff;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);';
-    banner.innerHTML = '🧪 Student Preview Mode &nbsp;·&nbsp; <button onclick="exitStudentPreview()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:50px;cursor:pointer;font-size:12px;font-weight:600;">Exit Preview</button>';
-    document.body.appendChild(banner);
-  }
-  banner.style.display = 'flex';
+  showPreviewBanner('Learner');
 };
 
-window.exitStudentPreview = function() {
-  const banner = $('student-preview-banner');
-  if (banner) banner.style.display = 'none';
-  hide('student-view');
-  $('app').style.display = 'none';
-  $('admin-choice-screen').style.display = 'flex';
+window.previewAsReviewer = function() {
+  $('admin-choice-screen').style.display = 'none';
+  $('app').style.display = 'block';
+  showChips();
+  hide('admin-view'); hide('student-view'); hide('examresults-view');
+  show('reviewer-view');
+  if (typeof loadReviewQueue === 'function') loadReviewQueue();
+  showPreviewBanner('Reviewer');
+};
+
+window.previewAsProctor = function() {
+  $('admin-choice-screen').style.display = 'none';
+  window.open('sf-certs-hub.html', '_blank');
+  showPreviewBanner('Proctor');
+  // Restore admin choice screen after short delay since we opened a new tab
+  setTimeout(() => { $('admin-choice-screen').style.display = 'flex'; }, 300);
 };
 </script>
 <footer style="padding:16px 32px;border-top:1px solid rgba(255,255,255,.06);text-align:center;background:rgba(13,17,23,.5);">
