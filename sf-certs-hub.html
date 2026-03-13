@@ -511,6 +511,12 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
                 <input type="email" id="nom-email-input" placeholder="employee@sourcefuse.com">
                 <button id="nom-add-btn">+ Nominate</button>
               </div>
+              <div id="nom-exam-override-row" style="display:none;align-items:center;gap:10px;margin-top:8px;padding:10px 12px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;">
+                <input type="checkbox" id="nom-override-check" style="width:15px;height:15px;accent-color:var(--gold);cursor:pointer;">
+                <label for="nom-override-check" style="font-size:12px;color:var(--muted);cursor:pointer;line-height:1.4;">
+                  <strong style="color:var(--text);">Grant Course Override</strong> — allow this nominee to take the exam without completing the linked course
+                </label>
+              </div>
               <div id="nom-list-container"><div class="nom-empty">Loading…</div></div>
             </div>
           </div>
@@ -729,7 +735,7 @@ function showHubPreviewBanner(label) {
     banner.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;background:rgba(99,102,241,.95);color:#fff;padding:10px 22px;border-radius:50px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap;';
     document.body.appendChild(banner);
   }
-  banner.innerHTML = '🧪 ' + label + ' Preview &nbsp;·&nbsp; <button onclick="window.close()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:50px;cursor:pointer;font-size:12px;font-weight:600;">Close Tab</button>';
+  banner.innerHTML = '🧪 ' + label + ' Preview &nbsp;·&nbsp; <button onclick="if(window.opener&&window.opener.backToAdminConsole)window.opener.backToAdminConsole();window.close();" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:50px;cursor:pointer;font-size:12px;font-weight:600;">Close Tab</button>';
   banner.style.display = 'flex';
 }
 
@@ -759,11 +765,18 @@ async function buildExamCard(exam) {
   let nominated = false;
   try {
     const s = await getDoc(doc(db, 'exams', exam.id, 'nominations', me.email));
-    nominated = s.exists() && s.data().nominated;
+    nominated = s.exists() && s.data().nominated !== false;
+  } catch{}
+
+  // Check examEligible override on the nomination doc
+  let examEligible = false;
+  try {
+    const nomDoc = await getDoc(doc(db, 'exams', exam.id, 'nominations', me.email));
+    examEligible = nomDoc.exists() && nomDoc.data().examEligible === true;
   } catch{}
 
   let courseComplete = true;
-  if (exam.linkedCourseId) {
+  if (exam.linkedCourseId && !examEligible) {
     try {
       const s = await getDoc(doc(db, 'progress', me.uid));
       courseComplete = s.exists() && s.data()[`course_${exam.linkedCourseId}`] === true;
@@ -782,14 +795,15 @@ async function buildExamCard(exam) {
   } catch{}
 
   const attemptsLeft = Math.max(0, maxAttempts - attemptCount);
-  const canTake = nominated && courseComplete && attemptsLeft > 0;
+  const canTake = nominated && (courseComplete || examEligible) && attemptsLeft > 0;
   const ac = exam.accentColor || '#f59e0b';
   const dots = Array.from({length: maxAttempts}, (_,i) =>
     `<div class="a-dot ${i < attemptCount ? 'used' : 'avail'}"></div>`).join('');
 
   const notices = [];
   if (!nominated) notices.push(`<div class="notice-box notice-not-nom">You are not nominated for this exam. Contact your manager.</div>`);
-  else if (!courseComplete && exam.linkedCourseId) notices.push(`<div class="notice-box notice-course-lock">⚠️ Complete the linked course before attempting this exam.</div>`);
+  else if (!courseComplete && exam.linkedCourseId && !examEligible) notices.push(`<div class="notice-box notice-course-lock">⚠️ Complete the linked course before attempting this exam.</div>`);
+  else if (examEligible && !courseComplete) notices.push(`<div class="notice-box" style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fbbf24;border-radius:8px;padding:8px 12px;font-size:13px;">⚡ Course override enabled — you can take this exam directly.</div>`);
   else if (attemptsLeft === 0) notices.push(`<div class="notice-box notice-no-attempts">All ${maxAttempts} attempts used for this exam.</div>`);
 
   const card = document.createElement('div');
@@ -1370,11 +1384,19 @@ window.onNomItemChange = async function() {
   const id = $('nom-item-select').value;
   if (!id) { $('nom-area').style.display = 'none'; return; }
   $('nom-area').style.display = 'block';
+  // Show override checkbox only for exam nominations
+  const overrideRow = $('nom-exam-override-row');
+  if (overrideRow) {
+    overrideRow.style.display = nomCategory === 'exam' ? 'flex' : 'none';
+    const cb = $('nom-override-check');
+    if (cb) cb.checked = false; // reset on each selection
+  }
   await loadNominations(id);
 }
 
 async function loadNominations(itemId) {
   $('nom-list-container').innerHTML = '<div class="nom-empty">Loading…</div>';
+  const isExam   = nomCategory === 'exam';
   const collPath = nomCategory === 'course'
     ? collection(db, 'courses', itemId, 'nominations')
     : collection(db, 'exams',   itemId, 'nominations');
@@ -1385,31 +1407,95 @@ async function loadNominations(itemId) {
     $('nom-list-container').innerHTML = '<div class="nom-empty">No users nominated.</div>';
     return;
   }
+
+  // Header hint for exam nominations
+  const header = isExam
+    ? `<div style="font-size:11px;color:var(--muted);padding:0 0 10px;line-height:1.5;">
+        <strong style="color:var(--text);">Course Override</strong> — toggle to allow a nominee to take the exam without completing the linked course.
+       </div>`
+    : '';
+
   const list = document.createElement('div');
   list.className = 'nom-list';
   for (const n of noms) {
+    const eligible = n.examEligible === true;
     const it = document.createElement('div');
     it.className = 'nom-item';
-    it.innerHTML = `<span>${esc(n.email)}</span><button class="nom-rem">×</button>`;
+    it.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:10px;';
+    it.innerHTML = `
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;">${esc(n.email)}</span>
+      ${isExam ? `
+        <label title="Allow exam without course completion" style="display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;">
+          <div class="override-toggle ${eligible ? 'on' : ''}" data-email="${esc(n.email)}" data-item="${esc(itemId)}"
+               onclick="toggleExamEligible(this)" style="
+               width:34px;height:18px;border-radius:9px;position:relative;cursor:pointer;transition:background .2s;
+               background:${eligible ? 'var(--accent)' : 'var(--border)'};flex-shrink:0;">
+            <div style="position:absolute;top:2px;left:${eligible ? '16px' : '2px'};width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s;"></div>
+          </div>
+          <span style="font-size:11px;color:${eligible ? 'var(--accent)' : 'var(--muted)'};white-space:nowrap;font-weight:${eligible ? '600' : '400'};">
+            ${eligible ? 'Override ON' : 'Override OFF'}
+          </span>
+        </label>` : ''}
+      <button class="nom-rem" style="flex-shrink:0;">×</button>`;
     it.querySelector('.nom-rem').addEventListener('click', () => removeNomination(itemId, n.email));
     list.appendChild(it);
   }
-  $('nom-list-container').innerHTML = '';
+  $('nom-list-container').innerHTML = header;
   $('nom-list-container').appendChild(list);
 }
 
+window.toggleExamEligible = async function(toggleEl) {
+  const email    = toggleEl.dataset.email;
+  const itemId   = toggleEl.dataset.item;
+  const isOn     = toggleEl.classList.contains('on');
+  const newValue = !isOn;
+
+  try {
+    const ref = doc(db, 'exams', itemId, 'nominations', email);
+    // When turning override ON, also ensure nominated:true so exam appears for the student
+    const payload = newValue
+      ? {nominated: true, examEligible: true, nominatedAt: serverTimestamp(), nominatedBy: me.email}
+      : {examEligible: false};
+    await setDoc(ref, payload, {merge: true});
+
+    // Update toggle UI immediately
+    toggleEl.classList.toggle('on', newValue);
+    toggleEl.style.background = newValue ? 'var(--accent)' : 'var(--border)';
+    toggleEl.querySelector('div').style.left = newValue ? '16px' : '2px';
+    const label = toggleEl.parentElement.querySelector('span');
+    label.textContent = newValue ? 'Override ON' : 'Override OFF';
+    label.style.color = newValue ? 'var(--accent)' : 'var(--muted)';
+    label.style.fontWeight = newValue ? '600' : '400';
+
+    toast(`${email}: course override ${newValue ? 'enabled' : 'disabled'}`, 'success');
+  } catch(err) {
+    toast('Error updating eligibility', 'error');
+    console.error(err);
+  }
+};
+
 async function addNomination() {
-  const itemId = $('nom-item-select').value;
-  const email  = $('nom-email-input').value.trim().toLowerCase();
+  const itemId   = $('nom-item-select').value;
+  const email    = $('nom-email-input').value.trim().toLowerCase();
   if (!itemId || !email) { toast('Select an item and enter an email.', 'error'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Invalid email.', 'error'); return; }
+
+  const isExam        = nomCategory === 'exam';
+  const overrideCheck = $('nom-override-check');
+  const grantOverride = isExam && overrideCheck && overrideCheck.checked;
+
+  const payload = {nominated: true, nominatedAt: serverTimestamp(), nominatedBy: me.email};
+  if (grantOverride) payload.examEligible = true;
+
   const collPath = nomCategory === 'course'
     ? doc(db, 'courses', itemId, 'nominations', email)
     : doc(db, 'exams',   itemId, 'nominations', email);
-  await setDoc(collPath, {nominated: true, nominatedAt: serverTimestamp(), nominatedBy: me.email});
+  await setDoc(collPath, payload);
+
+  if (overrideCheck) overrideCheck.checked = false; // reset after nominating
   $('nom-email-input').value = '';
   await loadNominations(itemId);
-  toast(`${email} nominated!`, 'success');
+  toast(`${email} nominated${grantOverride ? ' with course override' : ''}!`, 'success');
 }
 
 async function removeNomination(itemId, email) {
@@ -1805,28 +1891,39 @@ async function cpSelectCourse(courseId, courseTitle, btn) {
   $('cp-empty').style.display      = 'none';
 
   try {
-    // Fetch nominees for this course
+    // Fetch nominees for this course — these are the source of truth
     const nomSnap = await getDocs(collection(db, 'courses', courseId, 'nominations'));
-    const nomineeEmails = new Set();
-    nomSnap.forEach(d => nomineeEmails.add(d.id));
+    const nomineeEmails = [];
+    nomSnap.forEach(d => { if (d.data().nominated !== false) nomineeEmails.push(d.id); });
 
-    // Fetch all users and match by email to get uid
+    if (!nomineeEmails.length) {
+      $('cp-loading').style.display = 'none';
+      $('cp-empty').style.display   = 'block';
+      return;
+    }
+
+    // Fetch all users (uid-keyed) — build email→uid+profile map
     const usersSnap    = await getDocs(collection(db, 'users'));
     const progressSnap = await getDocs(collection(db, 'progress'));
     const resultsSnap  = await getDocs(collection(db, 'results'));
+
+    const emailToUser  = {}; // email → {uid, name, photoURL, lastSeen}
+    usersSnap.forEach(d => {
+      const u = d.data();
+      if (u.email) emailToUser[u.email] = {uid: d.id, name: u.name||u.displayName||'', photoURL: u.photoURL||'', lastSeen: u.lastSeen};
+    });
 
     const progressMap = {};
     progressSnap.forEach(d => progressMap[d.id] = d.data());
     const resultsMap  = {};
     resultsSnap.forEach(d => resultsMap[d.id]  = d.data());
 
-    // uid-keyed users collection — match nominee emails
-    usersSnap.forEach(d => {
-      const u = d.data();
-      if (!nomineeEmails.has(u.email)) return; // only show nominees
-      const uid  = d.id;
-      const prog = progressMap[uid] || {};
-      const res  = resultsMap[uid]  || null;
+    // Iterate nominee emails as source of truth — include everyone nominated
+    for (const email of nomineeEmails) {
+      const userInfo = emailToUser[email] || {uid: null, name: '', photoURL: '', lastSeen: null};
+      const uid  = userInfo.uid;
+      const prog = uid ? (progressMap[uid] || {}) : {};
+      const res  = uid ? (resultsMap[uid]  || null) : null;
       let totalDone = 0;
       const modProgress = {};
       for (const [key, tot] of Object.entries(CP_MODULE_TOTALS)) {
@@ -1835,16 +1932,17 @@ async function cpSelectCourse(courseId, courseTitle, btn) {
         modProgress[key] = {done, total: tot, pct: Math.round((done/tot)*100)};
       }
       _cpData.push({
-        uid, name: u.name||'Unknown', email: u.email||'',
-        photoURL: u.photoURL||'', lastSeen: u.lastSeen,
+        uid, name: userInfo.name || email.split('@')[0], email,
+        photoURL: userInfo.photoURL, lastSeen: userInfo.lastSeen,
         totalDone, modProgress,
+        neverLoggedIn:   !uid,
         bestScore:       res?.bestScore,
         bestPassed:      res?.bestPassed,
         attemptCount:    res?.attemptCount  || 0,
         moduleBreakdown: res?.moduleBreakdown || null,
         attempts:        res?.attempts       || []
       });
-    });
+    }
     _cpData.sort((a,b) => b.totalDone - a.totalDone);
     $('cp-loading').style.display = 'none';
     cpUpdateStats();
@@ -1919,7 +2017,9 @@ function cpRenderTable(data) {
 
   data.forEach((u, i) => {
     const overallPct = Math.round((u.totalDone / CP_TOTAL) * 100);
-    const lastSeen   = u.lastSeen?.seconds
+    const lastSeen   = u.neverLoggedIn
+      ? '<span style="color:var(--muted);font-style:italic;font-size:11px;">Never logged in</span>'
+      : u.lastSeen?.seconds
       ? new Date(u.lastSeen.seconds * 1000).toLocaleDateString() : '—';
     const scoreBadge = u.bestScore !== undefined
       ? `<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;white-space:nowrap;
