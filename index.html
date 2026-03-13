@@ -331,17 +331,15 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
     </div>
     <div class="choice-headline">What do you want to<br><em>do today?</em></div>
     <div class="choice-cards">
-      <div class="choice-card learn" onclick="chooseMode('learn')">
+      <div class="choice-card learn" style="cursor:default;opacity:0.7;">
         <div class="choice-icon">📚</div>
         <div class="choice-label">Learn</div>
         <div class="choice-desc">Access your nominated courses, track progress, and build new skills at your own pace.</div>
-        <div class="choice-arrow">→</div>
       </div>
-      <div class="choice-card certify" onclick="chooseMode('certify')">
+      <div class="choice-card certify" style="cursor:default;opacity:0.7;">
         <div class="choice-icon">🎓</div>
         <div class="choice-label">Get Certified</div>
         <div class="choice-desc">Take your certification evaluation exam and earn your SF internal certification badge.</div>
-        <div class="choice-arrow">→</div>
       </div>
     </div>
     <div style="margin-top:8px;text-align:center;">
@@ -809,8 +807,14 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
-  // Non-admin — show their choice screen (Learn / Get Certified)
-  $('choice-screen').style.display = 'flex';
+  // Non-admin — auto route directly, no need to click Learn/Get Certified
+  if (myRole === 'reviewer') { window.location.href = 'reviewer.html'; return; }
+  if (myRole === 'proctor')  { window.location.href = 'sf-certs-hub.html'; return; }
+  // Student — go straight to learn view
+  $('choice-screen').style.display = 'none';
+  $('app').style.display = 'block';
+  showChips();
+  route();
 });
 
 let inLearnerView = false;
@@ -937,6 +941,7 @@ function route() {
 
 /* ══ STUDENT ══ */
 async function loadStudentCourses() {
+  console.log('[SF Load] loadStudentCourses called, meEmail:', meEmail, 'myRole:', myRole);
   show('loading-courses'); hide('courses-grid'); hide('empty-state');
   $('courses-grid').innerHTML = '';
   try {
@@ -957,6 +962,7 @@ async function buildCard(c) {
   if (!nom) {
     try {
       const s = await getDoc(doc(db,'courses',c.id,'nominations',lookupEmail()));
+      console.log('[SF Card]', c.title, '| lookupEmail:', lookupEmail(), '| exists:', s.exists(), '| data:', s.exists() ? JSON.stringify(s.data()) : 'n/a');
       nom = s.exists() && s.data().nominated !== false; // treat missing field as nominated
     } catch{}
   }
