@@ -161,7 +161,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .card-meta{display:flex;align-items:center;justify-content:space-between;}
 .card-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:rgba(59,130,246,.1);padding:4px 10px;border-radius:50px;}
 .card-status{font-size:11px;font-weight:500;padding:3px 10px;border-radius:50px;}
-.s-nom{background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.25);}
+.s-nom{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.3);}
 .s-not{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2);}
 .card-icon{font-size:28px;}
 .card-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;line-height:1.3;}
@@ -171,6 +171,10 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .card-info-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);}
 .not-nom-notice{display:none;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 14px;font-size:12.5px;color:#fca5a5;line-height:1.5;}
 .course-card.locked .not-nom-notice{display:block;}
+
+.s-tab{padding:10px 22px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;background:none;border:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;border-radius:8px 8px 0 0;}
+.s-tab:hover{color:var(--text);}
+.s-tab.active{color:var(--highlight);border-bottom-color:var(--highlight);}
 .card-btn{display:flex;align-items:center;justify-content:center;width:100%;padding:11px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;border:none;transition:all .2s;}
 .btn-enter{background:var(--accent);color:#fff;}
 .btn-enter:hover{background:#2563eb;}
@@ -388,11 +392,11 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
         <div class="admin-card-arrow">→</div>
       </div>
 
-      <div class="admin-card ac-purple" onclick="adminNav('console')">
-        <span class="admin-card-tag tag-purple">Admin Dashboard</span>
-        <div class="admin-card-icon">🖥</div>
-        <div class="admin-card-label">Admin Dashboard</div>
-        <div class="admin-card-desc">Full certification hub — manage live exam sessions, view candidate status, and proctoring tools.</div>
+      <div class="admin-card ac-purple" onclick="adminNav('examresults')">
+        <span class="admin-card-tag tag-purple">Results</span>
+        <div class="admin-card-icon">🏆</div>
+        <div class="admin-card-label">Exam Results</div>
+        <div class="admin-card-desc">View consolidated test results per exam — scores, pass/fail status, and attempt history for all candidates.</div>
         <div class="admin-card-arrow">→</div>
       </div>
 
@@ -446,12 +450,33 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
       <div class="hero-eyebrow"><span></span>Certification Courses</div>
       <h1 class="hero-title">Your Learning<br><em>Journey Starts Here</em></h1>
       <p class="hero-sub">Complete your nominated courses to unlock your SourceFuse certifications.</p>
-      <div id="loading-courses"><div class="spinner"></div>Loading courses…</div>
-      <div id="courses-grid"></div>
-      <div id="empty-state">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-        <h3>No courses available yet</h3>
-        <p>Check back soon — new courses are being added.</p>
+
+      <!-- Student tabs -->
+      <div style="display:flex;gap:4px;margin:28px 0 0;border-bottom:1px solid var(--border);">
+        <button class="s-tab active" id="stab-courses" onclick="sStudentTab('courses')">📚 Courses</button>
+        <button class="s-tab"        id="stab-exams"   onclick="sStudentTab('exams')">🎓 Exams</button>
+      </div>
+
+      <!-- Courses tab -->
+      <div id="stab-content-courses">
+        <div id="loading-courses" style="padding:40px 0;text-align:center;"><div class="spinner"></div>Loading courses…</div>
+        <div id="courses-grid"></div>
+        <div id="empty-state" style="display:none;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <h3>No courses available yet</h3>
+          <p>Check back soon — new courses are being added.</p>
+        </div>
+      </div>
+
+      <!-- Exams tab -->
+      <div id="stab-content-exams" style="display:none;">
+        <div id="loading-exams" style="padding:40px 0;text-align:center;"><div class="spinner"></div>Loading exams…</div>
+        <div id="student-exams-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-top:24px;"></div>
+        <div id="empty-exams" style="display:none;padding:60px 0;text-align:center;color:var(--muted);">
+          <div style="font-size:40px;margin-bottom:12px;">🎓</div>
+          <h3 style="font-family:'Syne',sans-serif;color:var(--text);margin-bottom:8px;">No exams available yet</h3>
+          <p style="font-size:13px;">Exams linked to your courses will appear here once you're nominated.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -564,6 +589,68 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- EXAM RESULTS VIEW -->
+  <div id="examresults-view" style="display:none;">
+    <div style="max-width:1000px;margin:0 auto;padding:40px 32px 80px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;">🏆 Exam Results</div>
+          <div style="color:var(--muted);font-size:13px;margin-top:4px;">Consolidated results per exam — scores, pass/fail, and attempt history.</div>
+        </div>
+        <button onclick="backToAdminConsole()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;">← Back</button>
+      </div>
+
+      <!-- Exam selector -->
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
+        <div style="font-size:13px;color:var(--muted);flex-shrink:0;">Exam:</div>
+        <select id="er-exam-select" onchange="erSelectExam()"
+          style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;cursor:pointer;min-width:220px;">
+          <option value="">— Select an exam —</option>
+        </select>
+      </div>
+
+      <!-- Results panel (hidden until exam selected) -->
+      <div id="er-panel" style="display:none;">
+        <!-- Summary bar -->
+        <div id="er-summary" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;"></div>
+
+        <!-- Filters + actions -->
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="er-filter-btn active" onclick="erFilter('all',this)"   style="font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;">All</button>
+            <button class="er-filter-btn"        onclick="erFilter('passed',this)" style="font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid rgba(16,185,129,.3);background:rgba(16,185,129,.08);color:#34d399;cursor:pointer;font-family:'DM Sans',sans-serif;">🟢 Passed</button>
+            <button class="er-filter-btn"        onclick="erFilter('failed',this)" style="font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.08);color:#f87171;cursor:pointer;font-family:'DM Sans',sans-serif;">🔴 Failed</button>
+            <button class="er-filter-btn"        onclick="erFilter('pending',this)" style="font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.08);color:#fbbf24;cursor:pointer;font-family:'DM Sans',sans-serif;">🟡 Pending</button>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="erPrint()"       style="font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;">🖨 Print</button>
+            <button onclick="erExportCSV()"   style="font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid rgba(16,185,129,.3);background:rgba(16,185,129,.08);color:#34d399;cursor:pointer;font-family:'DM Sans',sans-serif;">📥 Download CSV</button>
+          </div>
+        </div>
+
+        <!-- Score range filter -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+          <span style="font-size:12px;color:var(--muted);">Score range:</span>
+          <input type="number" id="er-score-min" placeholder="Min %" min="0" max="100"
+            oninput="erRenderTable()"
+            style="width:80px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 10px;font-size:12px;outline:none;">
+          <span style="color:var(--muted);font-size:12px;">—</span>
+          <input type="number" id="er-score-max" placeholder="Max %" min="0" max="100"
+            oninput="erRenderTable()"
+            style="width:80px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 10px;font-size:12px;outline:none;">
+        </div>
+
+        <!-- Table -->
+        <div id="er-table-wrap" style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div id="er-table-inner"></div>
+        </div>
+      </div>
+
+      <div id="er-loading" style="color:var(--muted);text-align:center;padding:60px 0;display:none;">Loading…</div>
+      <div id="er-empty"   style="color:var(--muted);text-align:center;padding:60px 0;display:none;">Select an exam above to view results.</div>
     </div>
   </div>
 
@@ -749,13 +836,17 @@ window.adminNav = function(section) {
   inLearnerView = false;
   $('app').style.display = 'block';
   showChips();
-  hide('student-view'); hide('reviewer-view');
+  hide('student-view'); hide('reviewer-view'); hide('examresults-view');
   show('admin-view');
   $('learner-view-btn').textContent = '📚 Learner View';
   $('learner-view-btn').classList.remove('active-view');
   if (section === 'proctor') {
     loadAdminCourses();
     setTimeout(() => switchTab('people'), 100);
+  } else if (section === 'examresults') {
+    hide('admin-view');
+    show('examresults-view');
+    loadExamResultsView();
   } else {
     loadAdminCourses();
   }
@@ -847,7 +938,7 @@ async function buildCard(c) {
     <div class="card-body">
       <div class="card-meta">
         <span class="card-tag">${esc(c.category||'Course')}</span>
-        <span class="card-status ${nom?'s-nom':'s-not'}">${nom?'✓ Nominated':'Not Nominated'}</span>
+        <span class="card-status ${nom?'s-nom':'s-not'}">${nom?'🟠 Nominated':'Not Nominated'}</span>
       </div>
       <div class="card-icon">${esc(c.icon||'📘')}</div>
       <div class="card-title">${esc(c.title)}</div>
@@ -1214,8 +1305,8 @@ async function reviewAction(courseId, status) {
 
 /* ══ UTILS ══ */
 function $(id) { return document.getElementById(id); }
-function show(id) { $(id).style.display = 'block'; }
-function hide(id) { $(id).style.display = 'none'; }
+function show(id) { const el=$(id); if(el) el.style.display='block'; }
+function hide(id) { const el=$(id); if(el) el.style.display='none'; }
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&#34;'); }
 function lighten(hex) {
   try {
@@ -1229,6 +1320,387 @@ function toast(msg, type='') {
   const t = $('toast'); t.textContent=msg; t.className=type;
   t.classList.add('show'); clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════
+//  EXAM RESULTS VIEW
+// ══════════════════════════════════════
+let _erExams    = [];   // all exam docs
+let _erAllRows  = [];   // all candidate rows for selected exam
+let _erFilter   = 'all';
+let _erExamId   = null;
+let _erExamDoc  = null;
+
+async function loadExamResultsView() {
+  const sel = $('er-exam-select');
+  // Populate exam dropdown if not already done
+  if (sel.options.length <= 1) {
+    try {
+      const snap = await getDocs(collection(db, 'exams'));
+      _erExams = [];
+      snap.forEach(d => _erExams.push({id: d.id, ...d.data()}));
+      _erExams.sort((a,b) => (a.title||'').localeCompare(b.title||''));
+      sel.innerHTML = '<option value="">— Select an exam —</option>';
+      _erExams.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = (e.icon||'📝') + ' ' + (e.title||e.id);
+        sel.appendChild(opt);
+      });
+    } catch(err) { console.error('loadExamResultsView:', err); }
+  }
+  hide('er-panel'); hide('er-loading');
+  show('er-empty');
+}
+
+window.erSelectExam = async function() {
+  const sel   = $('er-exam-select');
+  const examId = sel.value;
+  if (!examId) { hide('er-panel'); show('er-empty'); return; }
+
+  _erExamId  = examId;
+  _erExamDoc = _erExams.find(e => e.id === examId) || {};
+  _erFilter  = 'all';
+  // Reset filter buttons
+  document.querySelectorAll('.er-filter-btn').forEach(b => b.style.fontWeight = '');
+  document.querySelector('.er-filter-btn').style.fontWeight = '700';
+
+  hide('er-empty'); hide('er-panel');
+  show('er-loading');
+
+  try {
+    // Fetch all examResults docs (uid-keyed)
+    const examResultsSnap = await getDocs(collection(db, 'examResults'));
+    // Fetch users for name lookup (uid-keyed in course repo)
+    const usersSnap = await getDocs(collection(db, 'users'));
+    const userMap = {};
+    usersSnap.forEach(d => {
+      const u = d.data();
+      if (u.email) userMap[d.id] = {name: u.name || u.displayName || '', email: u.email};
+    });
+
+    _erAllRows = [];
+    examResultsSnap.forEach(d => {
+      const uid  = d.id;
+      const data = d.data();
+      if (!data[examId]) return;
+      const res  = data[examId];
+      const user = userMap[uid] || {name: '', email: uid};
+      _erAllRows.push({
+        uid,
+        name:         user.name,
+        email:        user.email,
+        attemptCount: res.attemptCount || 0,
+        bestScore:    res.bestScore    ?? null,
+        bestPassed:   res.bestPassed   ?? null,
+        attempts:     res.attempts     || []
+      });
+    });
+
+    hide('er-loading');
+    show('er-panel');
+    erRenderSummary();
+    erRenderTable();
+  } catch(err) {
+    hide('er-loading');
+    $('er-table-inner').innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);">Error loading results.</div>';
+    show('er-panel');
+    console.error(err);
+  }
+};
+
+function erGetFiltered() {
+  const minScore = parseFloat($('er-score-min')?.value) || 0;
+  const maxScore = parseFloat($('er-score-max')?.value) || 100;
+  return _erAllRows.filter(r => {
+    if (_erFilter === 'passed')  return r.bestPassed === true;
+    if (_erFilter === 'failed')  return r.bestPassed === false;
+    if (_erFilter === 'pending') return r.attemptCount === 0 || r.bestPassed === null;
+    return true;
+  }).filter(r => {
+    if (r.bestScore === null) return true; // pending — don't exclude
+    return r.bestScore >= minScore && r.bestScore <= maxScore;
+  });
+}
+
+function erRenderSummary() {
+  const total   = _erAllRows.length;
+  const taken   = _erAllRows.filter(r => r.attemptCount > 0).length;
+  const passed  = _erAllRows.filter(r => r.bestPassed === true).length;
+  const failed  = _erAllRows.filter(r => r.bestPassed === false).length;
+  const pending = _erAllRows.filter(r => r.attemptCount === 0 || r.bestPassed === null).length;
+  const scores  = _erAllRows.filter(r => r.bestScore !== null).map(r => r.bestScore);
+  const avg     = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : null;
+
+  const badge = (label, val, bg, color, border) =>
+    `<span style="font-size:12px;font-weight:700;padding:6px 14px;border-radius:8px;background:${bg};color:${color};border:1px solid ${border};">${label}: ${val}</span>`;
+
+  $('er-summary').innerHTML = [
+    badge('Total nominated', total,  'var(--card)',             'var(--text)',  'var(--border)'),
+    badge('Taken',           taken,  'rgba(59,130,246,.1)',     '#60a5fa',     'rgba(59,130,246,.2)'),
+    badge('🟢 Passed',          passed, 'rgba(16,185,129,.1)',     '#34d399',     'rgba(16,185,129,.2)'),
+    badge('Failed',          failed, 'rgba(239,68,68,.08)',     '#f87171',     'rgba(239,68,68,.15)'),
+    badge('🟡 Pending',         pending,'rgba(245,158,11,.08)',    '#fbbf24',     'rgba(245,158,11,.2)'),
+    avg !== null ? badge('Avg score', avg+'%', 'rgba(139,92,246,.1)', '#a78bfa', 'rgba(139,92,246,.2)') : ''
+  ].join('');
+}
+
+window.erFilter = function(filter, btn) {
+  _erFilter = filter;
+  document.querySelectorAll('.er-filter-btn').forEach(b => b.style.fontWeight = '');
+  btn.style.fontWeight = '700';
+  erRenderTable();
+};
+
+window.erRenderTable = function() {
+  const rows = erGetFiltered();
+  const maxAtt = _erExamDoc?.maxAttempts || 3;
+  const passMark = _erExamDoc?.passMark || _erExamDoc?.passmark || 66;
+
+  if (!rows.length) {
+    $('er-table-inner').innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);font-size:14px;">No results match the current filter.</div>';
+    return;
+  }
+
+  const sorted = [...rows].sort((a,b) => (b.bestScore??-1) - (a.bestScore??-1));
+
+  $('er-table-inner').innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border);">
+          <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Candidate</th>
+          <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Best Score</th>
+          <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Result</th>
+          <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Attempts</th>
+          <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Attempt History</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sorted.map(r => {
+          const scoreStyle = r.bestPassed === true
+            ? 'color:#34d399;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);'
+            : r.bestPassed === false
+            ? 'color:#f87171;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);'
+            : 'color:var(--muted);background:var(--surface);border:1px solid var(--border);';
+          const dots = Array.from({length: maxAtt}, (_,i) =>
+            `<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:3px;
+              background:${i < r.attemptCount ? (r.bestPassed ? '#34d399' : '#f87171') : 'var(--border)'};"></span>`
+          ).join('');
+          const history = r.attempts.length
+            ? r.attempts.map((a,i) => {
+                const at  = a.at ? new Date(a.at).toLocaleDateString() : '—';
+                const sc  = a.score !== undefined ? a.score+'%' : '—';
+                return `<span style="font-size:10px;padding:2px 7px;border-radius:4px;margin-right:4px;
+                  background:${a.passed===true?'rgba(16,185,129,.08)':a.passed===false?'rgba(239,68,68,.08)':'var(--surface)'};
+                  border:1px solid ${a.passed===true?'rgba(16,185,129,.2)':a.passed===false?'rgba(239,68,68,.15)':'var(--border)'};
+                  color:${a.passed===true?'#34d399':a.passed===false?'#f87171':'var(--muted)'};">
+                  #${i+1} ${sc} · ${at}</span>`;
+              }).join('')
+            : '<span style="color:var(--muted);font-size:12px;">—</span>';
+          return `<tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:12px 16px;">
+              <div style="font-weight:600;">${esc(r.name||r.email)}</div>
+              ${r.name ? `<div style="font-size:11px;color:var(--muted);">${esc(r.email)}</div>` : ''}
+            </td>
+            <td style="padding:12px 16px;">
+              ${r.bestScore !== null
+                ? `<span style="font-weight:700;padding:3px 10px;border-radius:6px;${scoreStyle}">${r.bestScore}%</span>`
+                : `<span style="color:var(--muted);font-size:12px;">—</span>`}
+            </td>
+            <td style="padding:12px 16px;">
+              ${r.bestPassed === true  ? '<span style="color:#34d399;font-weight:600;">🟢 Pass</span>'
+              : r.bestPassed === false ? '<span style="color:#f87171;font-weight:600;">🔴 Fail</span>'
+              : '<span style="color:#fbbf24;">🟡 Pending</span>'}
+            </td>
+            <td style="padding:12px 16px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="font-size:12px;color:var(--muted);">${r.attemptCount}/${maxAtt}</span>
+                <div>${dots}</div>
+              </div>
+            </td>
+            <td style="padding:12px 16px;">${history}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+};
+
+window.erExportCSV = function() {
+  const rows     = erGetFiltered();
+  const examTitle = _erExamDoc?.title || _erExamId || 'exam';
+  const maxAtt   = _erExamDoc?.maxAttempts || 3;
+  const headers  = ['Name','Email','Best Score (%)','Result','Attempts Used','Max Attempts'];
+  // Add attempt columns
+  for (let i = 1; i <= maxAtt; i++) {
+    headers.push(`Attempt ${i} Score (%)`, `Attempt ${i} Passed`, `Attempt ${i} Date`);
+  }
+  const sorted = [...rows].sort((a,b) => (b.bestScore??-1)-(a.bestScore??-1));
+  const csvRows = sorted.map(r => {
+    const result = r.bestPassed === true ? 'Pass' : r.bestPassed === false ? 'Fail' : 'Pending';
+    const base = [
+      r.name || r.email,
+      r.email,
+      r.bestScore !== null ? r.bestScore : '',
+      result,
+      r.attemptCount,
+      maxAtt
+    ];
+    for (let i = 0; i < maxAtt; i++) {
+      const a = r.attempts[i];
+      base.push(
+        a?.score !== undefined ? a.score : '',
+        a?.passed === true ? 'Yes' : a?.passed === false ? 'No' : '',
+        a?.at ? new Date(a.at).toLocaleDateString() : ''
+      );
+    }
+    return base;
+  });
+  const csv  = [headers, ...csvRows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `${examTitle.replace(/\s+/g,'-').toLowerCase()}-results-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+window.erPrint = function() {
+  window.print();
+};
+
+
+// ══ STUDENT TABS ══
+window.sStudentTab = function(tab) {
+  ['courses','exams'].forEach(t => {
+    $('stab-'+t).classList.toggle('active', t===tab);
+    $('stab-content-'+t).style.display = t===tab ? 'block' : 'none';
+  });
+  if (tab==='exams' && !$('student-exams-grid').dataset.loaded) {
+    loadStudentExams();
+  }
+};
+
+async function loadStudentExams() {
+  const grid    = $('student-exams-grid');
+  const loading = $('loading-exams');
+  const empty   = $('empty-exams');
+  grid.innerHTML = '';
+  loading.style.display = 'block';
+  hide('empty-exams');
+
+  try {
+    // Fetch all live exams
+    const snap = await getDocs(collection(db, 'exams'));
+    const allExams = [];
+    snap.forEach(d => { if (d.data().status==='live') allExams.push({id:d.id,...d.data()}); });
+
+    // For each exam, check nomination
+    const nominatedExams = [];
+    for (const exam of allExams) {
+      let nominated = myRole === 'admin';
+      if (!nominated) {
+        try {
+          const s = await getDoc(doc(db,'exams',exam.id,'nominations',me.email));
+          nominated = s.exists() && s.data().nominated;
+        } catch {}
+      }
+      if (nominated || myRole === 'admin') nominatedExams.push(exam);
+    }
+
+    loading.style.display = 'none';
+    if (!nominatedExams.length) { show('empty-exams'); return; }
+
+    // Fetch this user's exam results once
+    let myResults = {};
+    try {
+      const rs = await getDoc(doc(db,'examResults',me.uid));
+      if (rs.exists()) myResults = rs.data();
+    } catch {}
+
+    // Fetch progress for course-completion check
+    let myProgress = {};
+    try {
+      const ps = await getDoc(doc(db,'progress',me.uid));
+      if (ps.exists()) myProgress = ps.data();
+    } catch {}
+
+    grid.dataset.loaded = '1';
+    for (const exam of nominatedExams) {
+      grid.appendChild(buildStudentExamCard(exam, myResults, myProgress));
+    }
+  } catch(err) {
+    loading.style.display = 'none';
+    console.error('loadStudentExams:', err);
+    toast('Error loading exams','error');
+  }
+}
+
+function buildStudentExamCard(exam, myResults, myProgress) {
+  const ac          = exam.accentColor || '#f59e0b';
+  const maxAttempts = exam.maxAttempts || 3;
+  const passMark    = exam.passMark || exam.passmark || 66;
+  const res         = myResults[exam.id] || null;
+  const attemptCount = res?.attemptCount || 0;
+  const bestScore    = res?.bestScore    ?? null;
+  const bestPassed   = res?.bestPassed   ?? null;
+  const attemptsLeft = Math.max(0, maxAttempts - attemptCount);
+
+  // Course completion check
+  let courseComplete = true;
+  if (exam.linkedCourseId) {
+    courseComplete = myProgress['course_'+exam.linkedCourseId] === true;
+  }
+
+  const canTake = courseComplete && attemptsLeft > 0;
+
+  // Status badge
+  const statusBadge = bestPassed === true
+    ? '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2);">🟢 Passed</span>'
+    : bestPassed === false
+    ? '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.15);">🔴 Not Passed</span>'
+    : attemptCount > 0
+    ? '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(245,158,11,.08);color:#fbbf24;border:1px solid rgba(245,158,11,.2);">🟡 In Progress</span>'
+    : '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(59,130,246,.08);color:#60a5fa;border:1px solid rgba(59,130,246,.2);">⚪ Not Attempted</span>';
+
+  const dots = Array.from({length: maxAttempts}, (_,i) =>
+    `<div class="a-dot ${i < attemptCount ? 'used' : 'avail'}"></div>`).join('');
+
+  let notice = '';
+  if (!courseComplete && exam.linkedCourseId)
+    notice = `<div class="notice-box notice-course-lock" style="margin-top:12px;">⚠️ Complete the linked course before attempting this exam.</div>`;
+  else if (attemptsLeft === 0)
+    notice = `<div class="notice-box notice-no-attempts" style="margin-top:12px;">All ${maxAttempts} attempts used for this exam.</div>`;
+
+  const el = document.createElement('div');
+  el.className = 'course-card';
+  el.innerHTML = `
+    <div class="card-banner" style="background:linear-gradient(90deg,${ac},${lighten(ac)})"></div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-tag" style="color:${ac};background:${ac}22;">${esc(exam.category||'Exam')}</span>
+        ${statusBadge}
+      </div>
+      <div class="card-icon">${esc(exam.icon||'🎓')}</div>
+      <div class="card-title">${esc(exam.title)}</div>
+      <div class="card-desc">${esc(exam.description||'')}</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:4px;">
+        ${exam.duration ? `<span style="font-size:12px;color:var(--muted);">⏱ ${esc(exam.duration)}</span>` : ''}
+        <span style="font-size:12px;color:var(--muted);">🎯 Pass: ${passMark}%</span>
+        ${bestScore !== null ? `<span style="font-size:12px;color:var(--muted);">⭐ Best: ${bestScore}%</span>` : ''}
+      </div>
+      <div class="attempts-bar" style="margin-top:8px;">
+        <span style="font-size:12px;color:var(--muted);">Attempts: ${attemptCount}/${maxAttempts}</span>
+        <div class="attempts-dots">${dots}</div>
+      </div>
+      ${notice}
+    </div>
+    <div class="card-footer">
+      ${canTake && exam.url
+        ? `<a href="${esc(exam.url)}" class="card-btn btn-enter" target="_blank">Take Exam →</a>`
+        : `<button class="card-btn btn-locked" disabled>${attemptsLeft===0?'No Attempts Left':'🔒 Complete Course First'}</button>`}
+    </div>`;
+  return el;
 }
 </script>
 <footer style="padding:16px 32px;border-top:1px solid rgba(255,255,255,.06);text-align:center;background:rgba(13,17,23,.5);">
