@@ -1588,9 +1588,9 @@ window.sStudentTab = function(tab) {
     $('stab-'+t).classList.toggle('active', t===tab);
     $('stab-content-'+t).style.display = t===tab ? 'block' : 'none';
   });
-  if (tab==='exams' && !$('student-exams-grid').dataset.loaded) {
-    loadStudentExams();
-  }
+  // Always reload on tab switch — ensures eligibility changes from admin are reflected immediately
+  if (tab==='exams')   loadStudentExams();
+  if (tab==='courses') loadStudentCourses();
 };
 
 async function loadStudentExams() {
@@ -1647,7 +1647,6 @@ async function loadStudentExams() {
       } catch {}
     }
 
-    grid.dataset.loaded = '1';
     for (const exam of nominatedExams) {
       const examWithFlag = {...exam, examEligible: examEligibilityMap[exam.id] || false};
       grid.appendChild(buildStudentExamCard(examWithFlag, myResults, myProgress));
@@ -1760,9 +1759,6 @@ window.previewAsStudent = function() {
   hide('admin-view'); hide('reviewer-view'); hide('examresults-view');
   show('student-view');
   loadStudentCourses();
-  // Also load the exams tab so it reflects real eligibility state
-  const examsTab = $('student-exams-grid');
-  if (examsTab) { examsTab.dataset.loaded = ''; }
   showPreviewBanner('Learner');
 };
 
