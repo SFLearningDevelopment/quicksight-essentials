@@ -700,12 +700,37 @@ function route() {
   $('proctor-view').style.display = 'none';
   $('admin-view').style.display   = 'none';
 
+  // Admin preview mode — force a specific role view for testing
+  const urlParams = new URLSearchParams(window.location.search);
+  const preview   = urlParams.get('preview');
+  if (preview && myRole === 'admin') {
+    history.replaceState({}, '', window.location.pathname);
+    if (preview === 'proctor') {
+      $('proctor-view').style.display = 'block';
+      initProctor();
+      showHubPreviewBanner('Proctor');
+      return;
+    }
+  }
+
   if      (myRole === 'admin')   { $('admin-view').style.display   = 'block'; initAdmin().then(() => {
-    const urlTab = new URLSearchParams(window.location.search).get('tab');
+    const urlTab = urlParams.get('tab');
     if (urlTab) { switchAdminTab(urlTab); history.replaceState({}, '', window.location.pathname); }
   }); }
   else if (myRole === 'proctor') { $('proctor-view').style.display = 'block'; initProctor(); }
   else                           { $('student-view').style.display = 'block'; loadExams(); }
+}
+
+function showHubPreviewBanner(label) {
+  let banner = document.getElementById('hub-preview-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'hub-preview-banner';
+    banner.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;background:rgba(99,102,241,.95);color:#fff;padding:10px 22px;border-radius:50px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap;';
+    document.body.appendChild(banner);
+  }
+  banner.innerHTML = '🧪 ' + label + ' Preview &nbsp;·&nbsp; <button onclick="window.close()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:50px;cursor:pointer;font-size:12px;font-weight:600;">Close Tab</button>';
+  banner.style.display = 'flex';
 }
 
 /* ══════════════════════════════════════
