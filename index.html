@@ -713,7 +713,22 @@ const db = getFirestore(app);
 
 // ── Google provider with domain hint ──
 
-let me = null, myRole = null, isPreviewMode = false;
+let me = null, myRole = null, isPreviewMode = false, previewEmail = null;
+
+// Returns the email to use for Firestore lookups — previewEmail when previewing as another user
+function lookupEmail() { return (isPreviewMode && previewEmail) ? previewEmail : me.email; }
+
+// Returns uid for Firestore lookups — fetches from users collection in preview mode
+async function lookupUid() {
+  if (!isPreviewMode || !previewEmail) return me.uid;
+  try {
+    // users collection is email-keyed in this project
+    const snap = await getDocs(collection(db, 'users'));
+    let uid = null;
+    snap.forEach(d => { if ((d.data().email||'').toLowerCase() === previewEmail) uid = d.id; });
+    return uid; // may be null if user never logged in — callers should handle gracefully
+  } catch { return null; }
+}
 let courses = [], people = [];
 let selCourse = null, selPerson = null, adminTab = 'courses';
 
@@ -758,12 +773,14 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
-  me = user;
+  // Normalize email to lowercase — Google Workspace can return mixed case
+  // but nomination docs are written with .toLowerCase(), so keys must match
+  me = {...user, email: user.email.toLowerCase()};
   
   $('user-name').textContent = user.displayName || user.email;
   if (user.photoURL) $('user-avatar').src = user.photoURL;
 
-  if (ADMINS.includes(user.email)) {
+  if (ADMINS.includes(me.email)) {
     myRole = 'admin';
   } else {
     const snap = await getDoc(doc(db, 'users', user.email));
@@ -938,7 +955,7 @@ async function buildCard(c) {
   let nom = myRole === 'admin' && !isPreviewMode;
   if (!nom) {
     try {
-      const s = await getDoc(doc(db,'courses',c.id,'nominations',me.email));
+      const s = await getDoc(doc(db,'courses',c.id,'nominations',lookupEmail()));
       nom = s.exists() && s.data().nominated !== false; // treat missing field as nominated
     } catch{}
   }
@@ -1613,7 +1630,7 @@ async function loadStudentExams() {
       let nominated = myRole === 'admin' && !isPreviewMode;
       if (!nominated) {
         try {
-          const s = await getDoc(doc(db,'exams',exam.id,'nominations',me.email));
+          const s = await getDoc(doc(db,'exams',exam.id,'nominations',lookupEmail()));
           // Show exam if: doc exists with nominated !== false, OR examEligible:true (override)
           nominated = s.exists() && (s.data().nominated !== false || s.data().examEligible === true);
         } catch {}
@@ -1625,24 +1642,29 @@ async function loadStudentExams() {
     if (!nominatedExams.length) { show('empty-exams'); return; }
 
     // Fetch this user's exam results once
+    const _uid = await lookupUid();
     let myResults = {};
     try {
-      const rs = await getDoc(doc(db,'examResults',me.uid));
-      if (rs.exists()) myResults = rs.data();
+      if (_uid) {
+        const rs = await getDoc(doc(db,'examResults',_uid));
+        if (rs.exists()) myResults = rs.data();
+      }
     } catch {}
 
     // Fetch progress for course-completion check
     let myProgress = {};
     try {
-      const ps = await getDoc(doc(db,'progress',me.uid));
-      if (ps.exists()) myProgress = ps.data();
+      if (_uid) {
+        const ps = await getDoc(doc(db,'progress',_uid));
+        if (ps.exists()) myProgress = ps.data();
+      }
     } catch {}
 
     // Fetch examEligible flag from each nomination doc
     const examEligibilityMap = {};
     for (const exam of nominatedExams) {
       try {
-        const nomDoc = await getDoc(doc(db,'exams',exam.id,'nominations',me.email));
+        const nomDoc = await getDoc(doc(db,'exams',exam.id,'nominations',lookupEmail()));
         examEligibilityMap[exam.id] = nomDoc.exists() && nomDoc.data().examEligible === true;
       } catch {}
     }
@@ -1730,7 +1752,7 @@ function buildStudentExamCard(exam, myResults, myProgress) {
   return el;
 }
 
-function showPreviewBanner(label) {
+function showPreviewBanner(label, user) {
   let banner = $('preview-banner');
   if (!banner) {
     banner = document.createElement('div');
@@ -1738,12 +1760,15 @@ function showPreviewBanner(label) {
     banner.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;background:rgba(99,102,241,.95);color:#fff;padding:10px 22px;border-radius:50px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap;';
     document.body.appendChild(banner);
   }
-  banner.innerHTML = '🧪 ' + label + ' Preview &nbsp;·&nbsp; <button onclick="exitPreview()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:50px;cursor:pointer;font-size:12px;font-weight:600;">Exit Preview</button>';
+  const who = user ? (user.name || user.email) : label;
+  banner.innerHTML = '🧪 Previewing as <strong style="margin:0 4px;">' + esc(who) + '</strong>'
+    + '&nbsp;·&nbsp; <button onclick="exitPreview()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:50px;cursor:pointer;font-size:12px;font-weight:600;">Exit Preview</button>';
   banner.style.display = 'flex';
 }
 
 window.exitPreview = function() {
   isPreviewMode = false;
+  previewEmail  = null;
   const banner = $('preview-banner');
   if (banner) banner.style.display = 'none';
   hide('student-view'); hide('reviewer-view'); hide('admin-view'); hide('examresults-view');
@@ -1751,7 +1776,117 @@ window.exitPreview = function() {
   $('admin-choice-screen').style.display = 'flex';
 };
 
-window.previewAsStudent = function() {
+// ══ PREVIEW USER PICKER ══
+
+let _pickerUsers = []; // cached full list
+
+window.previewAsStudent = async function() {
+  // Show picker overlay, load nominated users
+  $('preview-picker').style.display = 'block';
+  $('picker-loading').style.display = 'block';
+  $('picker-list').style.display    = 'none';
+  $('picker-empty').style.display   = 'none';
+  $('picker-search').value = '';
+  _pickerUsers = [];
+
+  try {
+    // Collect all nominated emails from courses + exams
+    const nominatedEmails = new Set();
+
+    const coursesSnap = await getDocs(collection(db, 'courses'));
+    for (const cd of coursesSnap.docs) {
+      const nomSnap = await getDocs(collection(db, 'courses', cd.id, 'nominations'));
+      nomSnap.forEach(d => { if (d.data().nominated !== false) nominatedEmails.add(d.id.toLowerCase()); });
+    }
+
+    const examsSnap = await getDocs(collection(db, 'exams'));
+    for (const ed of examsSnap.docs) {
+      const nomSnap = await getDocs(collection(db, 'exams', ed.id, 'nominations'));
+      nomSnap.forEach(d => {
+        if (d.data().nominated !== false || d.data().examEligible === true)
+          nominatedEmails.add(d.id.toLowerCase());
+      });
+    }
+
+    // Look up names from users collection
+    const usersSnap = await getDocs(collection(db, 'users'));
+    const userMap = {};
+    usersSnap.forEach(d => { if (d.data().email) userMap[d.data().email.toLowerCase()] = d.data(); });
+
+    _pickerUsers = Array.from(nominatedEmails).map(email => {
+      const u = userMap[email] || {};
+      return { email, name: u.name || u.displayName || '', photoURL: u.photoURL || '' };
+    }).sort((a,b) => (a.name||a.email).localeCompare(b.name||b.email));
+
+    $('picker-loading').style.display = 'none';
+    renderPickerUsers(_pickerUsers);
+  } catch(err) {
+    $('picker-loading').textContent = 'Error loading users.';
+    console.error('picker:', err);
+  }
+};
+
+function renderPickerUsers(users) {
+  const list = $('picker-list');
+  list.innerHTML = '';
+  if (!users.length) {
+    list.style.display = 'none';
+    $('picker-empty').style.display = 'block';
+    return;
+  }
+  $('picker-empty').style.display = 'none';
+  list.style.display = 'flex';
+
+  for (const u of users) {
+    const card = document.createElement('div');
+    card.style.cssText = 'display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;cursor:pointer;transition:all .15s;';
+    card.onmouseenter = () => { card.style.background='rgba(99,102,241,.15)'; card.style.borderColor='rgba(99,102,241,.4)'; };
+    card.onmouseleave = () => { card.style.background='rgba(255,255,255,.05)'; card.style.borderColor='rgba(255,255,255,.08)'; };
+
+    // Avatar
+    const av = document.createElement('div');
+    if (u.photoURL) {
+      av.innerHTML = '<img src="'+u.photoURL+'" style="width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);" onerror="this.style.display='none'">';
+    } else {
+      const initials = (u.name ? u.name.charAt(0) : u.email.charAt(0)).toUpperCase();
+      av.innerHTML = '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;">'+initials+'</div>';
+    }
+    card.appendChild(av);
+
+    // Info
+    const info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0;';
+    info.innerHTML = '<div style="font-weight:600;font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'
+      + esc(u.name || u.email.split('@')[0]) + '</div>'
+      + '<div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(u.email) + '</div>';
+    card.appendChild(info);
+
+    // Arrow
+    const arr = document.createElement('div');
+    arr.textContent = '→';
+    arr.style.cssText = 'color:rgba(255,255,255,.3);font-size:16px;flex-shrink:0;';
+    card.appendChild(arr);
+
+    card.addEventListener('click', () => launchPreviewAs(u));
+    list.appendChild(card);
+  }
+}
+
+window.filterPickerUsers = function() {
+  const q = $('picker-search').value.trim().toLowerCase();
+  if (!q) { renderPickerUsers(_pickerUsers); return; }
+  renderPickerUsers(_pickerUsers.filter(u =>
+    u.email.includes(q) || (u.name && u.name.toLowerCase().includes(q))
+  ));
+};
+
+window.closePicker = function() {
+  $('preview-picker').style.display = 'none';
+};
+
+function launchPreviewAs(u) {
+  $('preview-picker').style.display = 'none';
+  previewEmail = u.email.toLowerCase();
   isPreviewMode = true;
   $('admin-choice-screen').style.display = 'none';
   $('app').style.display = 'block';
@@ -1759,8 +1894,10 @@ window.previewAsStudent = function() {
   hide('admin-view'); hide('reviewer-view'); hide('examresults-view');
   show('student-view');
   loadStudentCourses();
-  showPreviewBanner('Learner');
-};
+  showPreviewBanner('Learner', u);
+}
+
+window.previewAsStudent = window.previewAsStudent;
 
 window.previewAsReviewer = function() {
   $('admin-choice-screen').style.display = 'none';
@@ -1793,5 +1930,32 @@ window.previewAsProctor = function() {
     <span>© 2026 SourceFuse Technologies</span>
   </div>
 </footer>
+
+  <!-- ══ PREVIEW USER PICKER OVERLAY ══ -->
+  <div id="preview-picker" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(10,12,20,.92);backdrop-filter:blur(8px);overflow-y:auto;">
+    <div style="max-width:680px;margin:60px auto;padding:0 20px 60px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+        <div>
+          <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;margin:0 0 4px;">Preview as Learner</h2>
+          <p style="font-size:13px;color:rgba(255,255,255,.5);margin:0;">Select a nominated user to preview their exact view</p>
+        </div>
+        <button onclick="closePicker()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">✕ Cancel</button>
+      </div>
+
+      <!-- Search -->
+      <input id="picker-search" type="text" placeholder="🔍  Search by name or email…"
+        oninput="filterPickerUsers()"
+        style="width:100%;box-sizing:border-box;padding:12px 16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;font-size:14px;margin-bottom:20px;outline:none;font-family:'Syne',sans-serif;">
+
+      <!-- Loading -->
+      <div id="picker-loading" style="text-align:center;padding:40px;color:rgba(255,255,255,.4);font-size:13px;">
+        <div class="spinner" style="margin:0 auto 12px;"></div>Loading nominated users…
+      </div>
+
+      <!-- User list -->
+      <div id="picker-list" style="display:none;display:flex;flex-direction:column;gap:10px;"></div>
+      <div id="picker-empty" style="display:none;text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:13px;">No matching users found.</div>
+    </div>
+  </div>
 </body>
 </html>
