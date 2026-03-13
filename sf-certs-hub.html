@@ -110,7 +110,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .exam-meta{display:flex;align-items:center;justify-content:space-between;}
 .exam-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:50px;}
 .exam-status-badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:50px;}
-.es-nom{background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.25);}
+.es-nom{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.3);}
 .es-not{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2);}
 .es-locked{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2);}
 .exam-icon{font-size:28px;}
@@ -409,9 +409,9 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
               style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;outline:none;flex:1;min-width:200px;transition:border-color .2s;"
               oninput="cpApplyFilters()" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"/>
             <button class="tbl-btn" id="cpf-all"     onclick="cpSetFilter('all')"     style="background:var(--gold);color:#1a1a1a;border-color:var(--gold);">All</button>
-            <button class="tbl-btn" id="cpf-passed"  onclick="cpSetFilter('passed')"  >✅ Passed</button>
-            <button class="tbl-btn" id="cpf-failed"  onclick="cpSetFilter('failed')"  >❌ Not Passed</button>
-            <button class="tbl-btn" id="cpf-notaken" onclick="cpSetFilter('notaken')" >⏳ Not Taken</button>
+            <button class="tbl-btn" id="cpf-passed"  onclick="cpSetFilter('passed')"  >🟢 Passed</button>
+            <button class="tbl-btn" id="cpf-failed"  onclick="cpSetFilter('failed')"  >🔴 Not Passed</button>
+            <button class="tbl-btn" id="cpf-notaken" onclick="cpSetFilter('notaken')" >⚪ Not Taken</button>
             <button onclick="cpExportCSV()" style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#34d399;padding:7px 16px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600;margin-left:auto;transition:all .2s;" onmouseover="this.style.background='var(--success)';this.style.color='#fff'" onmouseout="this.style.background='rgba(16,185,129,.1)';this.style.color='#34d399'">📥 Export CSV</button>
           </div>
           <!-- Table -->
@@ -541,7 +541,12 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
     <div class="admin-tab-content" id="atc-reports">
       <div class="atc-inner">
         <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;">Reports</div>
-        <div style="color:var(--muted);font-size:13px;margin-bottom:28px;">Exam session logs and course review submissions.</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:28px;">Test results, exam session logs, and course review submissions.</div>
+
+        <!-- Test Results -->
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">📊 Test Results</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:16px;">Consolidated results per exam — scores, pass/fail, and attempt history for all candidates.</div>
+        <div id="test-results-list" style="margin-bottom:40px;"><div style="color:var(--muted);text-align:center;padding:30px 0;">Loading…</div></div>
 
         <!-- Course Reviews Report -->
         <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">📋 Course Reviews</div>
@@ -769,7 +774,7 @@ async function buildExamCard(exam) {
     <div class="exam-body">
       <div class="exam-meta">
         <span class="exam-tag" style="color:${ac};background:${ac}22;">${esc(exam.category||'Exam')}</span>
-        <span class="exam-status-badge ${nominated?(courseComplete&&attemptsLeft>0?'es-nom':'es-locked'):'es-not'}">${nominated?(attemptsLeft>0?'✓ Eligible':'No Attempts Left'):'Not Nominated'}</span>
+        <span class="exam-status-badge ${nominated?(courseComplete&&attemptsLeft>0?'es-nom':'es-locked'):'es-not'}">${nominated?(attemptsLeft>0?'🟠 Eligible':'No Attempts Left'):'Not Nominated'}</span>
       </div>
       <div class="exam-icon">${esc(exam.icon||'🎓')}</div>
       <div class="exam-title">${esc(exam.title)}</div>
@@ -1417,6 +1422,7 @@ async function loadProctorSessions() {
    REPORTS
 ═══════════════════════════════════════ */
 async function loadReports() {
+  loadTestResults();   // load in parallel
   loadCourseReviews(); // load in parallel
   $('report-list').innerHTML='<div style="color:var(--muted);text-align:center;padding:40px 0">Loading…</div>';
   const snap = await getDocs(collection(db,'examSessions'));
@@ -1445,6 +1451,171 @@ async function loadReports() {
     </div>`;
   }).join('');
 }
+
+async function loadTestResults() {
+  const container = $('test-results-list');
+  if (!container) return;
+  container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px 0;">Loading…</div>';
+  try {
+    // 1. Fetch all exams
+    const examsSnap = await getDocs(collection(db, 'exams'));
+    const exams = [];
+    examsSnap.forEach(d => exams.push({id: d.id, ...d.data()}));
+    exams.sort((a,b) => (a.title||'').localeCompare(b.title||''));
+
+    if (!exams.length) {
+      container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px 0;">No exams found.</div>';
+      return;
+    }
+
+    // 2. Fetch all examResults docs (uid-keyed, map of examId → result)
+    const examResultsSnap = await getDocs(collection(db, 'examResults'));
+    // Build: examId → [{uid, email, name, attemptCount, bestScore, bestPassed, attempts[]}]
+    const resultsByExam = {};
+    exams.forEach(e => resultsByExam[e.id] = []);
+
+    // Also fetch user display info (uid-keyed)
+    const usersSnap = await getDocs(collection(db, 'users'));
+    const userMap = {}; // uid → {name, email}
+    usersSnap.forEach(d => {
+      const u = d.data();
+      if (u.email) userMap[d.id] = {name: u.name||u.displayName||'', email: u.email};
+    });
+
+    examResultsSnap.forEach(d => {
+      const uid  = d.id;
+      const data = d.data();
+      const user = userMap[uid] || {name:'', email: uid};
+      // Each key in data is an examId
+      Object.entries(data).forEach(([examId, res]) => {
+        if (resultsByExam[examId] !== undefined) {
+          resultsByExam[examId].push({
+            uid,
+            email:        user.email,
+            name:         user.name,
+            attemptCount: res.attemptCount || 0,
+            bestScore:    res.bestScore    ?? null,
+            bestPassed:   res.bestPassed   ?? null,
+            attempts:     res.attempts     || []
+          });
+        }
+      });
+    });
+
+    // 3. Render one collapsible card per exam
+    container.innerHTML = '';
+    for (const exam of exams) {
+      const rows   = resultsByExam[exam.id] || [];
+      const passed = rows.filter(r => r.bestPassed === true).length;
+      const failed = rows.filter(r => r.bestPassed === false).length;
+      const taken  = rows.filter(r => r.attemptCount > 0).length;
+      const withScore = rows.filter(r => r.bestScore !== null);
+      const avg = withScore.length
+        ? Math.round(withScore.reduce((s,r) => s + r.bestScore, 0) / withScore.length)
+        : null;
+
+      const examCardId = 'tr-exam-' + exam.id;
+      const ac = exam.accentColor || '#3b82f6';
+
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;';
+      card.innerHTML = `
+        <div style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;user-select:none;"
+             onclick="trToggle('${examCardId}', this)">
+          <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0;">
+            <div style="font-size:22px;flex-shrink:0;">${esc(exam.icon||'📝')}</div>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;">${esc(exam.title||exam.id)}</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">${esc(exam.category||'')}${exam.level ? ' · '+esc(exam.level) : ''}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">
+            <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.2);">${taken} Taken</span>
+            <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2);">🟢 ${passed} Passed</span>
+            <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.15);">${failed} Failed</span>
+            ${avg !== null ? `<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(240,165,0,.1);color:#fbbf24;border:1px solid rgba(240,165,0,.2);">Avg ${avg}%</span>` : ''}
+            <span class="tr-chevron" style="font-size:14px;color:var(--muted);transition:transform .2s;">▾</span>
+          </div>
+        </div>
+        <div id="${examCardId}" style="display:none;border-top:1px solid var(--border);">
+          ${rows.length === 0
+            ? `<div style="padding:20px;color:var(--muted);font-size:13px;text-align:center;">No results recorded for this exam yet.</div>`
+            : `<div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                  <thead>
+                    <tr style="border-bottom:1px solid var(--border);">
+                      <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Candidate</th>
+                      <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Best Score</th>
+                      <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Result</th>
+                      <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Attempts</th>
+                      <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Attempt History</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${rows.sort((a,b)=>(b.bestScore??-1)-(a.bestScore??-1)).map(r => {
+                      const scoreColor = r.bestPassed === true  ? 'color:#34d399;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);'
+                                       : r.bestPassed === false ? 'color:#f87171;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);'
+                                       : 'color:var(--muted);background:var(--surface);border:1px solid var(--border);';
+                      const attemptDots = Array.from({length: exam.maxAttempts||3}, (_,i) =>
+                        `<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:3px;background:${i < r.attemptCount ? (r.bestPassed ? '#34d399' : '#f87171') : 'var(--border)'};"></span>`
+                      ).join('');
+                      const historyHTML = r.attempts.length
+                        ? r.attempts.map((a,i) => {
+                            const at = a.at ? new Date(a.at).toLocaleDateString() : '—';
+                            const sc = a.score !== undefined ? a.score+'%' : '—';
+                            const passed = a.passed;
+                            return `<span style="font-size:10px;padding:2px 7px;border-radius:4px;margin-right:4px;
+                              background:${passed===true?'rgba(16,185,129,.08)':passed===false?'rgba(239,68,68,.08)':'var(--surface)'};
+                              border:1px solid ${passed===true?'rgba(16,185,129,.2)':passed===false?'rgba(239,68,68,.15)':'var(--border)'};
+                              color:${passed===true?'#34d399':passed===false?'#f87171':'var(--muted)'};">
+                              #${i+1} ${sc} · ${at}
+                            </span>`;
+                          }).join('')
+                        : '<span style="color:var(--muted);font-size:12px;">—</span>';
+                      return `<tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:12px 16px;">
+                          <div style="font-weight:600;font-size:13px;">${esc(r.name||r.email)}</div>
+                          ${r.name ? `<div style="font-size:11px;color:var(--muted);">${esc(r.email)}</div>` : ''}
+                        </td>
+                        <td style="padding:12px 16px;">
+                          ${r.bestScore !== null
+                            ? `<span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;${scoreColor}">${r.bestScore}%</span>`
+                            : '<span style="color:var(--muted);font-size:12px;">—</span>'}
+                        </td>
+                        <td style="padding:12px 16px;">
+                          ${r.bestPassed === true  ? '<span style="color:#34d399;font-weight:600;">🟢 Pass</span>'
+                          : r.bestPassed === false ? '<span style="color:#f87171;font-weight:600;">🔴 Fail</span>'
+                          : '<span style="color:var(--muted);">—</span>'}
+                        </td>
+                        <td style="padding:12px 16px;">
+                          <div style="display:flex;align-items:center;gap:6px;">
+                            <span style="font-size:12px;color:var(--muted);">${r.attemptCount}/${exam.maxAttempts||3}</span>
+                            <div>${attemptDots}</div>
+                          </div>
+                        </td>
+                        <td style="padding:12px 16px;">${historyHTML}</td>
+                      </tr>`;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>`
+          }
+        </div>`;
+      container.appendChild(card);
+    }
+  } catch(err) {
+    container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px 0;">Error loading test results.</div>';
+    console.error('loadTestResults:', err);
+  }
+}
+
+window.trToggle = function(id, header) {
+  const body     = $(id);
+  const chevron  = header.querySelector('.tr-chevron');
+  const isOpen   = body.style.display !== 'none';
+  body.style.display    = isOpen ? 'none'   : 'block';
+  chevron.style.transform = isOpen ? ''      : 'rotate(180deg)';
+};
 
 async function loadCourseReviews() {
   const container = $('course-reviews-list');
@@ -1730,7 +1901,7 @@ function cpRenderTable(data) {
            background:${u.bestPassed ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.15)'};
            color:${u.bestPassed ? 'var(--success)' : 'var(--danger)'};
            border:1px solid ${u.bestPassed ? 'rgba(16,185,129,.3)' : 'rgba(239,68,68,.3)'};">
-           ${u.bestScore}% ${u.bestPassed ? '✅ Pass' : '❌ Fail'}</span>`
+           ${u.bestScore}% ${u.bestPassed ? '🟢 Pass' : '🔴 Fail'}</span>`
       : `<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;background:var(--surface);color:var(--muted);border:1px solid var(--border);">Not Taken</span>`;
 
     const tr = document.createElement('tr');
@@ -1772,7 +1943,7 @@ function cpRenderTable(data) {
           const d = a.date?.seconds ? new Date(a.date.seconds * 1000).toLocaleDateString() : 'N/A';
           return `<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);">
             <span>Attempt ${ai+1} — ${d}</span>
-            <span style="font-weight:700;color:${a.passed?'var(--success)':'var(--danger)'};">${a.score}% ${a.passed?'✅':'❌'}</span>
+            <span style="font-weight:700;color:${a.passed?'var(--success)':'var(--danger)'};">${a.score}% ${a.passed?'🟢':'🔴'}</span>
           </div>`;
         }).join('')
       : '<div style="font-size:12px;color:var(--muted);">No attempts yet</div>';
