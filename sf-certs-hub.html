@@ -371,8 +371,8 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
     <!-- COURSES TAB -->
     <div class="admin-tab-content active" id="atc-courses">
       <div class="atc-inner">
-        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;">Course Catalogue</div>
-        <div style="color:var(--muted);font-size:13px;margin-bottom:24px;">All courses from Firestore. Click a course to open it in a new tab.</div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;">Course Catalog</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:24px;">Click a course to open it in a new tab.</div>
         <div id="admin-course-loading" style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:60px 0;color:var(--muted);font-size:14px;">
           <div class="spinner"></div>Loading courses…
         </div>
@@ -439,7 +439,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
       </div>
     </div>
 
-    <!-- EXAMS TAB -->EXAMS TAB -->
+    <!-- EXAMS TAB -->
     <div class="admin-tab-content" id="atc-exams">
       <div class="atc-inner">
         <button class="add-exam-btn" id="add-exam-btn">+ New Exam</button>
@@ -1095,11 +1095,14 @@ async function loadAdminCourses() {
           <div style="color:var(--muted);font-size:13px;line-height:1.5;flex:1;">${esc(c.description||'')}</div>
           <div style="padding:10px 12px;background:var(--surface);border-radius:8px;border:1px solid var(--border);">
             <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;">Review Status</div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
-              ${revBadge(reviewCompleted,'Review Completed')}
-              ${revBadge(goLive,'Go Live')}
-            </div>
-            <div style="font-size:11px;color:var(--muted);">${reviewData ? 'Reviewer: '+esc(reviewerName) : 'No review submitted yet.'}</div>
+            ${reviewData
+              ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+                  ${revBadge(reviewCompleted,'Review Completed')}
+                  ${revBadge(goLive,'Go Live')}
+                </div>
+                <div style="font-size:11px;color:var(--muted);">Reviewer: ${esc(reviewerName)}</div>`
+              : `<div style="font-size:12px;color:var(--muted);font-style:italic;">No review submitted yet.</div>`
+            }
           </div>
           <div style="display:flex;gap:16px;flex-wrap:wrap;">
             ${c.duration ? `<span style="font-size:12px;color:var(--muted);">⏱ ${esc(c.duration)}</span>` : ''}
@@ -1817,20 +1820,19 @@ window.cpExportCSV = () => {
 
 window.addEventListener('beforeunload', cleanup);
 </script>
-<footer style="margin-top:60px;padding:32px;border-top:1px solid rgba(255,255,255,.08);text-align:center;background:rgba(13,17,23,.6);">
-  <div style="max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
-    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:24px;font-size:12px;color:#7d8590;">
-      <span>🤖 <strong style="color:#e6edf3;">AI-Generated Content</strong> — Reviewed by subject matter experts</span>
-      <span>📚 <strong style="color:#e6edf3;">Educational Use Only</strong> — Internal training purposes</span>
-      <span>🔒 <strong style="color:#e6edf3;">Data Privacy</strong> — Progress stored securely in Firebase</span>
-    </div>
-    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:24px;font-size:12px;color:#7d8590;">
-      <span>🔗 <strong style="color:#e6edf3;">External Resources</strong> — Links provided for reference only</span>
-      <span>🔄 <strong style="color:#e6edf3;">Content Updates</strong> — Course content current as of March 2026</span>
-    </div>
-    <div style="font-size:11px;color:#4d5562;margin-top:4px;">
-      © 2026 SourceFuse Technologies · SF Learning Hub · Content accuracy should be verified against official documentation
-    </div>
+<footer style="padding:16px 32px;border-top:1px solid rgba(255,255,255,.06);text-align:center;background:rgba(13,17,23,.5);">
+  <div style="font-size:11px;color:#4d5562;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0;">
+    <span>🤖 AI-Generated &amp; Expert-Reviewed</span>
+    <span style="margin:0 10px;opacity:.3;">|</span>
+    <span>📚 Educational Use Only</span>
+    <span style="margin:0 10px;opacity:.3;">|</span>
+    <span>🔒 Data stored securely in Firebase</span>
+    <span style="margin:0 10px;opacity:.3;">|</span>
+    <span>🔗 External links for reference only</span>
+    <span style="margin:0 10px;opacity:.3;">|</span>
+    <span>🔄 Content current as of March 2026</span>
+    <span style="margin:0 10px;opacity:.3;">|</span>
+    <span>© 2026 SourceFuse Technologies</span>
   </div>
 </footer>
 </body>
