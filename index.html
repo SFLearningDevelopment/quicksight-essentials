@@ -277,6 +277,17 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .flag-raised-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:12px;color:#f87171;font-weight:600;}
 .flag-actioned-box{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:12px;color:#34d399;font-weight:600;}
 
+/* ══ ROLE PICKER ══ */
+.role-pick-btn{padding:8px 20px;border-radius:50px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif;}
+.role-pick-btn:hover{border-color:var(--accent);color:var(--accent);}
+.role-pick-btn.selected{background:var(--accent);color:#fff;border-color:var(--accent);}
+.role-pick-btn.selected-reviewer{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.role-pick-btn.selected-proctor{background:#059669;color:#fff;border-color:#059669;}
+.role-pick-btn.selected-admin{background:#d97706;color:#fff;border-color:#d97706;}
+.set-role-user-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .2s;border:1px solid transparent;}
+.set-role-user-row:hover{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.2);}
+.set-role-user-row.selected{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.35);}
+
 </style>
 </head>
 <body>
@@ -1344,19 +1355,7 @@ $('delete-person-btn').addEventListener('click', async () => {
   toast('User deleted.','success');
 });
 
-$('sb-add-person').addEventListener('click', async () => {
-  const email = prompt('Enter user email to assign/update role:');
-  if (!email) return;
-  const trimmed = email.trim().toLowerCase();
-  const roles = ['student','reviewer','proctor','admin'];
-  const role = prompt('Enter role (' + roles.join(', ') + '):', 'student');
-  if (!role || !roles.includes(role.trim().toLowerCase())) {
-    toast('Invalid role.', 'error'); return;
-  }
-  const finalRole = role.trim().toLowerCase();
-  await setDoc(doc(db,'users',trimmed), {role:finalRole, updatedAt:serverTimestamp(), updatedBy:me.email}, {merge:true});
-  toast(trimmed + ' role set to ' + finalRole, 'success');
-});
+$('sb-add-person').addEventListener('click', () => openSetRoleModal());
 
 // ══ REVIEWER VIEW (admin inline) ══
 async function loadReviewerQueue() {
@@ -2200,6 +2199,165 @@ document.addEventListener('click', e => {
   }
 });
 
+// ══ SET PERSON ROLE MODAL ══
+let _setRoleUsers = [];
+let _setRoleSelected = null;
+let _setRoleValue = null;
+
+window.openSetRoleModal = async function() {
+  $('set-role-modal').style.display  = 'block';
+  $('set-role-loading').style.display = 'block';
+  $('set-role-list').style.display   = 'none';
+  $('set-role-empty').style.display  = 'none';
+  $('set-role-selector').style.display = 'none';
+  $('set-role-search').value = '';
+  _setRoleSelected = null;
+  _setRoleValue    = null;
+
+  try {
+    // Collect all nominated users from courses + exams nominations
+    const emailSet = new Map(); // email -> {name, currentRole}
+
+    // From users collection
+    try {
+      const uSnap = await getDocs(collection(db, 'users'));
+      uSnap.forEach(d => emailSet.set(d.id, {email: d.id, name: d.data().name||d.id, role: d.data().role||'student'}));
+    } catch {}
+
+    // From course nominations
+    const cSnap = await getDocs(collection(db, 'courses'));
+    for (const cd of cSnap.docs) {
+      const nSnap = await getDocs(collection(db, 'courses', cd.id, 'nominations'));
+      nSnap.forEach(n => {
+        if (!emailSet.has(n.id)) emailSet.set(n.id, {email: n.id, name: n.id, role: n.data().role||'student'});
+      });
+    }
+
+    // From exam nominations
+    const eSnap = await getDocs(collection(db, 'exams'));
+    for (const ed of eSnap.docs) {
+      const nSnap = await getDocs(collection(db, 'exams', ed.id, 'nominations'));
+      nSnap.forEach(n => {
+        if (!emailSet.has(n.id)) emailSet.set(n.id, {email: n.id, name: n.id, role: 'student'});
+      });
+    }
+
+    _setRoleUsers = Array.from(emailSet.values());
+    $('set-role-loading').style.display = 'none';
+
+    if (!_setRoleUsers.length) {
+      $('set-role-empty').style.display = 'block';
+      return;
+    }
+    renderSetRoleList(_setRoleUsers);
+  } catch(e) {
+    console.error('openSetRoleModal:', e);
+    $('set-role-loading').style.display = 'none';
+    $('set-role-empty').style.display   = 'block';
+    $('set-role-empty').textContent     = 'Error loading users.';
+  }
+};
+
+function renderSetRoleList(users) {
+  const list = $('set-role-list');
+  list.innerHTML = '';
+  list.style.display = users.length ? 'block' : 'none';
+  $('set-role-empty').style.display = users.length ? 'none' : 'block';
+
+  users.forEach(u => {
+    const roleColors = {admin:'#f59e0b', reviewer:'#a78bfa', proctor:'#34d399', student:'#60a5fa'};
+    const roleColor  = roleColors[u.role] || 'var(--muted)';
+    const initials   = (u.name||u.email).charAt(0).toUpperCase();
+    const row = document.createElement('div');
+    row.className = 'set-role-user-row' + (_setRoleSelected===u.email ? ' selected' : '');
+    row.innerHTML = `
+      <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0;">${initials}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(u.name||u.email)}</div>
+        <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(u.email)}</div>
+      </div>
+      <span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:50px;background:${roleColor}22;color:${roleColor};border:1px solid ${roleColor}44;">${esc(u.role||'student')}</span>`;
+    row.onclick = () => selectSetRoleUser(u);
+    list.appendChild(row);
+  });
+}
+
+window.filterSetRoleList = function() {
+  const q = $('set-role-search').value.toLowerCase();
+  renderSetRoleList(_setRoleUsers.filter(u =>
+    (u.name||'').toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+  ));
+};
+
+function selectSetRoleUser(u) {
+  _setRoleSelected = u.email;
+  _setRoleValue    = null;
+  renderSetRoleList(
+    $('set-role-search').value
+      ? _setRoleUsers.filter(x => (x.name||'').toLowerCase().includes($('set-role-search').value.toLowerCase()) || x.email.toLowerCase().includes($('set-role-search').value.toLowerCase()))
+      : _setRoleUsers
+  );
+  $('set-role-selected-email').textContent = u.email;
+  $('set-role-selector').style.display     = 'block';
+  $('set-role-submit-btn').disabled        = true;
+  $('set-role-submit-btn').style.opacity   = '.5';
+  $('set-role-error').style.display        = 'none';
+
+  // Highlight current role button
+  ['student','reviewer','proctor','admin'].forEach(r => {
+    const btn = $('role-btn-' + r);
+    btn.className = 'role-pick-btn' + (r === u.role ? ' selected' : '');
+  });
+  if (u.role) { _setRoleValue = u.role; enableSetRoleSubmit(); }
+}
+
+window.setRoleSelect = function(role) {
+  _setRoleValue = role;
+  ['student','reviewer','proctor','admin'].forEach(r => {
+    const btn = $('role-btn-' + r);
+    const selClass = r==='reviewer'?'selected-reviewer':r==='proctor'?'selected-proctor':r==='admin'?'selected-admin':'selected';
+    btn.className = 'role-pick-btn' + (r===role?' '+selClass:'');
+  });
+  enableSetRoleSubmit();
+};
+
+function enableSetRoleSubmit() {
+  if (_setRoleSelected && _setRoleValue) {
+    $('set-role-submit-btn').disabled      = false;
+    $('set-role-submit-btn').style.opacity = '1';
+  }
+}
+
+window.closeSetRoleModal = function() {
+  $('set-role-modal').style.display = 'none';
+  _setRoleSelected = null;
+  _setRoleValue    = null;
+};
+
+window.submitSetRole = async function() {
+  if (!_setRoleSelected || !_setRoleValue) return;
+  const btn = $('set-role-submit-btn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    await setDoc(doc(db,'users',_setRoleSelected), {
+      role: _setRoleValue, updatedAt: serverTimestamp(), updatedBy: me.email
+    }, {merge: true});
+
+    // Update local cache
+    const idx = _setRoleUsers.findIndex(u => u.email === _setRoleSelected);
+    if (idx >= 0) _setRoleUsers[idx].role = _setRoleValue;
+
+    toast(_setRoleSelected + ' role set to ' + _setRoleValue, 'success');
+    closeSetRoleModal();
+  } catch(e) {
+    console.error('submitSetRole:', e);
+    $('set-role-error').textContent   = 'Error saving. Please try again.';
+    $('set-role-error').style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Save Role';
+    btn.style.opacity = '1';
+  }
+};
+
 // ══ ASSIGN PROCTOR ══
 window.openAssignProctorModal = async function() {
   $('assign-proctor-modal').style.display = 'block';
@@ -2404,6 +2562,47 @@ function showApError(msg) {
       <div style="display:flex;gap:12px;">
         <button onclick="closeAssignProctorModal()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);font-size:14px;cursor:pointer;">Cancel</button>
         <button onclick="submitAssignProctor()" id="ap-submit-btn" style="flex:2;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Assign Proctor</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SET PERSON ROLE MODAL -->
+<div id="set-role-modal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(10,12,20,.92);backdrop-filter:blur(8px);overflow-y:auto;">
+  <div style="max-width:600px;margin:60px auto;padding:0 20px 80px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">Set Person Role</h2>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Select a user and assign or update their role.</p>
+      </div>
+      <button onclick="closeSetRoleModal()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;">&#10005;</button>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;">
+      <!-- Search -->
+      <input id="set-role-search" placeholder="Search by name or email..." oninput="filterSetRoleList()"
+        style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;margin-bottom:16px;">
+
+      <!-- User list -->
+      <div id="set-role-list" style="max-height:300px;overflow-y:auto;margin-bottom:20px;"></div>
+      <div id="set-role-loading" style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">Loading users&hellip;</div>
+      <div id="set-role-empty" style="display:none;text-align:center;color:var(--muted);padding:20px;font-size:13px;">No users found.</div>
+
+      <!-- Role selector — shown after user is selected -->
+      <div id="set-role-selector" style="display:none;border-top:1px solid var(--border);padding-top:16px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">
+          Assign role for: <span id="set-role-selected-email" style="color:var(--accent);"></span>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+          <button onclick="setRoleSelect('student')"  id="role-btn-student"  class="role-pick-btn">Student</button>
+          <button onclick="setRoleSelect('reviewer')" id="role-btn-reviewer" class="role-pick-btn">Reviewer</button>
+          <button onclick="setRoleSelect('proctor')"  id="role-btn-proctor"  class="role-pick-btn">Proctor</button>
+          <button onclick="setRoleSelect('admin')"    id="role-btn-admin"    class="role-pick-btn">Admin</button>
+        </div>
+        <div id="set-role-error" style="display:none;font-size:12px;color:#f87171;margin-bottom:10px;"></div>
+        <button onclick="submitSetRole()" id="set-role-submit-btn"
+          style="width:100%;padding:11px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;opacity:.5;" disabled>
+          Save Role
+        </button>
       </div>
     </div>
   </div>
