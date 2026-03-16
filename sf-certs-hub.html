@@ -669,6 +669,7 @@ const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ hd: DOMAIN });
 
 let me = null, meEmail = null, myRole = null;
+let _previewProctorEmail = null; // set when admin previews a specific proctor
 let exams = [], selExamForConsent = null;
 let faceStream = null, faceGraceTimer = null, faceAwayStart = null;
 let sessionDocId = null;
@@ -778,8 +779,21 @@ function route() {
   $('admin-view').style.display   = 'none';
 
   // Admin preview mode — force a specific role view for testing
-  const urlParams = new URLSearchParams(window.location.search);
-  const preview   = urlParams.get('preview');
+  const urlParams    = new URLSearchParams(window.location.search);
+  const preview      = urlParams.get('preview');
+  const prevProctor  = urlParams.get('previewProctor');
+
+  if (myRole === 'admin' && prevProctor) {
+    // Admin previewing a specific proctor's exact view
+    _previewProctorEmail = decodeURIComponent(prevProctor);
+    history.replaceState({}, '', window.location.pathname);
+    // Show proctor-view exactly as the proctor sees it
+    $('proctor-view').style.display = 'block';
+    showHubPreviewBanner('Proctor — ' + _previewProctorEmail);
+    initProctor(); // loadProctorSession will use _previewProctorEmail
+    return;
+  }
+
   if (preview && myRole === 'admin') {
     history.replaceState({}, '', window.location.pathname);
     if (preview === 'proctor') {
@@ -1042,7 +1056,9 @@ async function loadProctorSession() {
   container.innerHTML = '<div style="color:var(--muted);font-size:14px;text-align:center;padding:40px 0">Loading session…</div>';
 
   // Get this proctor's assigned candidate from Firestore
-  const mySnap   = await getDoc(doc(db, 'users', me.email));
+  // In preview mode, use _previewProctorEmail instead of me.email
+  const proctorLookupEmail = _previewProctorEmail || me.email;
+  const mySnap   = await getDoc(doc(db, 'users', proctorLookupEmail));
   const assigned = mySnap.exists() ? mySnap.data().assignedCandidate : null;
 
   if (!assigned) {
@@ -1710,7 +1726,11 @@ async function loadBookedSlots() {
   if (!container) return;
   container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;">Loading...</div>';
   try {
-    const snap = await getDocs(query(collection(db,'examSlots'), where('status','==','bookedByLearner')));
+    // If previewing a specific proctor, filter to their slots only
+    const bookedQuery = _previewProctorEmail
+      ? query(collection(db,'examSlots'), where('assignedProctor','==',_previewProctorEmail))
+      : query(collection(db,'examSlots'), where('status','==','bookedByLearner'));
+    const snap = await getDocs(bookedQuery);
     const slots = [];
     snap.forEach(d => slots.push({id:d.id,...d.data()}));
     if (!slots.length) {
@@ -1733,7 +1753,11 @@ async function loadAwaitingAdmit() {
   if (!container) return;
   container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;">Loading...</div>';
   try {
-    const snap = await getDocs(query(collection(db,'examSlots'), where('status','==','awaitingAdmit')));
+    // If previewing a specific proctor, filter to their slots only
+    const admitQuery = _previewProctorEmail
+      ? query(collection(db,'examSlots'), where('assignedProctor','==',_previewProctorEmail))
+      : query(collection(db,'examSlots'), where('status','==','awaitingAdmit'));
+    const snap = await getDocs(admitQuery);
     const slots = [];
     snap.forEach(d => slots.push({id:d.id,...d.data()}));
     if (!slots.length) {
