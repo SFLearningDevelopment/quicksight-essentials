@@ -332,11 +332,25 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
         <div class="admin-card-desc">Manage exams, nominations, proctoring sessions, and certification reports.</div>
         <div class="admin-card-arrow">→</div>
       </div>
-      <div class="admin-card ac-green" onclick="adminNav('learner')">
+      <div class="admin-card ac-green" onclick="previewAsStudent()">
         <div class="admin-card-tag tag-green">PREVIEW</div>
         <div class="admin-card-icon">👁</div>
-        <div class="admin-card-label">Learner View</div>
-        <div class="admin-card-desc">Preview the platform as a learner or reviewer to verify the experience.</div>
+        <div class="admin-card-label">Preview as Learner</div>
+        <div class="admin-card-desc">See the platform exactly as a nominated learner sees it.</div>
+        <div class="admin-card-arrow">→</div>
+      </div>
+      <div class="admin-card ac-purple" onclick="previewAsReviewer()">
+        <div class="admin-card-tag tag-purple">PREVIEW</div>
+        <div class="admin-card-icon">📋</div>
+        <div class="admin-card-label">Preview as Reviewer</div>
+        <div class="admin-card-desc">View the course review queue as an assigned reviewer would see it.</div>
+        <div class="admin-card-arrow">→</div>
+      </div>
+      <div class="admin-card ac-red" onclick="previewAsProctor()">
+        <div class="admin-card-tag tag-red">PREVIEW</div>
+        <div class="admin-card-icon">🎥</div>
+        <div class="admin-card-label">Preview as Proctor</div>
+        <div class="admin-card-desc">Open the Certifications Hub in proctor mode to verify the proctoring experience.</div>
         <div class="admin-card-arrow">→</div>
       </div>
     </div>
@@ -416,8 +430,8 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
         </div>
         <div class="sb-section">
           <div class="sb-label">People</div>
-          <div id="people-list" class="course-list"><div class="sb-empty">Loading&hellip;</div></div>
-          <button class="save-btn" id="sb-add-person" style="width:100%;margin-top:10px;font-size:13px;padding:8px;">+ Add Person</button>
+          <div style="font-size:12px;color:var(--muted);padding:4px 8px 8px;line-height:1.5;">People are added via course &amp; exam nominations. Use below to set roles only.</div>
+          <button class="save-btn" id="sb-add-person" style="width:100%;margin-top:4px;font-size:13px;padding:8px;">+ Set Person Role</button>
         </div>
       </div>
       <div class="admin-content">
@@ -1096,7 +1110,7 @@ async function loadAdminCourses() {
     courses.sort((a,b)=>(a.order||0)-(b.order||0));
     if (!courses.length) { list.innerHTML='<div class="sb-empty">No courses yet.<br>Click <b>+ New</b> to add one.</div>'; return; }
     renderCourseList();
-    loadPeople();
+    // People list intentionally not shown — managed via nominations
   } catch { list.innerHTML='<div class="sb-empty">Error loading.</div>'; }
 }
 
@@ -1289,13 +1303,17 @@ $('delete-person-btn').addEventListener('click', async () => {
 });
 
 $('sb-add-person').addEventListener('click', async () => {
-  const email = prompt('Enter user email:');
+  const email = prompt('Enter user email to assign/update role:');
   if (!email) return;
-  const ref = doc(db,'users',email.trim().toLowerCase());
-  await setDoc(ref, {role:'student',createdAt:serverTimestamp()}, {merge:true});
-  people.push({id:email.trim().toLowerCase(),role:'student'});
-  renderPeopleList();
-  toast('User added!','success');
+  const trimmed = email.trim().toLowerCase();
+  const roles = ['student','reviewer','proctor','admin'];
+  const role = prompt('Enter role (' + roles.join(', ') + '):', 'student');
+  if (!role || !roles.includes(role.trim().toLowerCase())) {
+    toast('Invalid role.', 'error'); return;
+  }
+  const finalRole = role.trim().toLowerCase();
+  await setDoc(doc(db,'users',trimmed), {role:finalRole, updatedAt:serverTimestamp(), updatedBy:me.email}, {merge:true});
+  toast(trimmed + ' role set to ' + finalRole, 'success');
 });
 
 // ══ REVIEWER VIEW (admin inline) ══
