@@ -311,8 +311,8 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .p-slot-confirm-btn:hover{background:#059669;}
 .p-slot-confirmed-tag{font-size:12px;font-weight:700;padding:4px 12px;border-radius:50px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2);}
 .p-slot-tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);}
-.p-slot-tab{background:none;border:none;padding:9px 16px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;font-family:'Syne',sans-serif;}
-.p-slot-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.p-slot-tab{background:none;border:none;padding:9px 16px;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;font-family:'Syne',sans-serif;opacity:.75;}
+.p-slot-tab.active{color:var(--accent);border-bottom-color:var(--accent);opacity:1;}
 
 /* ══ PREVIEW READ-ONLY OVERLAY ══ */
 .preview-readonly-banner{
@@ -336,6 +336,16 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
   opacity:.55!important;
   pointer-events:none!important;
 }
+/* Sub-tabs always clickable in preview — navigation only, no data changes */
+.preview-readonly-wrap .p-slot-tab,.preview-readonly-wrap .p-slot-tab *,.preview-readonly-wrap .p-slot-tabs,.p-slot-tabs button{
+  pointer-events:all!important;
+  cursor:pointer!important;
+  opacity:1!important;
+}
+
+/* Proctor sub-tabs: always full brightness and clickable */
+.p-slot-tabs{pointer-events:all!important;}
+.p-slot-tab{pointer-events:all!important;cursor:pointer!important;}
 
 </style></head>
 <body>
