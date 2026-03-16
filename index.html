@@ -39,7 +39,9 @@ body::before{content:'';position:fixed;inset:0;background:
 .choice-headline{font-size:32px;font-weight:800;color:var(--text);text-align:center;font-family:'Syne',sans-serif;line-height:1.2;}
 .choice-headline em{color:var(--accent);font-style:normal;}
 .choice-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;}
-.choice-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 24px;display:flex;flex-direction:column;gap:10px;}
+.choice-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 24px;display:flex;flex-direction:column;gap:10px;transition:all .2s;}
+.choice-card.manage{border-color:rgba(99,102,241,.3);cursor:pointer;}
+.choice-card.manage:hover{border-color:rgba(99,102,241,.6);box-shadow:0 8px 30px rgba(99,102,241,.2);background:rgba(99,102,241,.08);}
 .choice-icon{font-size:32px;}
 .choice-label{font-size:18px;font-weight:700;color:var(--text);font-family:'Syne',sans-serif;}
 .choice-desc{font-size:13px;color:var(--muted);line-height:1.5;}
@@ -310,12 +312,12 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
   position:sticky;
   top:0;
   z-index:801;
-  background:linear-gradient(90deg,rgba(245,158,11,.18),rgba(245,158,11,.08));
-  border-bottom:2px solid rgba(245,158,11,.4);
-  color:#fbbf24;
+  background:rgba(245,158,11,.22);
+  border-bottom:2px solid rgba(245,158,11,.5);
+  color:#fde68a;
   font-size:13px;
   font-weight:700;
-  padding:8px 20px;
+  padding:9px 20px;
   display:flex;
   align-items:center;
   gap:8px;
@@ -351,6 +353,11 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
         <div class="choice-icon">🎓</div>
         <div class="choice-label">Get Certified</div>
         <div class="choice-desc">Take your certification evaluation exam and earn your SF internal certification badge.</div>
+      </div>
+      <div class="choice-card manage" id="manage-card" style="display:none;cursor:pointer;" onclick="goToAdminConsole()">
+        <div class="choice-icon">⚡</div>
+        <div class="choice-label">Manage</div>
+        <div class="choice-desc">Open the Admin Console to manage courses, exams, learners, and proctoring.</div>
       </div>
     </div>
     <div style="margin-top:8px;text-align:center;">
@@ -827,6 +834,9 @@ onAuthStateChanged(auth, async user => {
     }
     const firstName = (user.displayName || user.email).split(' ')[0].split('@')[0];
     $('admin-first-name').textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+    // Show Manage card on landing screen briefly then redirect to admin console
+    const mc = $('manage-card');
+    if (mc) mc.style.display = 'flex';
     $('admin-choice-screen').style.display = 'flex';
     return;
   }
@@ -861,6 +871,11 @@ window.selectMode = function(mode) {
 window.backToAdminConsole = function() {
   $('app').style.display = 'none';
   inLearnerView = false;
+  $('admin-choice-screen').style.display = 'flex';
+};
+
+window.goToAdminConsole = function() {
+  $('choice-screen').style.display = 'none';
   $('admin-choice-screen').style.display = 'flex';
 };
 
@@ -1563,40 +1578,42 @@ function showPreviewBanner(role, u) {
 }
 
 function applyPreviewReadOnly(role, u) {
-  // Remove any existing overlays first
   removePreviewReadOnly();
 
-  // Find the currently visible preview view
-  const viewIds = ['student-view', 'reviewer-view'];
-  for (const id of viewIds) {
-    const view = $(id);
-    if (!view || view.style.display === 'none') continue;
+  const label = '&#128065; Preview Mode &mdash; Read Only &nbsp;&bull;&nbsp; Viewing as <strong>' +
+    role + ':</strong> ' + (u.name||u.email) + ' &nbsp;&bull;&nbsp; No actions will be saved.';
 
-    // Inject sticky read-only banner as first child of the view
-    const banner = document.createElement('div');
-    banner.className = 'preview-readonly-banner';
-    banner.innerHTML = '&#128065; Preview Mode &mdash; Read Only &nbsp;&bull;&nbsp; Viewing as <strong>' +
-      role + ':</strong> ' + (u.name||u.email) + ' &nbsp;&bull;&nbsp; No actions will be saved.';
-    view.insertBefore(banner, view.firstChild);
+  // 1. Sticky banner at the very top of #app
+  const banner = document.createElement('div');
+  banner.className = 'preview-readonly-banner';
+  banner.id = 'preview-ro-banner';
+  banner.innerHTML = label;
+  const app = $('app');
+  if (app) app.insertBefore(banner, app.firstChild);
 
-    // Find the scrollable content container inside the view
-    // For student-view it's .s-main, for reviewer-view it's the first child div
-    let inner = view.querySelector('.s-main') || view.querySelector('div');
-    // Don't wrap the banner we just inserted
-    if (inner && inner.classList && inner.classList.contains('preview-readonly-banner')) {
-      inner = inner.nextElementSibling;
-    }
-    if (inner) {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'preview-readonly-wrap';
-      inner.parentNode.insertBefore(wrapper, inner);
-      wrapper.appendChild(inner);
-    }
-    break;
-  }
+  // 2. Full-screen click-blocker overlay (covers everything below the nav)
+  const overlay = document.createElement('div');
+  overlay.id = 'preview-ro-overlay';
+  overlay.style.cssText = [
+    'position:fixed',
+    'inset:0',
+    'z-index:700',
+    'cursor:not-allowed',
+    'background:transparent',
+    'pointer-events:all'
+  ].join(';');
+  // Allow scrolling by passing wheel/touch events through
+  overlay.addEventListener('wheel',   e => e.target.scrollTop += e.deltaY, {passive:true});
+  overlay.addEventListener('touchmove', e => e.preventDefault(), {passive:false});
+  document.body.appendChild(overlay);
 }
 
 function removePreviewReadOnly() {
+  const banner  = document.getElementById('preview-ro-banner');
+  const overlay = document.getElementById('preview-ro-overlay');
+  if (banner)  banner.remove();
+  if (overlay) overlay.remove();
+  // Also clean up any legacy wrap divs from previous implementation
   document.querySelectorAll('.preview-readonly-banner').forEach(el => el.remove());
   document.querySelectorAll('.preview-readonly-wrap').forEach(el => {
     while (el.firstChild) el.parentNode.insertBefore(el.firstChild, el);
@@ -2542,47 +2559,76 @@ window.submitReschedule = async function() {
   btn.disabled = true; btn.textContent = 'Rescheduling…';
 
   try {
-    // Read current slot to get reschedule count and assigned proctor
+    // Read old slot data
     const slotSnap = await getDoc(doc(db, 'examSlots', _reschedSlotId));
     if (!slotSnap.exists()) { showReschedError('Slot not found.'); btn.disabled=false; btn.textContent='Confirm Reschedule'; return; }
 
-    const slotData      = slotSnap.data();
-    const currentCount  = slotData.rescheduleCount || 0;
+    const oldSlot      = slotSnap.data();
+    const currentCount = oldSlot.rescheduleCount || 0;
     if (currentCount >= 2) { showReschedError('Maximum reschedules reached.'); btn.disabled=false; btn.textContent='Confirm Reschedule'; return; }
 
     const newCount = currentCount + 1;
+    const tz = _activeTz || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    await setDoc(doc(db, 'examSlots', _reschedSlotId), {
-      requestedDate:    date,
-      requestedTime:    time,
-      requestedTimezone: _activeTz || Intl.DateTimeFormat().resolvedOptions().timeZone,
-      utcDateTime:      chosen.toISOString(),
-      status:           'bookedByLearner',  // reset to awaiting confirmation
-      rescheduleCount:  newCount,
-      rescheduledAt:    serverTimestamp(),
-      rescheduledBy:    lookupEmail(),
-      confirmedBy:      null,
-      confirmedAt:      null,
-      admitted:         false,
-      flagged:          false,
-    }, {merge: true});
+    // 1. Write reschedule history record (for Reports)
+    await addDoc(collection(db, 'rescheduleHistory'), {
+      originalSlotId:     _reschedSlotId,
+      examId:             oldSlot.examId         || null,
+      learnerEmail:       oldSlot.learnerEmail    || lookupEmail(),
+      learnerName:        oldSlot.learnerName     || lookupEmail(),
+      assignedProctor:    oldSlot.assignedProctor || null,
+      originalDate:       oldSlot.requestedDate   || null,
+      originalTime:       oldSlot.requestedTime   || null,
+      newDate:            date,
+      newTime:            time,
+      rescheduleCount:    newCount,
+      rescheduledAt:      serverTimestamp(),
+      rescheduledBy:      lookupEmail()
+    });
 
-    // Notify the assigned proctor if any
-    if (slotData.assignedProctor) {
-      await addDoc(collection(db, 'notifications', slotData.assignedProctor, 'items'), {
-        message:   'Learner ' + (slotData.learnerName||slotData.learnerEmail||lookupEmail()) +
-                   ' has rescheduled their exam slot to ' + date + ' at ' + time +
-                   '. Please confirm the new slot. (' + newCount + '/2 reschedules used)',
+    // 2. Delete the old slot — it should not appear anywhere
+    await deleteDoc(doc(db, 'examSlots', _reschedSlotId));
+
+    // 3. Create a fresh slot with the new date/time
+    const newSlotRef = await addDoc(collection(db, 'examSlots'), {
+      examId:              oldSlot.examId             || null,
+      learnerEmail:        oldSlot.learnerEmail        || lookupEmail(),
+      learnerName:         oldSlot.learnerName         || (me.displayName || lookupEmail()),
+      learnerSelfie:       oldSlot.learnerSelfie       || null,
+      learnerPhotoConsent: oldSlot.learnerPhotoConsent || false,
+      requestedDate:       date,
+      requestedTime:       time,
+      requestedTimezone:   tz,
+      utcDateTime:         chosen.toISOString(),
+      status:              'bookedByLearner',
+      bookedAt:            serverTimestamp(),
+      rescheduleCount:     newCount,
+      rescheduledAt:       serverTimestamp(),
+      assignedProctor:     oldSlot.assignedProctor || null,
+      confirmedBy:         null,
+      confirmedAt:         null,
+      admitted:            false,
+      denied:              false,
+      flagged:             false,
+      snapshots:           []
+    });
+
+    // 4. Notify the assigned proctor
+    if (oldSlot.assignedProctor) {
+      await addDoc(collection(db, 'notifications', oldSlot.assignedProctor, 'items'), {
+        message:   'Learner ' + (oldSlot.learnerName||oldSlot.learnerEmail||lookupEmail()) +
+                   ' has rescheduled their exam to ' + date + ' at ' + time +
+                   '. New slot created. (' + newCount + '/2 reschedules used)',
         type:      'slot_rescheduled',
-        slotId:    _reschedSlotId,
+        slotId:    newSlotRef.id,
         read:      false,
         createdAt: serverTimestamp()
       });
     }
 
-    // Notify the learner
+    // 5. Notify the learner
     await addDoc(collection(db, 'notifications', lookupEmail(), 'items'), {
-      message:   'Your exam slot has been rescheduled to ' + date + ' at ' + time +
+      message:   'Your exam has been rescheduled to ' + date + ' at ' + time +
                  '. Awaiting proctor confirmation. (' + newCount + '/2 reschedules used)',
       type:      'slot_rescheduled',
       read:      false,
@@ -2590,7 +2636,7 @@ window.submitReschedule = async function() {
     });
 
     closeRescheduleModal();
-    toast('Slot rescheduled! Awaiting proctor confirmation.', 'success');
+    toast('Exam rescheduled! Awaiting proctor confirmation.', 'success');
     await loadStudentExams();
   } catch(e) {
     console.error('submitReschedule:', e);
