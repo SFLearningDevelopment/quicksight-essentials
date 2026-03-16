@@ -370,9 +370,13 @@ body.preview-active .p-slot-tab {
       <div class="choice-card certify" style="cursor:default;opacity:0.7;">
         <div class="choice-icon">🎓</div>
         <div class="choice-label">Get Certified</div>
-        <div class="choice-desc">Take your certification evaluation exam and earn your SF internal certifica tion badge.</div>
+        <div class="choice-desc">Take your certification evaluation exam and earn your SF internal certification badge.</div>
       </div>
-
+      <div class="choice-card manage" id="manage-card" style="display:none;cursor:pointer;" onclick="goToAdminConsole()">
+        <div class="choice-icon">⚡</div>
+        <div class="choice-label">Manage</div>
+        <div class="choice-desc">Open the Admin Console to manage courses, exams, learners and proctoring.</div>
+      </div>
     </div>
     <div style="margin-top:8px;text-align:center;">
       <button id="manual-signin-btn" onclick="manualSignIn()" style="display:inline-flex;align-items:center;gap:10px;background:#fff;color:#1a1a1a;border:none;border-radius:10px;padding:12px 28px;font-size:15px;font-weight:500;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);">
@@ -856,7 +860,10 @@ onAuthStateChanged(auth, async user => {
     }
     const firstName = (user.displayName || user.email).split(' ')[0].split('@')[0];
     $('admin-first-name').textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1);
-    $('admin-choice-screen').style.display = 'flex';
+    // Show landing screen with Manage card visible — admin clicks Manage to enter console
+    const mc = $('manage-card');
+    if (mc) mc.style.display = 'flex';
+    $('choice-screen').style.display = 'flex';
     return;
   }
 
