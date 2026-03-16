@@ -340,6 +340,13 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
         <div class="admin-card-desc">Manage exams, nominations, proctoring sessions, and certification reports.</div>
         <div class="admin-card-arrow">→</div>
       </div>
+      <div class="admin-card ac-green" onclick="openAssignProctorModal()">
+        <div class="admin-card-tag tag-green">PROCTORING</div>
+        <div class="admin-card-icon">🛡</div>
+        <div class="admin-card-label">Assign Proctor</div>
+        <div class="admin-card-desc">Assign a proctor to a nominated exam candidate and manage proctor-learner relationships.</div>
+        <div class="admin-card-arrow">→</div>
+      </div>
       <div class="admin-card ac-green" onclick="previewAsStudent()">
         <div class="admin-card-tag tag-green">PREVIEW</div>
         <div class="admin-card-icon">👁</div>
@@ -358,14 +365,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
         <div class="admin-card-tag tag-red">PREVIEW</div>
         <div class="admin-card-icon">🎥</div>
         <div class="admin-card-label">Preview as Proctor</div>
-        <div class="admin-card-desc">Open the Certifications Hub in proctor mode to verify the proctoring experience.</div>
-        <div class="admin-card-arrow">→</div>
-      </div>
-      <div class="admin-card ac-green" onclick="adminNav('assignProctor')">
-        <div class="admin-card-tag tag-green">PROCTORING</div>
-        <div class="admin-card-icon">🛡</div>
-        <div class="admin-card-label">Assign Proctor</div>
-        <div class="admin-card-desc">Assign proctors to exam nominations and manage proctor-learner relationships.</div>
+        <div class="admin-card-desc">See the Live Monitor exactly as an assigned proctor would see it.</div>
         <div class="admin-card-arrow">→</div>
       </div>
     </div>
@@ -822,7 +822,7 @@ window.backToAdminConsole = function() {
 window.adminNav = function(section) {
   if (section === 'certifications') { window.location.href = 'sf-certs-hub.html'; return; }
   if (section === 'learner')        { previewAsStudent(); return; }
-  if (section === 'assignProctor')  { window.location.href = 'sf-certs-hub.html?tab=nominations'; return; }
+  // assignProctor now uses modal, not navigation
   $('admin-choice-screen').style.display = 'none';
   inLearnerView = false;
   $('app').style.display = 'block';
@@ -1493,7 +1493,9 @@ window.exitPreview = function() {
   isPreviewMode = false;
   previewEmail  = null;
   $('preview-banner').style.display = 'none';
-  $('app').style.display = 'none';
+  // Hide all views and return to admin choice screen
+  hide('student-view'); hide('reviewer-view'); hide('admin-view'); hide('examresults-view');
+  $('app').style.display         = 'none';
   $('admin-choice-screen').style.display = 'flex';
 };
 
@@ -2174,6 +2176,131 @@ document.addEventListener('click', e => {
     if (panel) panel.style.display = 'none';
   }
 });
+
+// ══ ASSIGN PROCTOR ══
+window.openAssignProctorModal = async function() {
+  $('assign-proctor-modal').style.display = 'block';
+  $('ap-error').style.display    = 'none';
+  $('ap-nominee-wrap').style.display  = 'none';
+  $('ap-proctor-wrap').style.display  = 'none';
+  $('ap-current-wrap').style.display  = 'none';
+  $('ap-exam-select').innerHTML   = '<option value="">Loading exams...</option>';
+  $('ap-submit-btn').disabled     = false;
+  $('ap-submit-btn').textContent  = 'Assign Proctor';
+
+  try {
+    const snap = await getDocs(collection(db, 'exams'));
+    const exams = [];
+    snap.forEach(d => { if (d.data().status === 'live') exams.push({id: d.id, ...d.data()}); });
+    const sel = $('ap-exam-select');
+    sel.innerHTML = '<option value="">— Select an exam —</option>';
+    exams.forEach(e => {
+      const opt = document.createElement('option');
+      opt.value = e.id; opt.textContent = e.title || e.id;
+      sel.appendChild(opt);
+    });
+    const uSnap = await getDocs(collection(db, 'users'));
+    const proctorSel = $('ap-proctor-select');
+    proctorSel.innerHTML = '<option value="">— Select a proctor —</option>';
+    uSnap.forEach(d => {
+      if (d.data().role === 'proctor') {
+        const opt = document.createElement('option');
+        opt.value = d.id;
+        opt.textContent = (d.data().name || d.id) + ' (' + d.id + ')';
+        proctorSel.appendChild(opt);
+      }
+    });
+  } catch(e) { console.error('openAssignProctorModal:', e); }
+};
+
+window.loadApNominees = async function() {
+  const examId = $('ap-exam-select').value;
+  $('ap-nominee-wrap').style.display = 'none';
+  $('ap-proctor-wrap').style.display = 'none';
+  $('ap-current-wrap').style.display = 'none';
+  if (!examId) return;
+  try {
+    const snap = await getDocs(collection(db, 'exams', examId, 'nominations'));
+    const sel  = $('ap-nominee-select');
+    sel.innerHTML = '<option value="">— Select a nominee —</option>';
+    snap.forEach(d => {
+      if (d.data().nominated !== false || d.data().examEligible === true) {
+        const opt = document.createElement('option');
+        opt.value = d.id; opt.textContent = d.id;
+        opt.dataset.currentProctor = d.data().assignedProctor || '';
+        sel.appendChild(opt);
+      }
+    });
+    $('ap-nominee-wrap').style.display = 'block';
+  } catch(e) { console.error('loadApNominees:', e); }
+};
+
+window.loadApCurrentProctor = function() {
+  const sel = $('ap-nominee-select');
+  const opt = sel.options[sel.selectedIndex];
+  if (!sel.value) {
+    $('ap-proctor-wrap').style.display = 'none';
+    $('ap-current-wrap').style.display = 'none';
+    return;
+  }
+  const current = opt && opt.dataset ? opt.dataset.currentProctor : '';
+  $('ap-current-proctor').textContent = current || 'None assigned yet';
+  $('ap-current-wrap').style.display  = 'block';
+  $('ap-proctor-wrap').style.display  = 'block';
+  if (current) $('ap-proctor-select').value = current;
+};
+
+window.closeAssignProctorModal = function() {
+  $('assign-proctor-modal').style.display = 'none';
+};
+
+window.submitAssignProctor = async function() {
+  const examId       = $('ap-exam-select').value;
+  const nominee      = $('ap-nominee-select').value;
+  const proctorEmail = $('ap-proctor-select').value;
+  const examTitle    = $('ap-exam-select').options[$('ap-exam-select').selectedIndex]
+                        ? $('ap-exam-select').options[$('ap-exam-select').selectedIndex].textContent : examId;
+  if (!examId)       { showApError('Please select an exam.'); return; }
+  if (!nominee)      { showApError('Please select a nominee.'); return; }
+  if (!proctorEmail) { showApError('Please select a proctor.'); return; }
+  const btn = $('ap-submit-btn');
+  btn.disabled = true; btn.textContent = 'Assigning...';
+  try {
+    await setDoc(doc(db, 'exams', examId, 'nominations', nominee), {
+      assignedProctor: proctorEmail, assignedProctorBy: me.email,
+      assignedProctorAt: serverTimestamp()
+    }, {merge: true});
+    await setDoc(doc(db, 'users', proctorEmail), {
+      assignedCandidate: nominee, assignedExamId: examId,
+      updatedAt: serverTimestamp(), updatedBy: me.email
+    }, {merge: true});
+    try {
+      const slotSnap = await getDocs(query(
+        collection(db,'examSlots'),
+        where('learnerEmail','==',nominee),
+        where('examId','==',examId)
+      ));
+      for (const sd of slotSnap.docs) {
+        await setDoc(doc(db,'examSlots',sd.id), {assignedProctor: proctorEmail}, {merge:true});
+      }
+    } catch {}
+    await addDoc(collection(db,'notifications',proctorEmail,'items'), {
+      message: 'You have been assigned as proctor for ' + nominee + ' on exam "' + examTitle + '".',
+      type: 'proctor_assigned', read: false, createdAt: serverTimestamp()
+    });
+    closeAssignProctorModal();
+    toast('Proctor assigned successfully!', 'success');
+  } catch(e) {
+    console.error('submitAssignProctor:', e);
+    showApError('Error assigning. Please try again.');
+    btn.disabled = false; btn.textContent = 'Assign Proctor';
+  }
+};
+
+function showApError(msg) {
+  const el = $('ap-error');
+  el.textContent = msg; el.style.display = 'block';
+}
 </script>
 <!-- REVIEWER PICKER OVERLAY -->
 <div id="reviewer-picker" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(10,12,20,.92);backdrop-filter:blur(8px);overflow-y:auto;">
@@ -2204,6 +2331,58 @@ document.addEventListener('click', e => {
     <div id="proctor-picker-loading" style="text-align:center;color:var(--muted);padding:40px;font-size:14px;">Loading proctors&hellip;</div>
     <div id="proctor-picker-list" style="display:none;flex-direction:column;gap:10px;"></div>
     <div id="proctor-picker-empty" style="display:none;text-align:center;color:var(--muted);padding:40px;font-size:14px;">No proctors with active assignments found.</div>
+  </div>
+</div>
+
+<!-- ASSIGN PROCTOR MODAL -->
+<div id="assign-proctor-modal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(10,12,20,.92);backdrop-filter:blur(8px);overflow-y:auto;">
+  <div style="max-width:680px;margin:60px auto;padding:0 20px 80px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">🛡 Assign Proctor</h2>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Assign a proctor to a nominated exam candidate.</p>
+      </div>
+      <button onclick="closeAssignProctorModal()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;">&#10005;</button>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;">
+      <!-- Step 1: Select Exam -->
+      <div style="margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Step 1 — Select Exam</div>
+        <select id="ap-exam-select" class="schedule-input" onchange="loadApNominees()">
+          <option value="">— Select an exam —</option>
+        </select>
+      </div>
+
+      <!-- Step 2: Select Nominee -->
+      <div id="ap-nominee-wrap" style="display:none;margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Step 2 — Select Nominee</div>
+        <select id="ap-nominee-select" class="schedule-input" onchange="loadApCurrentProctor()">
+          <option value="">— Select a nominee —</option>
+        </select>
+      </div>
+
+      <!-- Current assignment info -->
+      <div id="ap-current-wrap" style="display:none;margin-bottom:20px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Currently assigned proctor:</div>
+        <div id="ap-current-proctor" style="font-size:14px;font-weight:600;color:var(--text);">None</div>
+      </div>
+
+      <!-- Step 3: Select Proctor -->
+      <div id="ap-proctor-wrap" style="display:none;margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Step 3 — Assign Proctor</div>
+        <select id="ap-proctor-select" class="schedule-input">
+          <option value="">— Select a proctor —</option>
+        </select>
+      </div>
+
+      <div id="ap-error" style="display:none;font-size:13px;color:#f87171;padding:10px 14px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);margin-bottom:14px;"></div>
+
+      <div style="display:flex;gap:12px;">
+        <button onclick="closeAssignProctorModal()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);font-size:14px;cursor:pointer;">Cancel</button>
+        <button onclick="submitAssignProctor()" id="ap-submit-btn" style="flex:2;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Assign Proctor</button>
+      </div>
+    </div>
   </div>
 </div>
 
