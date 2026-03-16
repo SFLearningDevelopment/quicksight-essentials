@@ -1092,8 +1092,28 @@ async function loadProctorAssignedSlots() {
       return (order[a.status]||0) - (order[b.status]||0);
     });
 
+    // Track active listeners so we can clear them on refresh
+    if (window._proctorSlotListeners) {
+      window._proctorSlotListeners.forEach(unsub => unsub());
+    }
+    window._proctorSlotListeners = [];
+
     for (const slot of slots) {
       container.appendChild(buildProctorSlotCard(slot));
+
+      // For confirmed slots — listen in real-time for snapshots arriving
+      if (slot.status === 'confirmed' || slot.status === 'bookedByLearner') {
+        const unsub = onSnapshot(doc(db, 'examSlots', slot.id), slotSnap => {
+          if (!slotSnap.exists()) return;
+          const updated = {id: slotSnap.id, ...slotSnap.data()};
+          const existing = document.getElementById('p-slot-' + slot.id);
+          if (existing) {
+            const newCard = buildProctorSlotCard(updated);
+            existing.replaceWith(newCard);
+          }
+        });
+        window._proctorSlotListeners.push(unsub);
+      }
     }
   } catch(e) {
     console.error('loadProctorAssignedSlots:', e);
@@ -1145,9 +1165,23 @@ function buildProctorSlotCard(slot) {
       <button class="reject-btn-slot" style="flex:1;padding:10px;" onclick="rejectLearner('${slot.id}','${esc(slot.learnerEmail||'')}')">❌ Deny</button>
     </div>`;
   } else if (slot.status === 'confirmed') {
-    actions = `<div style="font-size:13px;color:#34d399;margin-top:10px;padding:8px 12px;background:rgba(16,185,129,.06);border-radius:8px;border:1px solid rgba(16,185,129,.2);">
-      &#10003; Slot confirmed. Waiting for learner to begin session at the scheduled time.
-    </div>`;
+    // Check if we're within 10 minutes of the exam
+    const _slotMs = slot.requestedDate && slot.requestedTime
+      ? new Date(slot.requestedDate + 'T' + slot.requestedTime + ':00').getTime() : null;
+    const _minsTo = _slotMs ? Math.floor((_slotMs - Date.now()) / 60000) : 999;
+    if (_minsTo <= 10) {
+      actions = `<div style="font-size:13px;color:#60a5fa;margin-top:10px;padding:10px 14px;background:rgba(59,130,246,.06);border-radius:8px;border:1px solid rgba(59,130,246,.2);">
+        &#9203; Learner can now begin setup. Waiting for them to start their camera and send snapshots&hellip;
+        <div style="margin-top:6px;font-size:12px;color:var(--muted);">This card will update automatically when snapshots arrive.</div>
+      </div>`;
+    } else {
+      const _dateStr = slot.requestedDate || '';
+      const _timeStr = slot.requestedTime || '';
+      actions = `<div style="font-size:13px;color:#34d399;margin-top:10px;padding:8px 12px;background:rgba(16,185,129,.06);border-radius:8px;border:1px solid rgba(16,185,129,.2);">
+        &#10003; Slot confirmed. Exam scheduled for ${_dateStr} ${_timeStr}.<br>
+        <span style="font-size:12px;color:var(--muted);">Setup window opens 10 minutes before exam time.</span>
+      </div>`;
+    }
   }
 
   // Snapshots for awaitingAdmit
@@ -2078,21 +2112,23 @@ window.admitLearner = async function(slotId, learnerEmail) {
   try {
     await setDoc(doc(db,'examSlots',slotId), {
       admitted:   true,
-      admittedBy: me.email,
+      denied:     false,
+      admittedBy: meEmail,
       admittedAt: serverTimestamp(),
       status:     'inProgress',
-      flagged:    false  // Clear flag on proctor action
+      flagged:    false
     }, {merge: true});
 
     await addDoc(collection(db,'notifications',learnerEmail,'items'), {
-      message:   'You have been admitted to your exam by your proctor. Good luck!',
+      message:   'You have been admitted to your exam by your proctor. Click "Begin Exam" to start. Good luck!',
       type:      'admitted',
       read:      false,
       createdAt: serverTimestamp()
     });
 
-    toast('Learner admitted!', 'success');
-    loadAwaitingAdmit();
+    toast('Learner admitted! They can now begin their exam.', 'success');
+    // onSnapshot listeners on the proctor slot cards will auto-update the card
+    if (typeof loadAwaitingAdmit === 'function') loadAwaitingAdmit();
   } catch(e) {
     console.error('admitLearner:', e);
     toast('Error admitting learner.', 'error');
@@ -2101,28 +2137,34 @@ window.admitLearner = async function(slotId, learnerEmail) {
 
 // ══ REJECT LEARNER ══
 window.rejectLearner = async function(slotId, learnerEmail) {
-  if (!confirm('Deny this learner access? Their attempt will be consumed.')) return;
+  if (!confirm('Deny this learner? They will see "Additional Verification Required" and one reschedule will be used.')) return;
   try {
+    // Read current rescheduleCount
+    const slotSnap = await getDoc(doc(db, 'examSlots', slotId));
+    const currentCount = slotSnap.exists() ? (slotSnap.data().rescheduleCount || 0) : 0;
+
     await setDoc(doc(db,'examSlots',slotId), {
-      admitted:    false,
-      rejectedBy:  me.email,
-      rejectedAt:  serverTimestamp(),
-      status:      'rejected',
-      flagged:     false  // Clear flag on proctor action
+      admitted:        false,
+      denied:          true,
+      deniedBy:        meEmail,
+      deniedAt:        serverTimestamp(),
+      status:          'inProgress',   // stays inProgress so card shows denied state
+      flagged:         false,
+      rescheduleCount: currentCount + 1  // consume one reschedule
     }, {merge: true});
 
     await addDoc(collection(db,'notifications',learnerEmail,'items'), {
-      message:   'Your exam session was denied by your proctor. Please contact your manager for more information.',
-      type:      'rejected',
+      message:   'Your proctor requires additional verification. Please reschedule your exam. One reschedule has been used.',
+      type:      'denied',
       read:      false,
       createdAt: serverTimestamp()
     });
 
-    toast('Learner denied. Attempt consumed.', 'error');
-    loadAwaitingAdmit();
+    toast('Learner denied. They will be prompted to reschedule.', 'error');
+    if (typeof loadAwaitingAdmit === 'function') loadAwaitingAdmit();
   } catch(e) {
     console.error('rejectLearner:', e);
-    toast('Error rejecting.', 'error');
+    toast('Error denying learner.', 'error');
   }
 };
 
