@@ -695,7 +695,7 @@ const FB = {
   projectId:"sfcertification-grafana",
   appId:"1:227322696511:web:12e7ced7dd3d45fa06798a"
 };
-const ADMINS = ['jv.ravichandran@sourcefuse.com']; // noushin.khan temporarily removed for learner test
+const ADMINS = ['jv.ravichandran@sourcefuse.com', 'noushin.khan@sourcefuse.com']; // noushin.khan temporarily removed for learner test
 const DOMAIN = 'sourcefuse.com';
 
 const app  = initializeApp(FB);
@@ -1119,7 +1119,28 @@ function buildStudentExamCard(exam, myResults, myProgress) {
   // Footer action
   let footerHtml = '';
   if (slotStatus === 'confirmed') {
-    footerHtml = `<button class="card-btn btn-enter" onclick="beginExamSession('${exam.id}','${slot?.id||''}')">&#127909; Begin Session &rarr;</button>`;
+    // Show Begin Setup only within 10 minutes of scheduled time
+    const _scheduledMs = slot.requestedDate && slot.requestedTime
+      ? new Date(slot.requestedDate + 'T' + slot.requestedTime + ':00').getTime()
+      : null;
+    const _minsToExam  = _scheduledMs ? Math.floor((_scheduledMs - Date.now()) / 60000) : 999;
+    if (_minsToExam <= 10) {
+      footerHtml = `<button class="card-btn btn-enter" onclick="openBeginSetup('${exam.id}','${slot?.id||''}')">&#128247; Begin Setup &rarr;</button>`;
+    } else {
+      footerHtml = `<button class="card-btn btn-locked" disabled style="cursor:default;">
+        &#128197; Exam on ${slot.requestedDate||''} ${slot.requestedTime||''} &mdash; Setup available 10 min before
+      </button>`;
+    }
+  } else if (slotStatus === 'inProgress' && slot?.admitted === true) {
+    footerHtml = `<button class="card-btn btn-enter" onclick="beginActualExam('${exam.id}','${slot?.id||''}')">&#127891; Begin Exam &rarr;</button>`;
+  } else if (slotStatus === 'inProgress' && slot?.denied === true) {
+    const reschedLeft = Math.max(0, 2 - (slot.rescheduleCount || 0));
+    footerHtml = `<div style="text-align:center;">
+      <div style="font-size:13px;color:#f87171;padding:10px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);margin-bottom:8px;">
+        &#9888;&#65039; Additional verification required. Please reschedule.
+      </div>
+      ${reschedLeft > 0 ? `<button class="card-btn btn-enter" style="background:#7c3aed;" onclick="openRescheduleModal('${slot.id}','${esc(exam.title)}',${reschedLeft})">&#128197; Reschedule (${reschedLeft} left)</button>` : '<div style="font-size:13px;color:var(--muted);">No reschedules remaining.</div>'}
+    </div>`;
   } else if (slotStatus === 'awaitingAdmit') {
     footerHtml = `<button class="card-btn btn-locked" disabled>&#9203; Awaiting Confirmation</button>`;
   } else if (slotStatus === 'bookedByLearner') {
@@ -1993,7 +2014,7 @@ function showSchedError(msg) {
   el.style.display = 'block';
 }
 
-// ══ BEGIN SESSION — 5 SNAPSHOTS + FACE MATCH ══
+// ══ BEGIN SETUP — Camera consent, snapshots, proctor admit/deny ══
 
 let _sessionExamId  = null;
 let _sessionSlotId  = null;
@@ -2001,7 +2022,192 @@ let _sessionStream  = null;
 let _sessionSnaps   = [];
 let _admitListener  = null;
 
-window.beginExamSession = async function(examId, slotId) {
+window.openBeginSetup = function(examId, slotId) {
+  _sessionExamId = examId;
+  _sessionSlotId = slotId;
+  _sessionSnaps  = [];
+
+  // Show only consent step
+  ['setup-step-consent','setup-step-camera','setup-step-waiting','setup-step-admitted','setup-step-denied']
+    .forEach(id => { const el = $(id); if (el) el.style.display = 'none'; });
+
+  $('setup-step-consent').style.display = 'block';
+  $('setup-consent-check').checked      = false;
+  $('setup-consent-error').style.display = 'none';
+
+  // Show exam title
+  const exam = (window._currentExams || []).find(e => e.id === examId);
+  $('setup-exam-title').textContent = exam ? exam.title : 'Exam Setup';
+
+  $('begin-setup-modal').style.display = 'block';
+};
+
+window.closeBeginSetup = function() {
+  if (_sessionStream) { _sessionStream.getTracks().forEach(t => t.stop()); _sessionStream = null; }
+  if (_admitListener) { _admitListener(); _admitListener = null; }
+  $('begin-setup-modal').style.display = 'none';
+};
+
+window.startBeginSetupCamera = async function() {
+  if (!$('setup-consent-check').checked) {
+    $('setup-consent-error').textContent   = 'Please check the consent box first.';
+    $('setup-consent-error').style.display = 'block';
+    return;
+  }
+  $('setup-consent-error').style.display = 'none';
+  $('setup-step-consent').style.display  = 'none';
+  $('setup-step-camera').style.display   = 'block';
+  $('setup-snap-status').textContent     = 'Starting camera…';
+  $('setup-snap-thumbs').innerHTML       = '';
+  $('setup-snap-bar').style.width        = '0%';
+
+  try {
+    _sessionStream = await navigator.mediaDevices.getUserMedia({video: {facingMode:'user'}, audio: false});
+    $('setup-video').srcObject = _sessionStream;
+
+    // Load face-api if available
+    loadFaceApi();
+
+    // Fetch scheduling selfie for comparison
+    let referenceImage = null;
+    try {
+      const slotDoc = await getDoc(doc(db, 'examSlots', _sessionSlotId));
+      if (slotDoc.exists()) referenceImage = slotDoc.data().learnerSelfie || null;
+    } catch {}
+
+    await takeBeginSetupSnapshots(referenceImage);
+  } catch(e) {
+    $('setup-snap-status').textContent = 'Camera access denied. Please allow camera and try again.';
+    console.error('setup camera:', e);
+  }
+};
+
+async function takeBeginSetupSnapshots(referenceImage) {
+  const video   = $('setup-video');
+  const canvas  = document.createElement('canvas');
+  const ctx     = canvas.getContext('2d');
+  const thumbs  = $('setup-snap-thumbs');
+  const bar     = $('setup-snap-bar');
+  _sessionSnaps = [];
+
+  let refDescriptor = null;
+  if (_faceApiLoaded && referenceImage) {
+    try {
+      const refImg = await faceapi.fetchImage(referenceImage);
+      const refDet = await faceapi.detectSingleFace(refImg, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks(true).withFaceDescriptor();
+      if (refDet) refDescriptor = refDet.descriptor;
+    } catch(e) { console.warn('ref face:', e); }
+  }
+
+  for (let i = 0; i < 5; i++) {
+    $('setup-snap-status').textContent = 'Taking snapshot ' + (i+1) + ' of 5…';
+    await new Promise(r => setTimeout(r, 3000));
+
+    canvas.width  = video.videoWidth  || 320;
+    canvas.height = video.videoHeight || 240;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const snapBase64 = canvas.toDataURL('image/jpeg', 0.6);
+
+    let matchScore = null;
+    if (_faceApiLoaded && refDescriptor) {
+      try {
+        const snapImg = await faceapi.fetchImage(snapBase64);
+        const snapDet = await faceapi.detectSingleFace(snapImg, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks(true).withFaceDescriptor();
+        if (snapDet) {
+          const dist = faceapi.euclideanDistance(refDescriptor, snapDet.descriptor);
+          matchScore = Math.round((1 - Math.min(dist, 1)) * 100);
+        }
+      } catch {}
+    }
+
+    _sessionSnaps.push({image: snapBase64, takenAt: new Date().toISOString(), matchScore});
+    bar.style.width = ((i+1)/5*100) + '%';
+
+    // Add thumbnail
+    const scoreColor = matchScore == null ? 'var(--border)' : matchScore >= 70 ? '#34d399' : matchScore >= 50 ? '#f59e0b' : '#f87171';
+    const thumb = document.createElement('div');
+    thumb.style.cssText = 'text-align:center;';
+    thumb.innerHTML = '<img src="'+snapBase64+'" style="width:60px;height:45px;object-fit:cover;border-radius:6px;border:2px solid '+scoreColor+';">' +
+      '<div style="font-size:10px;font-weight:700;color:'+scoreColor+';">'+(matchScore!=null?matchScore+'%':'—')+'</div>';
+    thumbs.appendChild(thumb);
+  }
+
+  // Stop camera
+  if (_sessionStream) { _sessionStream.getTracks().forEach(t => t.stop()); _sessionStream = null; }
+  $('setup-video').style.display = 'none';
+  $('setup-snap-status').textContent = 'Snapshots complete. Sending to proctor…';
+
+  // Write snapshots to Firestore
+  try {
+    await setDoc(doc(db, 'examSlots', _sessionSlotId), {
+      snapshots:        _sessionSnaps,
+      status:           'awaitingAdmit',
+      snapshotsTakenAt: new Date().toISOString()
+    }, {merge: true});
+  } catch(e) { console.error('snapshot save:', e); }
+
+  // Deduct attempt
+  try {
+    const uid = await lookupUid();
+    if (uid) {
+      const resRef  = doc(db, 'examResults', uid);
+      const resSnap = await getDoc(resRef);
+      const cur = resSnap.exists() ? ((resSnap.data()[_sessionExamId]||{}).attemptCount||0) : 0;
+      await setDoc(resRef, {[_sessionExamId]: {attemptCount: cur+1, lastAttemptAt: serverTimestamp()}}, {merge: true});
+    }
+  } catch {}
+
+  // Show waiting step with thumb strip
+  $('setup-step-camera').style.display  = 'none';
+  $('setup-step-waiting').style.display = 'block';
+  const strip = $('setup-thumb-strip');
+  strip.innerHTML = thumbs.innerHTML; // copy thumbnails
+
+  // Listen for proctor decision
+  listenForProctorDecision(_sessionSlotId);
+}
+
+function listenForProctorDecision(slotId) {
+  if (_admitListener) { _admitListener(); _admitListener = null; }
+  _admitListener = onSnapshot(doc(db, 'examSlots', slotId), snap => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+
+    if (data.admitted === true && data.status === 'inProgress') {
+      if (_admitListener) { _admitListener(); _admitListener = null; }
+      $('setup-step-waiting').style.display  = 'none';
+      $('setup-step-admitted').style.display = 'block';
+      // Wire Begin Exam button
+      $('setup-begin-exam-btn').onclick = () => {
+        closeBeginSetup();
+        const examData = (window._currentExams || []).find(e => e.id === _sessionExamId);
+        if (examData && examData.url) window.open(examData.url, '_blank');
+        loadStudentExams();
+      };
+      toast('Admitted by proctor! You may begin your exam.', 'success');
+    } else if (data.denied === true) {
+      if (_admitListener) { _admitListener(); _admitListener = null; }
+      $('setup-step-waiting').style.display = 'none';
+      $('setup-step-denied').style.display  = 'block';
+      toast('Additional verification required. Please reschedule.', 'error');
+      loadStudentExams(); // refresh card to show new reschedule count
+    }
+  });
+}
+
+window.beginActualExam = function(examId, slotId) {
+  const examData = (window._currentExams || []).find(e => e.id === examId);
+  if (examData && examData.url) window.open(examData.url, '_blank');
+};
+
+// Keep old function name for any lingering references
+window.beginExamSession = window.openBeginSetup;
+
+// ══ BEGIN SETUP (old beginExamSession body — unused, kept for reference) ══
+
+window._legacyBeginExamSession = async function(examId, slotId) {
   _sessionExamId = examId;
   _sessionSlotId = slotId;
   _sessionSnaps  = [];
@@ -2758,6 +2964,76 @@ function showApError(msg) {
         <button onclick="submitReschedule()" id="resched-submit-btn" style="flex:2;padding:12px;border-radius:10px;border:none;background:#7c3aed;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Confirm Reschedule</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- BEGIN SETUP MODAL -->
+<div id="begin-setup-modal" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(10,12,20,.95);backdrop-filter:blur(10px);overflow-y:auto;">
+  <div style="max-width:560px;margin:60px auto;padding:0 20px 80px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">&#128247; Exam Setup</h2>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;" id="setup-exam-title"></p>
+      </div>
+      <button onclick="closeBeginSetup()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;">&#10005;</button>
+    </div>
+
+    <!-- Step 1: Consent -->
+    <div id="setup-step-consent" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;">
+      <div style="font-size:15px;font-weight:700;margin-bottom:12px;">&#128247; Identity Verification</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;">
+        To begin your exam, your camera will be turned on and <strong>5 snapshots</strong> will be taken over the next <strong>15 seconds</strong> (one every 3 seconds). These snapshots will be sent to your assigned proctor for identity verification before you can start.
+      </p>
+      <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;margin-bottom:20px;">
+        <input type="checkbox" id="setup-consent-check" style="width:18px;height:18px;flex-shrink:0;margin-top:2px;">
+        <span style="font-size:13px;color:var(--text);line-height:1.6;">I consent to my camera being used for identity verification and snapshots being shared with my proctor.</span>
+      </label>
+      <button onclick="startBeginSetupCamera()" id="setup-start-btn" style="width:100%;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">
+        &#128247; Turn On Camera &amp; Begin
+      </button>
+      <div id="setup-consent-error" style="display:none;font-size:13px;color:#f87171;margin-top:10px;text-align:center;"></div>
+    </div>
+
+    <!-- Step 2: Camera + Snapshots -->
+    <div id="setup-step-camera" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;">
+      <div style="font-size:15px;font-weight:700;margin-bottom:12px;">&#128249; Camera Active</div>
+      <video id="setup-video" autoplay muted playsinline style="width:100%;border-radius:10px;background:#000;max-height:280px;object-fit:cover;margin-bottom:14px;"></video>
+      <div id="setup-snap-status" style="text-align:center;font-size:14px;font-weight:600;color:var(--accent);margin-bottom:14px;"></div>
+      <div id="setup-snap-thumbs" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;"></div>
+      <div id="setup-snap-progress" style="height:4px;background:var(--border);border-radius:50px;overflow:hidden;margin-bottom:10px;">
+        <div id="setup-snap-bar" style="height:100%;background:var(--accent);border-radius:50px;width:0%;transition:width .3s;"></div>
+      </div>
+    </div>
+
+    <!-- Step 3: Waiting for proctor -->
+    <div id="setup-step-waiting" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px;text-align:center;">
+      <div style="font-size:40px;margin-bottom:14px;">&#9203;</div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:8px;">Waiting for Proctor</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Your snapshots have been sent to your proctor for review. Please wait — they will admit or deny your session shortly.</p>
+      <div id="setup-thumb-strip" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;"></div>
+      <div style="font-size:12px;color:var(--muted);">&#128338; Do not close this window. This page will update automatically.</div>
+    </div>
+
+    <!-- Step 4a: Admitted -->
+    <div id="setup-step-admitted" style="display:none;background:var(--card);border:1px solid rgba(16,185,129,.3);border-radius:16px;padding:36px;text-align:center;">
+      <div style="font-size:40px;margin-bottom:14px;">&#127891;</div>
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#34d399;margin-bottom:8px;">You've Been Admitted!</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Your proctor has verified your identity. You may now begin your exam.</p>
+      <button id="setup-begin-exam-btn" style="width:100%;padding:13px;border-radius:10px;border:none;background:#34d399;color:#1a1d27;font-size:16px;font-weight:800;cursor:pointer;font-family:'Syne',sans-serif;">
+        &#127891; Begin Exam &rarr;
+      </button>
+    </div>
+
+    <!-- Step 4b: Denied -->
+    <div id="setup-step-denied" style="display:none;background:var(--card);border:1px solid rgba(239,68,68,.3);border-radius:16px;padding:36px;text-align:center;">
+      <div style="font-size:40px;margin-bottom:14px;">&#9888;&#65039;</div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#f87171;margin-bottom:8px;">Additional Verification Required</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Your proctor could not verify your identity from the snapshots. Please reschedule your exam. One reschedule has been used.</p>
+      <button onclick="closeBeginSetup()" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);font-size:14px;cursor:pointer;">
+        Close &amp; Reschedule from Your Exam Card
+      </button>
+    </div>
+
   </div>
 </div>
 
