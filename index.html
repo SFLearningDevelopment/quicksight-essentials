@@ -1602,10 +1602,18 @@ function applyPreviewReadOnly(role, u) {
     'background:transparent',
     'pointer-events:all'
   ].join(';');
-  // Allow scrolling by passing wheel/touch events through
-  overlay.addEventListener('wheel',   e => e.target.scrollTop += e.deltaY, {passive:true});
+  overlay.addEventListener('wheel', e => e.target.scrollTop += e.deltaY, {passive:true});
   overlay.addEventListener('touchmove', e => e.preventDefault(), {passive:false});
   document.body.appendChild(overlay);
+
+  // 3. Raise nav tabs above the overlay so they remain clickable (navigation only, no data changes)
+  const tabContainers = document.querySelectorAll('.s-tabs, .reviewer-tabs, .p-slot-tabs');
+  tabContainers.forEach(el => {
+    el.setAttribute('data-prev-zindex', el.style.zIndex || '');
+    el.setAttribute('data-prev-position', el.style.position || '');
+    el.style.position = 'relative';
+    el.style.zIndex   = '701';
+  });
 }
 
 function removePreviewReadOnly() {
@@ -1613,7 +1621,14 @@ function removePreviewReadOnly() {
   const overlay = document.getElementById('preview-ro-overlay');
   if (banner)  banner.remove();
   if (overlay) overlay.remove();
-  // Also clean up any legacy wrap divs from previous implementation
+  // Restore tab z-index
+  document.querySelectorAll('.s-tabs, .reviewer-tabs, .p-slot-tabs').forEach(el => {
+    el.style.zIndex   = el.getAttribute('data-prev-zindex')   || '';
+    el.style.position = el.getAttribute('data-prev-position') || '';
+    el.removeAttribute('data-prev-zindex');
+    el.removeAttribute('data-prev-position');
+  });
+  // Clean up any legacy wrap divs
   document.querySelectorAll('.preview-readonly-banner').forEach(el => el.remove());
   document.querySelectorAll('.preview-readonly-wrap').forEach(el => {
     while (el.firstChild) el.parentNode.insertBefore(el.firstChild, el);
