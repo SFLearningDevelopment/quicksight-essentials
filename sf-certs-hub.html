@@ -404,87 +404,16 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
   <!-- ADMIN VIEW -->
   <div id="admin-view">
     <div class="admin-tabs">
-      <button class="admin-tab active" id="atab-courses"      onclick="switchAdminTab('courses')">📚 Courses</button>
-      <button class="admin-tab"        id="atab-cprogress"    onclick="switchAdminTab('cprogress')">📊 Course Progress</button>
-      <button class="admin-tab"        id="atab-exams"        onclick="switchAdminTab('exams')">🎓 Exams</button>
+      <button class="admin-tab active" id="atab-exams"        onclick="switchAdminTab('exams')">🎓 Exams</button>
       <button class="admin-tab"        id="atab-nominations"  onclick="switchAdminTab('nominations')">Nominations</button>
       <button class="admin-tab"        id="atab-monitor"      onclick="switchAdminTab('monitor')">Live Monitor</button>
       <button class="admin-tab"        id="atab-reports"      onclick="switchAdminTab('reports')">Reports</button>
     </div>
 
     <!-- COURSES TAB -->
-    <div class="admin-tab-content active" id="atc-courses">
-      <div class="atc-inner">
-        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;">Course Catalog</div>
-        <div style="color:var(--muted);font-size:13px;margin-bottom:24px;">Click a course to open it in a new tab.</div>
-        <div id="admin-course-loading" style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:60px 0;color:var(--muted);font-size:14px;">
-          <div class="spinner"></div>Loading courses…
-        </div>
-        <div id="admin-course-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;"></div>
-      </div>
-    </div>
-
-    <!-- COURSE PROGRESS TAB -->
-    <div class="admin-tab-content" id="atc-cprogress">
-      <div class="atc-inner">
-        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px;">Course Progress</div>
-        <div style="color:var(--muted);font-size:13px;margin-bottom:24px;">Select a course to view per-learner progress.</div>
-
-        <!-- Course Selector -->
-        <div style="margin-bottom:28px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">Select Course</div>
-          <div id="cp-course-loading" style="color:var(--muted);font-size:13px;">Loading courses…</div>
-          <div id="cp-course-cards" style="display:none;display:flex;gap:12px;flex-wrap:wrap;"></div>
-        </div>
-
-        <!-- Data panel — hidden until course selected -->
-        <div id="cp-data-panel" style="display:none;">
-          <!-- Stats row -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;" id="cp-stats-row">
-            <div class="stat-card"><div class="stat-label">Total Learners</div><div class="stat-val" id="cp-stat-total">—</div></div>
-            <div class="stat-card"><div class="stat-label">Passed</div><div class="stat-val green" id="cp-stat-passed">—</div></div>
-            <div class="stat-card"><div class="stat-label">Avg Best Score</div><div class="stat-val yellow" id="cp-stat-avg">—</div></div>
-            <div class="stat-card"><div class="stat-label">Course Completed</div><div class="stat-val" id="cp-stat-completed">—</div></div>
-          </div>
-
-          <!-- Filters -->
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-            <input type="text" id="cp-search" placeholder="🔍 Search by name or email…"
-              style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;outline:none;flex:1;min-width:200px;transition:border-color .2s;"
-              oninput="cpApplyFilters()" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"/>
-            <button class="tbl-btn" id="cpf-all"     onclick="cpSetFilter('all')"     style="background:var(--gold);color:#1a1a1a;border-color:var(--gold);">All</button>
-            <button class="tbl-btn" id="cpf-passed"  onclick="cpSetFilter('passed')"  >🟢 Passed</button>
-            <button class="tbl-btn" id="cpf-failed"  onclick="cpSetFilter('failed')"  >🔴 Not Passed</button>
-            <button class="tbl-btn" id="cpf-notaken" onclick="cpSetFilter('notaken')" >⚪ Not Taken</button>
-            <button onclick="cpExportCSV()" style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#34d399;padding:7px 16px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600;margin-left:auto;transition:all .2s;" onmouseover="this.style.background='var(--success)';this.style.color='#fff'" onmouseout="this.style.background='rgba(16,185,129,.1)';this.style.color='#34d399'">📥 Export CSV</button>
-          </div>
-          <!-- Table -->
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
-            <div id="cp-loading" style="display:none;flex-direction:column;align-items:center;gap:14px;padding:60px 0;color:var(--muted);font-size:14px;">
-              <div class="spinner"></div>Loading learner data…
-            </div>
-            <table class="exam-list-table" id="cp-table" style="display:none;">
-              <thead>
-                <tr>
-                  <th>Learner</th>
-                  <th>Progress</th>
-                  <th>M1</th><th>M2</th><th>M3</th><th>M4</th>
-                  <th>Best Score</th>
-                  <th>Attempts</th>
-                  <th>Last Active</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="cp-tbody"></tbody>
-            </table>
-            <div id="cp-empty" style="display:none;text-align:center;padding:48px;color:var(--muted);font-size:14px;">No learners found matching your filter.</div>
-          </div>
-        </div><!-- end cp-data-panel -->
-      </div>
-    </div>
-
+    
     <!-- EXAMS TAB -->
-    <div class="admin-tab-content" id="atc-exams">
+    <div class="admin-tab-content active" id="atc-exams">
       <div class="atc-inner">
         <button class="add-exam-btn" id="add-exam-btn">+ New Exam</button>
         <div class="exam-form-wrap" id="exam-form-wrap">
@@ -1158,7 +1087,6 @@ function buildSessionCard(s) {
 let editingExamId = null;
 
 async function initAdmin() {
-  await loadAdminCourses();
   await loadAdminExams();
   $('add-exam-btn').addEventListener('click', () => openExamForm());
   $('cancel-exam-btn').addEventListener('click', () => $('exam-form-wrap').classList.remove('open'));
@@ -1174,12 +1102,11 @@ async function initAdmin() {
 
 window.switchAdminTab = tab => {
   adminTab = tab;
-  ['courses','cprogress','exams','nominations','monitor','reports'].forEach(t => {
-    $(`atab-${t}`).className = 'admin-tab' + (tab===t ? ' active' : '');
-    $(`atc-${t}`).className  = 'admin-tab-content' + (tab===t ? ' active' : '');
+  ['exams','nominations','monitor','reports'].forEach(t => {
+    const btn = $(`atab-${t}`); const pane = $(`atc-${t}`);
+    if (btn)  btn.className  = 'admin-tab' + (tab===t ? ' active' : '');
+    if (pane) pane.className = 'admin-tab-content' + (tab===t ? ' active' : '');
   });
-  if (tab === 'courses')     loadAdminCourses();
-  if (tab === 'cprogress')   loadCourseProgress();
   if (tab === 'monitor')     { loadBookedSlots(); startFlagListener(); }
   if (tab === 'reports')     loadReports();
   if (tab === 'nominations') populateNomExamSelect();
