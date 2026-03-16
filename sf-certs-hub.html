@@ -2001,7 +2001,7 @@ window.adminOverrideAdmit = async function(slotId, learnerEmail) {
 };
 
 
-async function loadProctorSessions() {
+window.loadProctorSessions = async function() {
   const container = $('admin-sessions');
   if (!container) return;
   container.innerHTML='<div style="color:var(--muted);font-size:14px;text-align:center;padding:40px 0">Loading sessions…</div>';
@@ -2018,7 +2018,7 @@ async function loadProctorSessions() {
     }
     for (const s of sessions) container.appendChild(buildSessionCard(s));
   } catch { container.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px">Error loading sessions.</div>'; }
-}
+};
 
 /* ══════════════════════════════════════
    REPORTS
