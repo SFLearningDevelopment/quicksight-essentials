@@ -314,6 +314,29 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .p-slot-tab{background:none;border:none;padding:9px 16px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;font-family:'Syne',sans-serif;}
 .p-slot-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
 
+/* ══ PREVIEW READ-ONLY OVERLAY ══ */
+.preview-readonly-banner{
+  background:linear-gradient(90deg,rgba(245,158,11,.18),rgba(245,158,11,.08));
+  border-bottom:2px solid rgba(245,158,11,.4);
+  color:#fbbf24;
+  font-size:13px;
+  font-weight:700;
+  padding:8px 20px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  letter-spacing:.01em;
+  position:sticky;
+  top:0;
+  z-index:200;
+}
+.preview-readonly-wrap{position:relative;pointer-events:none;user-select:none;}
+.preview-readonly-wrap *{pointer-events:none!important;cursor:not-allowed!important;}
+.preview-readonly-wrap button,.preview-readonly-wrap a,.preview-readonly-wrap input,.preview-readonly-wrap select,.preview-readonly-wrap textarea{
+  opacity:.55!important;
+  pointer-events:none!important;
+}
+
 </style></head>
 <body>
 
@@ -778,6 +801,7 @@ function route() {
 }
 
 function showHubPreviewBanner(label) {
+  // Floating pill banner (existing)
   let banner = document.getElementById('hub-preview-banner');
   if (!banner) {
     banner = document.createElement('div');
@@ -785,8 +809,46 @@ function showHubPreviewBanner(label) {
     banner.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;background:rgba(99,102,241,.95);color:#fff;padding:10px 22px;border-radius:50px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap;';
     document.body.appendChild(banner);
   }
-  banner.innerHTML = '🧪 ' + label + ' Preview &nbsp;·&nbsp; <button onclick="if(window.opener&&window.opener.backToAdminConsole)window.opener.backToAdminConsole();window.close();" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:50px;cursor:pointer;font-size:12px;font-weight:600;">Close Tab</button>';
+  banner.innerHTML = '&#129514; ' + label + ' Preview &nbsp;&middot;&nbsp; <button onclick="if(window.opener&&window.opener.backToAdminConsole)window.opener.backToAdminConsole();window.close();" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:50px;cursor:pointer;font-size:12px;font-weight:600;">Close Tab</button>';
   banner.style.display = 'flex';
+
+  // Sticky read-only top banner
+  document.querySelectorAll('.preview-readonly-banner').forEach(el => el.remove());
+  const readBanner = document.createElement('div');
+  readBanner.className = 'preview-readonly-banner';
+  readBanner.innerHTML = '&#128065; Preview Mode &mdash; Read Only &nbsp;&bull;&nbsp; ' + label + ' &nbsp;&bull;&nbsp; No actions will be saved.';
+  document.body.insertBefore(readBanner, document.body.firstChild);
+
+  // Apply pointer-blocking wrapper to every view that's visible
+  applyHubPreviewReadOnly();
+}
+
+function applyHubPreviewReadOnly() {
+  // Remove existing wrappers first
+  document.querySelectorAll('.preview-readonly-wrap').forEach(el => {
+    while (el.firstChild) el.parentNode.insertBefore(el.firstChild, el);
+    el.remove();
+  });
+  // Wrap all interactive content areas
+  const targets = [
+    document.querySelector('#proctor-view .proctor-main'),
+    document.querySelector('#admin-view .atc-inner'),
+    document.querySelector('#student-view .s-main'),
+  ].filter(Boolean);
+
+  // Since in hub preview we show the proctor-view or admin Live Monitor,
+  // wrap everything inside #admin-view and #proctor-view
+  ['proctor-view', 'admin-view', 'student-view'].forEach(id => {
+    const view = document.getElementById(id);
+    if (!view || view.style.display === 'none') return;
+    const inner = view.querySelector('.proctor-main, .s-main, .admin-tabs');
+    if (inner) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'preview-readonly-wrap';
+      inner.parentNode.insertBefore(wrapper, inner);
+      wrapper.appendChild(inner);
+    }
+  });
 }
 
 /* ══════════════════════════════════════
