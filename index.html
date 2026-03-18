@@ -821,8 +821,6 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
       </div>
       <button onclick="closeBeginSetup()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;">&#10005;</button>
     </div>
-
-    <!-- Step 1: Consent -->
     <div id="setup-step-consent" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;">
       <div style="font-size:15px;font-weight:700;margin-bottom:12px;">&#128247; Identity Verification</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;">
@@ -837,8 +835,6 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
       </button>
       <div id="setup-consent-error" style="display:none;font-size:13px;color:#f87171;margin-top:10px;text-align:center;"></div>
     </div>
-
-    <!-- Step 2: Camera + Snapshots -->
     <div id="setup-step-camera" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;">
       <div style="font-size:15px;font-weight:700;margin-bottom:12px;">&#128249; Camera Active</div>
       <video id="setup-video" autoplay muted playsinline style="width:100%;border-radius:10px;background:#000;max-height:280px;object-fit:cover;margin-bottom:14px;"></video>
@@ -848,19 +844,14 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
         <div id="setup-snap-bar" style="height:100%;background:var(--accent);border-radius:50px;width:0%;transition:width .3s;"></div>
       </div>
     </div>
-
-    <!-- Step 3: Waiting for proctor -->
     <div id="setup-step-waiting" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px;text-align:center;">
       <div style="font-size:40px;margin-bottom:14px;">&#9203;</div>
       <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:8px;">Waiting for Proctor</div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Your snapshots have been sent to your proctor for review. Please wait — they will admit or deny your session shortly.</p>
       <div id="setup-thumb-strip" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;"></div>
       <div style="font-size:12px;color:var(--muted);">&#128338; Do not close this window. This page will update automatically.</div>
-      <!-- PATCH 2: Flag delay section — revealed after 5 minutes by listenForProctorDecision timer -->
       <div id="setup-flag-wrap" style="display:none;margin-top:20px;"></div>
     </div>
-
-    <!-- Step 4a: Admitted -->
     <div id="setup-step-admitted" style="display:none;background:var(--card);border:1px solid rgba(16,185,129,.3);border-radius:16px;padding:36px;text-align:center;">
       <div style="font-size:40px;margin-bottom:14px;">&#127891;</div>
       <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#34d399;margin-bottom:8px;">You've Been Admitted!</div>
@@ -869,8 +860,6 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
         &#127891; Begin Exam &rarr;
       </button>
     </div>
-
-    <!-- Step 4b: Denied -->
     <div id="setup-step-denied" style="display:none;background:var(--card);border:1px solid rgba(239,68,68,.3);border-radius:16px;padding:36px;text-align:center;">
       <div style="font-size:40px;margin-bottom:14px;">⚠️</div>
       <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#f87171;margin-bottom:8px;">Session Denied by Proctor</div>
@@ -892,6 +881,8 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202603181602 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
@@ -906,10 +897,9 @@ const FB = {
   projectId:"sfcertification-grafana",
   appId:"1:227322696511:web:12e7ced7dd3d45fa06798a"
 };
-// PATCH 1: FLAG_WAIT_MS constant added
 const ADMINS       = ['jv.ravichandran@sourcefuse.com', 'noushin.khan@sourcefuse.com'];
 const DOMAIN       = 'sourcefuse.com';
-const FLAG_WAIT_MS = 5 * 60 * 1000; // 5 minutes — proctor delay threshold
+const FLAG_WAIT_MS = 5 * 60 * 1000;
 
 const app  = initializeApp(FB);
 const auth = getAuth(app);
@@ -968,42 +958,66 @@ onAuthStateChanged(auth, async user => {
     $('choice-screen').style.display = 'flex';
     return;
   }
-  $('loading-splash').classList.add('hidden');
-  if (user.email.split('@')[1] !== DOMAIN) {
-    await signOut(auth);
-    $('choice-screen').style.display = 'flex';
-    toast('Access denied — please use your @sourcefuse.com account.', 'error');
-    return;
-  }
-  me = user; meEmail = user.email.toLowerCase();
-  $('user-name').textContent = user.displayName || user.email;
-  if (user.photoURL) $('user-avatar').src = user.photoURL;
-  if (ADMINS.includes(meEmail)) {
-    myRole = 'admin';
-  } else {
-    const snap = await getDoc(doc(db, 'users', meEmail));
-    myRole = snap.exists() ? (snap.data().role || 'student') : 'student';
-  }
-  if (myRole === 'admin') {
-    const params = new URLSearchParams(window.location.search);
-    const view = params.get('view');
-    if (view === 'courses') {
-      $('app').style.display = 'block'; showChips();
-      hide('student-view'); hide('reviewer-view'); show('admin-view');
-      loadAdminCourses();
-      history.replaceState({}, '', window.location.pathname);
+
+  // ── FIX: wrap all post-auth logic so a Firestore error never leaves a blank screen ──
+  try {
+    $('loading-splash').classList.add('hidden');
+    if (user.email.split('@')[1] !== DOMAIN) {
+      await signOut(auth);
+      $('choice-screen').style.display = 'flex';
+      toast('Access denied — please use your @sourcefuse.com account.', 'error');
       return;
     }
-    const firstName = (user.displayName || user.email).split(' ')[0].split('@')[0];
-    $('admin-first-name').textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+    me = user; meEmail = user.email.toLowerCase();
+    $('user-name').textContent = user.displayName || user.email;
+    if (user.photoURL) $('user-avatar').src = user.photoURL;
+
+    if (ADMINS.includes(meEmail)) {
+      myRole = 'admin';
+    } else {
+      // ── FIX: role lookup wrapped in its own try/catch ──
+      // Firestore rules may deny learners from reading users/{email} directly.
+      // If this throws, we default safely to 'student' instead of crashing the page.
+      try {
+        const snap = await getDoc(doc(db, 'users', meEmail));
+        myRole = snap.exists() ? (snap.data().role || 'student') : 'student';
+      } catch(roleErr) {
+        console.warn('[SF Hub] Role lookup failed (Firestore rules?), defaulting to student:', roleErr.message);
+        myRole = 'student';
+      }
+    }
+
+    if (myRole === 'admin') {
+      const params = new URLSearchParams(window.location.search);
+      const view = params.get('view');
+      if (view === 'courses') {
+        $('app').style.display = 'block'; showChips();
+        hide('student-view'); hide('reviewer-view'); show('admin-view');
+        loadAdminCourses();
+        history.replaceState({}, '', window.location.pathname);
+        return;
+      }
+      const firstName = (user.displayName || user.email).split(' ')[0].split('@')[0];
+      $('admin-first-name').textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+      $('choice-screen').style.display = 'none';
+      $('admin-choice-screen').style.display = 'flex';
+      return;
+    }
+    if (myRole === 'reviewer') { window.location.href = 'reviewer.html'; return; }
+    if (myRole === 'proctor')  { window.location.href = 'sf-certs-hub.html'; return; }
+
     $('choice-screen').style.display = 'none';
-    $('admin-choice-screen').style.display = 'flex';
-    return;
+    $('app').style.display = 'block'; showChips(); route(); startNotifListener();
+
+  } catch(err) {
+    // ── FIX: catch-all — never leave learner on a blank screen ──
+    console.error('[SF Hub] Auth routing error:', err);
+    $('loading-splash').classList.add('hidden');
+    $('choice-screen').style.display = 'flex';
+    const btn = $('manual-signin-btn');
+    if (btn) { btn.disabled=false; btn.innerHTML='<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="G"> Sign in with Google'; }
+    toast('Something went wrong loading your profile. Please try signing in again.', 'error');
   }
-  if (myRole === 'reviewer') { window.location.href = 'reviewer.html'; return; }
-  if (myRole === 'proctor')  { window.location.href = 'sf-certs-hub.html'; return; }
-  $('choice-screen').style.display = 'none';
-  $('app').style.display = 'block'; showChips(); route(); startNotifListener();
 });
 
 window.manualSignIn = async function() {
@@ -1156,24 +1170,20 @@ async function loadStudentExams() {
       slotSnap.forEach(d=>{const s={id:d.id,...d.data()};if(!slotMap[s.examId]||(s.bookedAt?.seconds||0)>(slotMap[s.examId].bookedAt?.seconds||0)) slotMap[s.examId]=s;});
     } catch(e){console.warn('slot fetch:',e);}
     _currentExams=nominatedExams; window._currentExams=_currentExams;
-    // Cancel any existing slot listeners from previous load
     if (window._examSlotListeners) { window._examSlotListeners.forEach(u=>u()); }
     window._examSlotListeners = [];
     for (const exam of nominatedExams) {
       const slot = slotMap[exam.id] || null;
       grid.appendChild(buildStudentExamCard({...exam, examEligible:examEligibilityMap[exam.id]||false, _slot:slot}, myResults, myProgress));
-      // Attach onSnapshot for active slots so card auto-updates (e.g. when proctor denies)
       if (slot && ['bookedByLearner','confirmed','awaitingAdmit','inProgress'].includes(slot.status) && !slot.denied) {
         const unsub = onSnapshot(doc(db,'examSlots',slot.id), slotSnap => {
           if (!slotSnap.exists()) return;
           const updated = {id:slotSnap.id, ...slotSnap.data()};
-          // Find and replace the exam card in place
           const existingCard = document.getElementById('exam-card-'+exam.id);
           if (existingCard) {
             const newCard = buildStudentExamCard({...exam, examEligible:examEligibilityMap[exam.id]||false, _slot:updated}, myResults, myProgress);
             existingCard.replaceWith(newCard);
           }
-          // If newly denied, show a notification toast
           if (updated.denied === true && slot.denied !== true) {
             toast('Your proctor denied your exam session. Check your exam card.', 'error');
           }
@@ -1708,7 +1718,7 @@ window.submitExamSlot = async function() {
 
 function showSchedError(msg) { const el=$('sched-error'); el.textContent=msg; el.style.display='block'; }
 
-// ══ BEGIN SETUP — Camera consent, snapshots, proctor admit/deny ══
+// ══ BEGIN SETUP ══
 let _sessionExamId=null, _sessionSlotId=null, _sessionStream=null, _sessionSnaps=[], _admitListener=null;
 
 window.openBeginSetup = function(examId,slotId) {
@@ -1721,7 +1731,6 @@ window.openBeginSetup = function(examId,slotId) {
   $('begin-setup-modal').style.display='block';
 };
 
-// PATCH 4: closeBeginSetup clears the flag delay timer
 window.closeBeginSetup = function() {
   if (_sessionStream) { _sessionStream.getTracks().forEach(t=>t.stop()); _sessionStream=null; }
   if (_admitListener) { _admitListener(); _admitListener=null; }
@@ -1779,18 +1788,13 @@ async function takeBeginSetupSnapshots(referenceImage) {
   listenForProctorDecision(_sessionSlotId);
 }
 
-// PATCH 3: listenForProctorDecision with flag delay timer
 let _flagDelayTimer=null;
 
 function listenForProctorDecision(slotId) {
   if (_admitListener) { _admitListener(); _admitListener=null; }
   if (_flagDelayTimer) { clearTimeout(_flagDelayTimer); _flagDelayTimer=null; }
-
-  // Hide flag wrap initially
   const flagWrap=$('setup-flag-wrap');
   if (flagWrap) flagWrap.style.display='none';
-
-  // Reveal flag checkbox after FLAG_WAIT_MS if still waiting
   _flagDelayTimer=setTimeout(()=>{
     const waitStep=$('setup-step-waiting');
     if (!waitStep||waitStep.style.display==='none') return;
@@ -1851,7 +1855,7 @@ window.closeSessionModal=function(){
   $('session-modal').style.display='none';
 };
 
-// ══ FLAG DELAY (exam card — existing function) ══
+// ══ FLAG DELAY ══
 window.raiseDelayFlag = async function(slotId, checked) {
   if (!checked) return;
   const checkbox=document.getElementById('flag-check-'+slotId);
@@ -1866,7 +1870,6 @@ window.raiseDelayFlag = async function(slotId, checked) {
   } catch(e) { console.error('raiseDelayFlag:',e); toast('Error raising flag.','error'); if(checkbox) checkbox.disabled=false; }
 };
 
-// PATCH 5: raiseSetupDelayFlag — modal-specific wrapper
 window.raiseSetupDelayFlag = async function(slotId, checked) {
   if (!checked) return;
   const cb=$('setup-flag-check'); if(cb) cb.disabled=true;
@@ -1920,13 +1923,11 @@ document.addEventListener('click',e=>{
   const bell=$('notif-bell'); if(bell&&!bell.contains(e.target)){const panel=$('notif-panel');if(panel) panel.style.display='none';}
 });
 
-// ══ RESCHEDULE EXAM SLOT ══
+// ══ RESCHEDULE ══
 let _reschedSlotId=null, _reschedExamId=null, _reschedProctor=null;
 
 window.openRescheduleRequestModal = function(slotId, examTitle, examId, assignedProctor) {
-  _reschedSlotId = slotId;
-  _reschedExamId = examId;
-  _reschedProctor = assignedProctor || null;
+  _reschedSlotId = slotId; _reschedExamId = examId; _reschedProctor = assignedProctor || null;
   $('reschedule-subtitle').textContent = examTitle + ' — Your request will be reviewed by the admin.';
   $('resched-error').style.display = 'none';
   $('resched-date').value = ''; $('resched-time').value = '';
@@ -1936,7 +1937,6 @@ window.openRescheduleRequestModal = function(slotId, examTitle, examId, assigned
   $('reschedule-modal').style.display = 'block';
 };
 
-// Keep old openRescheduleModal as alias for bookedByLearner cards (still uses request flow)
 window.openRescheduleModal = window.openRescheduleRequestModal;
 
 window.closeRescheduleModal = function() {
@@ -1957,35 +1957,21 @@ window.submitRescheduleRequest = async function() {
     const slotData = slotSnap.data();
     const tz = _activeTz || Intl.DateTimeFormat().resolvedOptions().timeZone;
     const myEmail = lookupEmail(), myName = me?.displayName || myEmail;
-
     await addDoc(collection(db, 'rescheduleRequests'), {
-      originalSlotId:      _reschedSlotId,
-      examId:              _reschedExamId || slotData.examId || null,
-      examTitle:           slotData.examTitle || null,
-      learnerEmail:        myEmail,
-      learnerName:         myName,
-      learnerSelfie:       slotData.learnerSelfie || null,
-      learnerPhotoConsent: slotData.learnerPhotoConsent || false,
-      assignedProctor:     _reschedProctor || slotData.assignedProctor || null,
-      originalDate:        slotData.requestedDate || null,
-      originalTime:        slotData.requestedTime || null,
-      requestedDate:       date,
-      requestedTime:       time,
-      requestedTimezone:   tz,
-      rescheduleCount:     (slotData.rescheduleCount || 0) + 1,
-      status:              'pending',
-      createdAt:           serverTimestamp()
+      originalSlotId: _reschedSlotId, examId: _reschedExamId || slotData.examId || null,
+      examTitle: slotData.examTitle || null, learnerEmail: myEmail, learnerName: myName,
+      learnerSelfie: slotData.learnerSelfie || null, learnerPhotoConsent: slotData.learnerPhotoConsent || false,
+      assignedProctor: _reschedProctor || slotData.assignedProctor || null,
+      originalDate: slotData.requestedDate || null, originalTime: slotData.requestedTime || null,
+      requestedDate: date, requestedTime: time, requestedTimezone: tz,
+      rescheduleCount: (slotData.rescheduleCount || 0) + 1, status: 'pending', createdAt: serverTimestamp()
     });
-
-    // Notify both admins
-    const ADMINS = ['jv.ravichandran@sourcefuse.com', 'noushin.khan@sourcefuse.com'];
     for (const adminEmail of ADMINS) {
       await addDoc(collection(db, 'notifications', adminEmail, 'items'), {
         message: myName + ' has requested a reschedule for ' + date + ' at ' + time + '. Review in the Exams tab.',
         type: 'reschedule_request', read: false, createdAt: serverTimestamp()
       });
     }
-
     closeRescheduleModal();
     toast('Reschedule request submitted! Awaiting admin approval.', 'success');
     await loadStudentExams();
@@ -1996,7 +1982,6 @@ window.submitRescheduleRequest = async function() {
   }
 };
 
-// Keep old submitReschedule as alias so any remaining references don't break
 window.submitReschedule = window.submitRescheduleRequest;
 
 function showReschedError(msg) { const el=$('resched-error'); el.textContent=msg; el.style.display='block'; }
