@@ -785,14 +785,14 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
   <div style="max-width:520px;margin:80px auto;padding:0 20px 80px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
       <div>
-        <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">&#128197; Reschedule Exam</h2>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">📅 Request Reschedule</h2>
         <p id="reschedule-subtitle" style="font-size:13px;color:var(--muted);margin-top:4px;"></p>
       </div>
       <button onclick="closeRescheduleModal()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;">&#10005;</button>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;">
       <div style="font-size:13px;color:#fbbf24;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:10px 14px;margin-bottom:20px;">
-        &#9888;&#65039; New date/time must be at least <strong>24 hours</strong> from now.
+        ⚠️ New date/time must be at least <strong>24 hours</strong> from now. Your request will be reviewed by the admin.
       </div>
       <div style="margin-bottom:16px;">
         <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;">New Date</label>
@@ -805,7 +805,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
       <div id="resched-error" style="display:none;font-size:13px;color:#f87171;padding:10px 14px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);margin-bottom:14px;"></div>
       <div style="display:flex;gap:12px;">
         <button onclick="closeRescheduleModal()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);font-size:14px;cursor:pointer;">Cancel</button>
-        <button onclick="submitReschedule()" id="resched-submit-btn" style="flex:2;padding:12px;border-radius:10px;border:none;background:#7c3aed;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Confirm Reschedule</button>
+        <button onclick="submitRescheduleRequest()" id="resched-submit-btn" style="flex:2;padding:12px;border-radius:10px;border:none;background:#7c3aed;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Submit Request</button>
       </div>
     </div>
   </div>
@@ -872,11 +872,11 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 
     <!-- Step 4b: Denied -->
     <div id="setup-step-denied" style="display:none;background:var(--card);border:1px solid rgba(239,68,68,.3);border-radius:16px;padding:36px;text-align:center;">
-      <div style="font-size:40px;margin-bottom:14px;">&#9888;&#65039;</div>
-      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#f87171;margin-bottom:8px;">Additional Verification Required</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Your proctor could not verify your identity from the snapshots. Please reschedule your exam. One reschedule has been used.</p>
-      <button onclick="closeBeginSetup()" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);font-size:14px;cursor:pointer;">
-        Close &amp; Reschedule from Your Exam Card
+      <div style="font-size:40px;margin-bottom:14px;">⚠️</div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#f87171;margin-bottom:8px;">Session Denied by Proctor</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Your proctor has denied your exam session. Close this window and use the <strong>Request Reschedule</strong> button on your exam card to submit a new date and time for admin approval.</p>
+      <button onclick="closeBeginSetup()" style="width:100%;padding:12px;border-radius:10px;border:none;background:#7c3aed;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">
+        Close &amp; Request Reschedule
       </button>
     </div>
   </div>
@@ -1156,8 +1156,30 @@ async function loadStudentExams() {
       slotSnap.forEach(d=>{const s={id:d.id,...d.data()};if(!slotMap[s.examId]||(s.bookedAt?.seconds||0)>(slotMap[s.examId].bookedAt?.seconds||0)) slotMap[s.examId]=s;});
     } catch(e){console.warn('slot fetch:',e);}
     _currentExams=nominatedExams; window._currentExams=_currentExams;
+    // Cancel any existing slot listeners from previous load
+    if (window._examSlotListeners) { window._examSlotListeners.forEach(u=>u()); }
+    window._examSlotListeners = [];
     for (const exam of nominatedExams) {
-      grid.appendChild(buildStudentExamCard({...exam,examEligible:examEligibilityMap[exam.id]||false,_slot:slotMap[exam.id]||null},myResults,myProgress));
+      const slot = slotMap[exam.id] || null;
+      grid.appendChild(buildStudentExamCard({...exam, examEligible:examEligibilityMap[exam.id]||false, _slot:slot}, myResults, myProgress));
+      // Attach onSnapshot for active slots so card auto-updates (e.g. when proctor denies)
+      if (slot && ['bookedByLearner','confirmed','awaitingAdmit','inProgress'].includes(slot.status) && !slot.denied) {
+        const unsub = onSnapshot(doc(db,'examSlots',slot.id), slotSnap => {
+          if (!slotSnap.exists()) return;
+          const updated = {id:slotSnap.id, ...slotSnap.data()};
+          // Find and replace the exam card in place
+          const existingCard = document.getElementById('exam-card-'+exam.id);
+          if (existingCard) {
+            const newCard = buildStudentExamCard({...exam, examEligible:examEligibilityMap[exam.id]||false, _slot:updated}, myResults, myProgress);
+            existingCard.replaceWith(newCard);
+          }
+          // If newly denied, show a notification toast
+          if (updated.denied === true && slot.denied !== true) {
+            toast('Your proctor denied your exam session. Check your exam card.', 'error');
+          }
+        });
+        window._examSlotListeners.push(unsub);
+      }
     }
   } catch(err) { loading.style.display='none'; console.error('loadStudentExams:',err); toast('Error loading exams','error'); }
 }
@@ -1216,20 +1238,27 @@ function buildStudentExamCard(exam,myResults,myProgress) {
   } else if (slotStatus==='inProgress'&&slot?.admitted===true) {
     footerHtml=`<button class="card-btn btn-enter" onclick="beginActualExam('${exam.id}','${slot?.id||''}')">&#127891; Begin Exam &rarr;</button>`;
   } else if (slotStatus==='inProgress'&&slot?.denied===true) {
-    const reschedLeft=Math.max(0,2-(slot.rescheduleCount||0));
-    footerHtml=`<div style="text-align:center;"><div style="font-size:13px;color:#f87171;padding:10px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);margin-bottom:8px;">&#9888;&#65039; Additional verification required. Please reschedule.</div>${reschedLeft>0?`<button class="card-btn btn-enter" style="background:#7c3aed;" onclick="openRescheduleModal('${slot.id}','${esc(exam.title)}',${reschedLeft})">&#128197; Reschedule (${reschedLeft} left)</button>`:'<div style="font-size:13px;color:var(--muted);">No reschedules remaining.</div>'}</div>`;
+    const reason = slot.denialReason ? `<div style="font-size:12px;color:var(--muted);margin-top:4px;padding:8px 10px;background:rgba(0,0,0,.2);border-radius:6px;border-left:3px solid #f87171;">Reason: ${esc(slot.denialReason)}</div>` : '';
+    footerHtml=`<div style="text-align:center;">
+      <div style="font-size:13px;color:#f87171;padding:10px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);margin-bottom:8px;">
+        ⚠️ Your proctor denied your session.${reason}
+      </div>
+      <button class="card-btn btn-enter" style="background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}')">📅 Request Reschedule</button>
+    </div>`;
   } else if (slotStatus==='awaitingAdmit') {
     footerHtml=`<button class="card-btn btn-locked" disabled>&#9203; Awaiting Confirmation</button>`;
   } else if (slotStatus==='bookedByLearner') {
-    const reschedLeft=2-(slot.rescheduleCount||0);
-    footerHtml=reschedLeft>0?`<div style="display:flex;gap:10px;"><button class="card-btn btn-locked" disabled style="flex:1;">&#9203; Awaiting Confirmation</button><button class="card-btn btn-enter" style="flex:1;background:#7c3aed;" onclick="openRescheduleModal('${slot.id}','${esc(exam.title)}',${reschedLeft})">&#128197; Reschedule (${reschedLeft} left)</button></div>`:`<button class="card-btn btn-locked" disabled>&#9203; Awaiting Confirmation</button>`;
+    footerHtml=`<div style="display:flex;gap:10px;">
+      <button class="card-btn btn-locked" disabled style="flex:1;">⏳ Awaiting Confirmation</button>
+      <button class="card-btn btn-enter" style="flex:1;background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}')">📅 Reschedule</button>
+    </div>`;
   } else if (canTake) {
     footerHtml=`<button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}')">&#128197; Schedule Exam</button>`;
   } else {
     footerHtml=`<button class="card-btn btn-locked" disabled>${attemptsLeft===0?'No Attempts Left':'🔒 Complete Course First'}</button>`;
   }
 
-  const el=document.createElement('div'); el.className='course-card';
+  const el=document.createElement('div'); el.className='course-card'; el.id='exam-card-'+exam.id;
   el.innerHTML=`
     <div class="card-banner" style="background:linear-gradient(90deg,${ac},${lighten(ac)})"></div>
     <div class="card-body">
@@ -1803,7 +1832,7 @@ function listenForProctorDecision(slotId) {
       if (_admitListener){_admitListener();_admitListener=null;}
       if (_flagDelayTimer){clearTimeout(_flagDelayTimer);_flagDelayTimer=null;}
       $('setup-step-waiting').style.display='none'; $('setup-step-denied').style.display='block';
-      toast('Additional verification required. Please reschedule.','error');
+      toast('Your proctor denied your session. Check your exam card to request a reschedule.','error');
       loadStudentExams();
     }
   });
@@ -1892,42 +1921,85 @@ document.addEventListener('click',e=>{
 });
 
 // ══ RESCHEDULE EXAM SLOT ══
-let _reschedSlotId=null;
+let _reschedSlotId=null, _reschedExamId=null, _reschedProctor=null;
 
-window.openRescheduleModal = function(slotId,examTitle,reschedLeft) {
-  _reschedSlotId=slotId;
-  $('reschedule-subtitle').textContent=examTitle+' — '+reschedLeft+' reschedule'+(reschedLeft===1?'':'s')+' remaining after this.';
-  $('resched-error').style.display='none'; $('resched-date').value=''; $('resched-time').value='';
-  $('resched-submit-btn').disabled=false; $('resched-submit-btn').textContent='Confirm Reschedule';
-  const minDate=new Date(Date.now()+24*60*60*1000); $('resched-date').min=minDate.toISOString().split('T')[0];
-  $('reschedule-modal').style.display='block';
+window.openRescheduleRequestModal = function(slotId, examTitle, examId, assignedProctor) {
+  _reschedSlotId = slotId;
+  _reschedExamId = examId;
+  _reschedProctor = assignedProctor || null;
+  $('reschedule-subtitle').textContent = examTitle + ' — Your request will be reviewed by the admin.';
+  $('resched-error').style.display = 'none';
+  $('resched-date').value = ''; $('resched-time').value = '';
+  $('resched-submit-btn').disabled = false; $('resched-submit-btn').textContent = 'Submit Request';
+  const minDate = new Date(Date.now() + 24*60*60*1000);
+  $('resched-date').min = minDate.toISOString().split('T')[0];
+  $('reschedule-modal').style.display = 'block';
 };
 
-window.closeRescheduleModal = function() { $('reschedule-modal').style.display='none'; _reschedSlotId=null; };
+// Keep old openRescheduleModal as alias for bookedByLearner cards (still uses request flow)
+window.openRescheduleModal = window.openRescheduleRequestModal;
 
-window.submitReschedule = async function() {
-  const date=$('resched-date').value, time=$('resched-time').value;
-  if (!date){showReschedError('Please select a new date.');return;}
-  if (!time){showReschedError('Please select a new time.');return;}
-  const chosen=new Date(date+'T'+time+':00'), minAllowed=new Date(Date.now()+24*60*60*1000);
-  if (chosen<minAllowed){showReschedError('New date/time must be at least 24 hours from now.');return;}
-  const btn=$('resched-submit-btn'); btn.disabled=true; btn.textContent='Rescheduling…';
+window.closeRescheduleModal = function() {
+  $('reschedule-modal').style.display = 'none';
+  _reschedSlotId = null; _reschedExamId = null; _reschedProctor = null;
+};
+
+window.submitRescheduleRequest = async function() {
+  const date = $('resched-date').value, time = $('resched-time').value;
+  if (!date) { showReschedError('Please select a new date.'); return; }
+  if (!time) { showReschedError('Please select a new time.'); return; }
+  const chosen = new Date(date + 'T' + time + ':00'), minAllowed = new Date(Date.now() + 24*60*60*1000);
+  if (chosen < minAllowed) { showReschedError('New date/time must be at least 24 hours from now.'); return; }
+  const btn = $('resched-submit-btn'); btn.disabled = true; btn.textContent = 'Submitting…';
   try {
-    const slotSnap=await getDoc(doc(db,'examSlots',_reschedSlotId));
-    if (!slotSnap.exists()){showReschedError('Slot not found.');btn.disabled=false;btn.textContent='Confirm Reschedule';return;}
-    const oldSlot=slotSnap.data(), currentCount=oldSlot.rescheduleCount||0;
-    if (currentCount>=2){showReschedError('Maximum reschedules reached.');btn.disabled=false;btn.textContent='Confirm Reschedule';return;}
-    const newCount=currentCount+1, tz=_activeTz||Intl.DateTimeFormat().resolvedOptions().timeZone;
-    await addDoc(collection(db,'rescheduleHistory'),{originalSlotId:_reschedSlotId,examId:oldSlot.examId||null,learnerEmail:oldSlot.learnerEmail||lookupEmail(),learnerName:oldSlot.learnerName||lookupEmail(),assignedProctor:oldSlot.assignedProctor||null,originalDate:oldSlot.requestedDate||null,originalTime:oldSlot.requestedTime||null,newDate:date,newTime:time,rescheduleCount:newCount,rescheduledAt:serverTimestamp(),rescheduledBy:lookupEmail()});
-    await deleteDoc(doc(db,'examSlots',_reschedSlotId));
-    const newSlotRef=await addDoc(collection(db,'examSlots'),{examId:oldSlot.examId||null,learnerEmail:oldSlot.learnerEmail||lookupEmail(),learnerName:oldSlot.learnerName||(me.displayName||lookupEmail()),learnerSelfie:oldSlot.learnerSelfie||null,learnerPhotoConsent:oldSlot.learnerPhotoConsent||false,requestedDate:date,requestedTime:time,requestedTimezone:tz,utcDateTime:chosen.toISOString(),status:'bookedByLearner',bookedAt:serverTimestamp(),rescheduleCount:newCount,rescheduledAt:serverTimestamp(),assignedProctor:oldSlot.assignedProctor||null,confirmedBy:null,confirmedAt:null,admitted:false,denied:false,flagged:false,snapshots:[]});
-    if (oldSlot.assignedProctor) { await addDoc(collection(db,'notifications',oldSlot.assignedProctor,'items'),{message:'Learner '+(oldSlot.learnerName||oldSlot.learnerEmail||lookupEmail())+' has rescheduled their exam to '+date+' at '+time+'. New slot created. ('+newCount+'/2 reschedules used)',type:'slot_rescheduled',slotId:newSlotRef.id,read:false,createdAt:serverTimestamp()}); }
-    await addDoc(collection(db,'notifications',lookupEmail(),'items'),{message:'Your exam has been rescheduled to '+date+' at '+time+'. Awaiting proctor confirmation. ('+newCount+'/2 reschedules used)',type:'slot_rescheduled',read:false,createdAt:serverTimestamp()});
-    closeRescheduleModal(); toast('Exam rescheduled! Awaiting proctor confirmation.','success'); await loadStudentExams();
-  } catch(e) { console.error('submitReschedule:',e); showReschedError('Error rescheduling. Please try again.'); btn.disabled=false; btn.textContent='Confirm Reschedule'; }
+    const slotSnap = await getDoc(doc(db, 'examSlots', _reschedSlotId));
+    if (!slotSnap.exists()) { showReschedError('Slot not found.'); btn.disabled=false; btn.textContent='Submit Request'; return; }
+    const slotData = slotSnap.data();
+    const tz = _activeTz || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const myEmail = lookupEmail(), myName = me?.displayName || myEmail;
+
+    await addDoc(collection(db, 'rescheduleRequests'), {
+      originalSlotId:      _reschedSlotId,
+      examId:              _reschedExamId || slotData.examId || null,
+      examTitle:           slotData.examTitle || null,
+      learnerEmail:        myEmail,
+      learnerName:         myName,
+      learnerSelfie:       slotData.learnerSelfie || null,
+      learnerPhotoConsent: slotData.learnerPhotoConsent || false,
+      assignedProctor:     _reschedProctor || slotData.assignedProctor || null,
+      originalDate:        slotData.requestedDate || null,
+      originalTime:        slotData.requestedTime || null,
+      requestedDate:       date,
+      requestedTime:       time,
+      requestedTimezone:   tz,
+      rescheduleCount:     (slotData.rescheduleCount || 0) + 1,
+      status:              'pending',
+      createdAt:           serverTimestamp()
+    });
+
+    // Notify both admins
+    const ADMINS = ['jv.ravichandran@sourcefuse.com', 'noushin.khan@sourcefuse.com'];
+    for (const adminEmail of ADMINS) {
+      await addDoc(collection(db, 'notifications', adminEmail, 'items'), {
+        message: myName + ' has requested a reschedule for ' + date + ' at ' + time + '. Review in the Exams tab.',
+        type: 'reschedule_request', read: false, createdAt: serverTimestamp()
+      });
+    }
+
+    closeRescheduleModal();
+    toast('Reschedule request submitted! Awaiting admin approval.', 'success');
+    await loadStudentExams();
+  } catch(e) {
+    console.error('submitRescheduleRequest:', e);
+    showReschedError('Error submitting request. Please try again.');
+    btn.disabled = false; btn.textContent = 'Submit Request';
+  }
 };
 
-function showReschedError(msg){const el=$('resched-error');el.textContent=msg;el.style.display='block';}
+// Keep old submitReschedule as alias so any remaining references don't break
+window.submitReschedule = window.submitRescheduleRequest;
+
+function showReschedError(msg) { const el=$('resched-error'); el.textContent=msg; el.style.display='block'; }
 
 // ══ SET PERSON ROLE MODAL ══
 let _setRoleUsers=[], _setRoleSelected=null, _setRoleValue=null;
