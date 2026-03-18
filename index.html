@@ -881,7 +881,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202603181604 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202603181605 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -1797,8 +1797,28 @@ async function takeBeginSetupSnapshots(referenceImage) {
   } catch(e){console.error('snapshot save:',e);}
   try {
     const uid=await lookupUid();
-    if (uid) { const resRef=doc(db,'examResults',uid); const resSnap=await getDoc(resRef); const cur=resSnap.exists()?((resSnap.data()[_sessionExamId]||{}).attemptCount||0):0; await setDoc(resRef,{learnerEmail:me.email,learnerName:me.displayName||me.email,[_sessionExamId]:{attemptCount:cur+1,lastAttemptAt:serverTimestamp()}},{merge:true}); }
-  } catch{}
+    if (uid) {
+      // Write examResults — increments attemptCount and stamps identity fields
+      const resRef=doc(db,'examResults',uid);
+      const resSnap=await getDoc(resRef);
+      const cur=resSnap.exists()?((resSnap.data()[_sessionExamId]||{}).attemptCount||0):0;
+      await setDoc(resRef,{learnerEmail:me.email,learnerName:me.displayName||me.email,[_sessionExamId]:{attemptCount:cur+1,lastAttemptAt:serverTimestamp()}},{merge:true});
+      // Write examSessions — creates the candidateUid→email bridge that loadTestResults uses
+      // for name resolution in the Test Results report. This is the new-flow equivalent
+      // of createSessionDoc() in sf-certs-hub (old consent screen), which never fires
+      // for candidates using the Begin Setup flow in index.html.
+      await addDoc(collection(db,'examSessions'),{
+        candidateUid:   uid,
+        candidateEmail: me.email,
+        candidateName:  me.displayName||me.email,
+        examId:         _sessionExamId,
+        startedAt:      serverTimestamp(),
+        status:         'active',
+        flags:          [],
+        source:         'beginSetup'
+      });
+    }
+  } catch(e){ console.error('examResults/examSessions write:',e); }
   $('setup-step-camera').style.display='none'; $('setup-step-waiting').style.display='block';
   const strip=$('setup-thumb-strip'); strip.innerHTML=thumbs.innerHTML;
   listenForProctorDecision(_sessionSlotId);
@@ -2108,6 +2128,9 @@ window.submitAssignProctor = async function() {
   try {
     await setDoc(doc(db,'exams',examId,'nominations',nominee),{assignedProctor:proctorEmail,assignedProctorBy:me.email,assignedProctorAt:serverTimestamp()},{merge:true});
     await setDoc(doc(db,'users',proctorEmail),{assignedCandidate:nominee,assignedExamId:examId,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true});
+    // Also write assignedExamId to the candidate's user doc so their profile
+    // carries an exam reference — useful for future lookups and reporting.
+    await setDoc(doc(db,'users',nominee),{assignedExamId:examId,assignedProctor:proctorEmail,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true});
     try { const slotSnap=await getDocs(query(collection(db,'examSlots'),where('learnerEmail','==',nominee),where('examId','==',examId))); for(const sd of slotSnap.docs) await setDoc(doc(db,'examSlots',sd.id),{assignedProctor:proctorEmail},{merge:true}); } catch{}
     await addDoc(collection(db,'notifications',proctorEmail,'items'),{message:'You have been assigned as proctor for '+nominee+' on exam "'+examTitle+'".',type:'proctor_assigned',read:false,createdAt:serverTimestamp()});
     closeAssignProctorModal(); toast('Proctor assigned successfully!','success');
