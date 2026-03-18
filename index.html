@@ -881,7 +881,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202603181602 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202603181603 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -1246,7 +1246,23 @@ function buildStudentExamCard(exam,myResults,myProgress) {
       footerHtml=`<button class="card-btn btn-locked" disabled style="cursor:default;">&#128197; Exam on ${slot.requestedDate||''} ${slot.requestedTime||''} &mdash; Setup available 10 min before</button>`;
     }
   } else if (slotStatus==='inProgress'&&slot?.admitted===true) {
-    footerHtml=`<button class="card-btn btn-enter" onclick="beginActualExam('${exam.id}','${slot?.id||''}')">&#127891; Begin Exam &rarr;</button>`;
+    // Derive pass/fail if bestPassed not yet written (evaluation may only write bestScore)
+    const _derivedPassed = bestPassed!==null ? bestPassed : (bestScore!==null ? bestScore>=passMark : null);
+    if (_derivedPassed===true) {
+      // Already passed — no more action needed
+      footerHtml=`<div style="text-align:center;padding:10px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;font-size:13px;color:#34d399;font-weight:700;">🟢 Exam Passed — Congratulations!</div>`;
+    } else if (attemptsLeft>0) {
+      // Failed but has attempts left — must go through schedule → proctor flow again
+      footerHtml=`<div style="text-align:center;">
+        <div style="font-size:12px;color:#fbbf24;padding:8px 12px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;margin-bottom:8px;">
+          &#128196; Attempt recorded. To try again, please schedule a new exam slot.
+        </div>
+        <button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}')">&#128197; Schedule New Attempt</button>
+      </div>`;
+    } else {
+      // No attempts left
+      footerHtml=`<button class="card-btn btn-locked" disabled>No Attempts Left</button>`;
+    }
   } else if (slotStatus==='inProgress'&&slot?.denied===true) {
     const reason = slot.denialReason ? `<div style="font-size:12px;color:var(--muted);margin-top:4px;padding:8px 10px;background:rgba(0,0,0,.2);border-radius:6px;border-left:3px solid #f87171;">Reason: ${esc(slot.denialReason)}</div>` : '';
     footerHtml=`<div style="text-align:center;">
