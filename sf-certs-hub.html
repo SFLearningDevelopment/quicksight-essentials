@@ -688,7 +688,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 </div>
 
 <script type="module">
-console.log('%c[sf-certs-hub] ✅ Code version: v202603181603 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-certs-hub] ✅ Code version: v202603181604 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
@@ -2375,112 +2375,165 @@ async function loadReports() {
 async function loadTestResults() {
   const container=$('test-results-list');
   if (!container) return;
-  container.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px 0;">Loading…</div>';
+  container.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px 0;">Loading\u2026</div>';
   try {
+    // ── Load exams ──
     const examsSnap=await getDocs(collection(db,'exams'));
-    const exs=[]; examsSnap.forEach(d=>exs.push({id:d.id,...d.data()})); exs.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+    const exs=[]; examsSnap.forEach(d=>exs.push({id:d.id,...d.data()}));
+    exs.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
     if (!exs.length) { container.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px 0;">No exams found.</div>'; return; }
+
+    // ── Load examResults (keyed by Firebase UID) ──
     const examResultsSnap=await getDocs(collection(db,'examResults'));
     const resultsByExam={}; exs.forEach(e=>resultsByExam[e.id]=[]);
 
-    // FIX 1: Build userMap from ALL available sources so candidate names always resolve.
-    // Source A: examSessions (candidateUid → name/email)
+    // ── Build UID → {name, email} map ──
+    // Primary source: examSessions — written by grafana-evaluation.html,
+    // stores candidateUid + candidateEmail + candidateName in the same doc.
+    // This is the ONLY reliable UID→email bridge currently in Firestore.
     const userMap={};
     try {
       const sessionsSnap=await getDocs(collection(db,'examSessions'));
       sessionsSnap.forEach(d=>{
         const sd=d.data();
-        if(sd.candidateUid&&sd.candidateEmail) userMap[sd.candidateUid]={name:sd.candidateName||sd.candidateEmail,email:sd.candidateEmail};
+        if (sd.candidateUid && sd.candidateEmail) {
+          // Prefer the entry with a real display name over a bare email
+          const existing=userMap[sd.candidateUid];
+          const newName=sd.candidateName&&sd.candidateName!==sd.candidateEmail?sd.candidateName:null;
+          if (!existing || newName) {
+            userMap[sd.candidateUid]={
+              name: newName || existing?.name || sd.candidateEmail,
+              email: sd.candidateEmail
+            };
+          }
+        }
       });
-    } catch(e){console.warn('examSessions fetch:',e);}
-    // Source B: examSlots (learnerEmail + uid lookup via users collection)
-    // Build email→name map first from users collection
+    } catch(e){ console.warn('examSessions fetch:',e); }
+
+    // Secondary source: users collection, keyed by email.
+    // Users docs don't store UID, but if examResults doc-id looks like an email
+    // (legacy records) we can resolve it directly.
     const emailNameMap={};
     try {
       const usersSnap=await getDocs(collection(db,'users'));
       usersSnap.forEach(d=>{
         const ud=d.data();
-        // users doc id is email; name may be stored as displayName or name
-        emailNameMap[d.id]={name:ud.displayName||ud.name||d.id, email:d.id};
+        emailNameMap[d.id]={ name: ud.displayName||ud.name||d.id, email: d.id };
       });
-    } catch(e){console.warn('users fetch:',e);}
-    // Source C: exam nominations — they store the learner email; use to enrich userMap by uid
-    // We'll resolve uid→email from examSlots which stores both learnerEmail and (after setup) uid
-    try {
-      const slotsSnap=await getDocs(collection(db,'examSlots'));
-      slotsSnap.forEach(d=>{
-        const sd=d.data();
-        if(sd.learnerUid&&sd.learnerEmail&&!userMap[sd.learnerUid]) {
-          const known=emailNameMap[sd.learnerEmail];
-          userMap[sd.learnerUid]={name:(known?.name)||sd.learnerName||sd.learnerEmail, email:sd.learnerEmail};
-        }
-      });
-    } catch(e){console.warn('examSlots fetch:',e);}
+    } catch(e){ console.warn('users fetch:',e); }
 
-    // Build a uid→email reverse map from nominations across all exams
-    // so that even if uid isn't in any slot/session, we can match by scanning nominations
-    const uidEmailFromNoms={};
-    for (const exam of exs) {
-      try {
-        const nomSnap=await getDocs(collection(db,'exams',exam.id,'nominations'));
-        nomSnap.forEach(n=>{
-          // nominations are keyed by email; uid not stored here directly
-          // but we can fill emailNameMap for display purposes
-          const email=n.id, nd=n.data();
-          if(!emailNameMap[email]) emailNameMap[email]={name:nd.name||email, email};
-        });
-      } catch{}
-    }
-
+    // ── Process each examResults doc ──
     examResultsSnap.forEach(d=>{
       const uid=d.id, data=d.data();
-      // Resolve user: prefer userMap (uid-keyed), then fall back gracefully
-      let user=userMap[uid];
-      if(!user) {
-        // uid might itself be an email (older records)
-        user=emailNameMap[uid]||{name:'', email:uid};
+      // Resolve identity: UID map first, then treat doc-id as email fallback
+      // Tertiary source: learnerEmail/learnerName written directly into examResults doc
+      // by index.html after our fix — most reliable for future records
+      if (!userMap[uid] && data.learnerEmail) {
+        const knownName = emailNameMap[data.learnerEmail]?.name || data.learnerName || data.learnerEmail;
+        userMap[uid] = { name: knownName, email: data.learnerEmail };
       }
-      Object.entries(data).forEach(([examId,res])=>{
+      let user = userMap[uid] || emailNameMap[uid] || { name:'', email:uid };
+
+      Object.entries(data).forEach(([examId, res])=>{
         if (resultsByExam[examId]===undefined) return;
-        const examDef=exs.find(e=>e.id===examId);
-        const passMark=examDef?(examDef.passMark||examDef.passmark||70):70;
-        const attemptCount=res.attemptCount||0;
-        const bestScore=res.bestScore??null;
-        // FIX 2: derive bestPassed from bestScore vs passMark when it's missing/null
-        let bestPassed=res.bestPassed??null;
-        if(bestPassed===null && bestScore!==null) bestPassed=bestScore>=passMark;
-        // Also: if attemptCount>0 but bestScore is null (only attemptCount was written),
-        // treat as "Taken — result pending" (bestPassed stays null, score stays null)
-        resultsByExam[examId].push({uid,email:user.email,name:user.name,attemptCount,bestScore,bestPassed,attempts:res.attempts||[]});
+        const examDef = exs.find(e=>e.id===examId);
+        const passMark = examDef ? (examDef.passMark||examDef.passmark||70) : 70;
+        const attemptCount = res.attemptCount||0;
+        const bestScore    = res.bestScore??null;
+        // Derive bestPassed from bestScore vs passMark when not explicitly stored
+        let bestPassed = res.bestPassed??null;
+        if (bestPassed===null && bestScore!==null) bestPassed = (bestScore >= passMark);
+        resultsByExam[examId].push({ uid, email:user.email, name:user.name, attemptCount, bestScore, bestPassed, attempts:res.attempts||[] });
       });
     });
+
+    // ── Render ──
     container.innerHTML='';
     for (const exam of exs) {
-      const rows=resultsByExam[exam.id]||[], passed=rows.filter(r=>r.bestPassed===true).length, failed=rows.filter(r=>r.bestPassed===false).length, taken=rows.filter(r=>r.attemptCount>0).length;
-      const withScore=rows.filter(r=>r.bestScore!==null); const avg=withScore.length?Math.round(withScore.reduce((s,r)=>s+r.bestScore,0)/withScore.length):null;
+      const rows    = resultsByExam[exam.id]||[];
+      const passed  = rows.filter(r=>r.bestPassed===true).length;
+      const failed  = rows.filter(r=>r.bestPassed===false).length;
+      const taken   = rows.filter(r=>r.attemptCount>0).length;
+      const withScore = rows.filter(r=>r.bestScore!==null);
+      const avg = withScore.length ? Math.round(withScore.reduce((s,r)=>s+r.bestScore,0)/withScore.length) : null;
       const examCardId='tr-exam-'+exam.id;
-      const card=document.createElement('div'); card.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;';
+
+      const card=document.createElement('div');
+      card.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;';
       card.innerHTML=`<div style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;user-select:none;" onclick="trToggle('${examCardId}',this)">
         <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0;">
-          <div style="font-size:22px;flex-shrink:0;">${esc(exam.icon||'📝')}</div>
+          <div style="font-size:22px;flex-shrink:0;">${esc(exam.icon||'\u{1F4DD}')}</div>
           <div><div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;">${esc(exam.title||exam.id)}</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">${esc(exam.category||'')}</div></div>
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">
           <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.2);">${taken} Taken</span>
-          <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2);">🟢 ${passed} Passed</span>
+          <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2);">\u{1F7E2} ${passed} Passed</span>
           <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.15);">${failed} Failed</span>
           ${avg!==null?`<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(240,165,0,.1);color:#fbbf24;border:1px solid rgba(240,165,0,.2);">Avg ${avg}%</span>`:''}
-          <span class="tr-chevron" style="font-size:14px;color:var(--muted);transition:transform .2s;">▾</span>
+          <span class="tr-chevron" style="font-size:14px;color:var(--muted);transition:transform .2s;">\u25BE</span>
         </div>
       </div>
       <div id="${examCardId}" style="display:none;border-top:1px solid var(--border);">
-        ${rows.length===0?`<div style="padding:20px;color:var(--muted);font-size:13px;text-align:center;">No results recorded yet.</div>`:`<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="border-bottom:1px solid var(--border);"><th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Candidate</th><th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Best Score</th><th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Result</th><th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Attempts</th></tr></thead><tbody>${rows.sort((a,b)=>(b.bestScore??-1)-(a.bestScore??-1)).map(r=>{const sc=r.bestPassed===true?'color:#34d399;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);':r.bestPassed===false?'color:#f87171;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);':'color:var(--muted);background:var(--surface);border:1px solid var(--border);';const dots=Array.from({length:exam.maxAttempts||3},(_,i)=>`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:3px;background:${i<r.attemptCount?(r.bestPassed?'#34d399':'#f87171'):'var(--border)'};"></span>`).join('');const displayName=r.name&&r.name!==r.email&&r.name!==r.uid?r.name:(r.email||r.uid);const showEmail=displayName!==r.email&&!!r.email&&r.email!==r.uid;const resultCell=r.bestPassed===true?'<span style="color:#34d399;font-weight:600;">\U0001f7e2 Pass</span>':r.bestPassed===false?'<span style="color:#f87171;font-weight:600;">\U0001f534 Fail</span>':r.attemptCount>0?'<span style="color:#fbbf24;font-weight:600;">\U0001f7e1 Taken</span>':'<span style="color:var(--muted);">\u2014</span>';return`<tr style="border-bottom:1px solid var(--border);"><td style="padding:12px 16px;"><div style="font-weight:600;font-size:13px;">${esc(displayName)}</div>${showEmail?`<div style="font-size:11px;color:var(--muted);">${esc(r.email)}</div>`:''}</td><td style="padding:12px 16px;">${r.bestScore!==null?`<span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;${sc}">${r.bestScore}%</span>`:'<span style="color:var(--muted);font-size:12px;">—</span>'}</td><td style="padding:12px 16px;">${resultCell}</td><td style="padding:12px 16px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;color:var(--muted);">${r.attemptCount}/${exam.maxAttempts||3}</span><div>${dots}</div></div></td></tr>`;}).join('')}</tbody></table></div>`}
+        ${rows.length===0
+          ? `<div style="padding:20px;color:var(--muted);font-size:13px;text-align:center;">No results recorded yet.</div>`
+          : `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead><tr style="border-bottom:1px solid var(--border);">
+                <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Candidate</th>
+                <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Best Score</th>
+                <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Result</th>
+                <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Attempts</th>
+              </tr></thead>
+              <tbody>${rows.sort((a,b)=>(b.bestScore??-1)-(a.bestScore??-1)).map(r=>{
+                // Name display: show real name bold, email as subtitle if different
+                const displayName = (r.name && r.name !== r.email) ? r.name : (r.email || r.uid);
+                const showEmail   = displayName !== r.email && !!r.email;
+                // Score badge style
+                const sc = r.bestPassed===true
+                  ? 'color:#34d399;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);'
+                  : r.bestPassed===false
+                    ? 'color:#f87171;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);'
+                    : 'color:var(--muted);background:var(--surface);border:1px solid var(--border);';
+                // Attempt dots
+                const dots = Array.from({length:exam.maxAttempts||3},(_,i)=>
+                  `<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:3px;background:${
+                    i<r.attemptCount?(r.bestPassed===true?'#34d399':'#f87171'):'var(--border)'
+                  };"></span>`).join('');
+                // Result cell — plain ASCII-safe strings, no Python unicode escapes
+                const resultCell = r.bestPassed===true
+                  ? '<span style="color:#34d399;font-weight:600;">\u{1F7E2} Pass</span>'
+                  : r.bestPassed===false
+                    ? '<span style="color:#f87171;font-weight:600;">\u{1F534} Fail</span>'
+                    : r.attemptCount>0
+                      ? '<span style="color:#fbbf24;font-weight:600;">\u{1F7E1} Taken</span>'
+                      : '<span style="color:var(--muted);">\u2014</span>';
+                return `<tr style="border-bottom:1px solid var(--border);">
+                  <td style="padding:12px 16px;">
+                    <div style="font-weight:600;font-size:13px;">${esc(displayName)}</div>
+                    ${showEmail ? `<div style="font-size:11px;color:var(--muted);">${esc(r.email)}</div>` : ''}
+                  </td>
+                  <td style="padding:12px 16px;">${r.bestScore!==null
+                    ? `<span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px;${sc}">${r.bestScore}%</span>`
+                    : '<span style="color:var(--muted);font-size:12px;">\u2014</span>'
+                  }</td>
+                  <td style="padding:12px 16px;">${resultCell}</td>
+                  <td style="padding:12px 16px;">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                      <span style="font-size:12px;color:var(--muted);">${r.attemptCount}/${exam.maxAttempts||3}</span>
+                      <div>${dots}</div>
+                    </div>
+                  </td>
+                </tr>`;
+              }).join('')}</tbody>
+            </table></div>`
+        }
       </div>`;
       container.appendChild(card);
     }
-  } catch(err) { container.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px 0;">Error loading test results.</div>'; console.error('loadTestResults:',err); }
+  } catch(err) {
+    container.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px 0;">Error loading test results.</div>';
+    console.error('loadTestResults:',err);
+  }
 }
-
 window.trToggle = function(id, header) {
   const body=$(id), chevron=header.querySelector('.tr-chevron'), isOpen=body.style.display!=='none';
   body.style.display=isOpen?'none':'block'; chevron.style.transform=isOpen?'':'rotate(180deg)';
