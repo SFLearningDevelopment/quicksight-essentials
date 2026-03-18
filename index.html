@@ -191,7 +191,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .snapshot-thumb{width:56px;height:42px;border-radius:6px;object-fit:cover;border:2px solid var(--border);}
 .match-score{font-size:10px;text-align:center;margin-top:2px;font-weight:700;}
 
-/* ══ ADMIN VIEW ══ */
+/* ══ ADMIN / REVIEWER / EXAM RESULTS VIEWS ══ */
 #admin-view{display:none;}
 #reviewer-view{display:none;}
 #examresults-view{display:none;}
@@ -269,6 +269,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .approve-btn{padding:9px 20px;border-radius:8px;border:none;background:#10b981;color:#fff;font-size:13px;font-weight:700;cursor:pointer;}
 .reject-btn{padding:9px 20px;border-radius:8px;border:none;background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);font-size:13px;font-weight:700;cursor:pointer;}
 .rq-comment{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:13px;margin-bottom:12px;resize:vertical;min-height:80px;font-family:'Syne',sans-serif;}
+
 /* ══ FLAG DELAY ══ */
 .flag-delay-box{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:12px 14px;margin-top:10px;}
 .flag-delay-label{font-size:12px;color:#f87171;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
@@ -289,55 +290,31 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 .set-role-user-row.selected{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.35);}
 
 /* ══ PREVIEW READ-ONLY OVERLAY ══ */
-/* Preview read-only mode — applied as a class on the view div */
 .preview-mode-active button:not(.s-tab):not(.preview-tab-exempt),
 .preview-mode-active input,
 .preview-mode-active select,
 .preview-mode-active textarea,
 .preview-mode-active a[onclick]:not(.preview-tab-exempt){
-  pointer-events:none!important;
-  cursor:not-allowed!important;
-  opacity:.45!important;
+  pointer-events:none!important;cursor:not-allowed!important;opacity:.45!important;
 }
-/* Nav tabs explicitly override — must come AFTER the blocking rule */
 .preview-mode-active .s-tabs,
 .preview-mode-active .s-tabs .s-tab,
 .preview-mode-active .s-tab,
 .s-tab.preview-mode-active,
 #student-view.preview-mode-active .s-tabs button,
-#student-view.preview-mode-active .s-tab {
-  pointer-events:all!important;
-  cursor:pointer!important;
-  opacity:1!important;
-  position:relative;
-  z-index:1;
+#student-view.preview-mode-active .s-tab{
+  pointer-events:all!important;cursor:pointer!important;opacity:1!important;position:relative;z-index:1;
 }
 .preview-readonly-banner{
-  position:sticky;
-  top:0;
-  z-index:801;
-  background:rgba(245,158,11,.22);
-  border-bottom:2px solid rgba(245,158,11,.5);
-  color:#fde68a;
-  font-size:13px;
-  font-weight:700;
-  padding:9px 20px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  letter-spacing:.01em;
+  position:sticky;top:0;z-index:801;background:rgba(245,158,11,.22);
+  border-bottom:2px solid rgba(245,158,11,.5);color:#fde68a;
+  font-size:13px;font-weight:700;padding:9px 20px;
+  display:flex;align-items:center;gap:8px;letter-spacing:.01em;
 }
-/* Nav tabs always above read-only overlay in preview mode */
-body.preview-active .s-tabs,
-body.preview-active .s-tab,
-body.preview-active .p-slot-tabs,
-body.preview-active .p-slot-tab {
-  position:relative;
-  z-index:701;
-  pointer-events:all;
-  cursor:pointer;
+body.preview-active .s-tabs,body.preview-active .s-tab,
+body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
+  position:relative;z-index:701;pointer-events:all;cursor:pointer;
 }
-
 </style>
 </head>
 <body>
@@ -349,7 +326,7 @@ body.preview-active .p-slot-tab {
   <div style="font-size:13px;color:var(--muted);">Loading&hellip;</div>
 </div>
 
-<!-- CHOICE SCREEN (unauthenticated) -->
+<!-- CHOICE SCREEN -->
 <div id="choice-screen">
   <div class="choice-wrap">
     <div class="choice-brand">
@@ -495,7 +472,7 @@ body.preview-active .p-slot-tab {
     </div>
   </div>
 
-  <!-- ADMIN VIEW (minimal — full admin in sf-certs-hub) -->
+  <!-- ADMIN VIEW -->
   <div id="admin-view">
     <div class="admin-layout">
       <div class="sidebar">
@@ -512,7 +489,6 @@ body.preview-active .p-slot-tab {
       </div>
       <div class="admin-content">
         <div id="admin-placeholder" style="color:var(--muted);font-size:14px;padding:40px 0;text-align:center;">Select a course or person to edit.</div>
-        <!-- Course edit panel -->
         <div id="course-panel" style="display:none;">
           <div class="p-section">
             <div class="p-section-title">Course Details</div>
@@ -554,7 +530,6 @@ body.preview-active .p-slot-tab {
             </div>
           </div>
         </div>
-        <!-- Person edit panel -->
         <div id="person-panel" style="display:none;">
           <div class="p-section">
             <div class="p-section-title">User Details</div>
@@ -582,7 +557,7 @@ body.preview-active .p-slot-tab {
     </div>
   </div>
 
-  <!-- REVIEWER VIEW (inline admin preview) -->
+  <!-- REVIEWER VIEW -->
   <div id="reviewer-view">
     <div style="max-width:800px;margin:0 auto;padding:40px 32px;">
       <h2 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:8px;">Course Review Queue</h2>
@@ -648,34 +623,22 @@ body.preview-active .p-slot-tab {
         <input type="time" id="sched-time" class="schedule-input" value="10:00">
         <div class="schedule-tz" id="sched-tz-display"></div>
       </div>
-      <!-- Webcam selfie + consent -->
       <div class="consent-box">
         <div class="consent-title">📸 Identity Verification Selfie</div>
         <div class="consent-text">A live selfie will be taken using your webcam and shared with your proctor (a SourceFuse employee only) to verify your identity before the exam. This photo will not be shared outside of SourceFuse.</div>
-        <!-- Start camera button -->
-        <button onclick="startSelfieCamera()" id="selfie-start-btn"
-          style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--accent);background:rgba(59,130,246,.08);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;">
+        <button onclick="startSelfieCamera()" id="selfie-start-btn" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--accent);background:rgba(59,130,246,.08);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;">
           🎥 Open Camera to Take Selfie
         </button>
-        <!-- Webcam stream -->
         <div id="selfie-cam-wrap" style="display:none;margin-bottom:12px;">
-          <video id="selfie-video" autoplay playsinline muted
-            style="width:100%;max-width:280px;border-radius:10px;border:2px solid var(--accent);display:block;margin:0 auto;"></video>
+          <video id="selfie-video" autoplay playsinline muted style="width:100%;max-width:280px;border-radius:10px;border:2px solid var(--accent);display:block;margin:0 auto;"></video>
           <div id="selfie-countdown" style="text-align:center;font-size:28px;font-weight:800;color:var(--accent);margin-top:8px;display:none;"></div>
           <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
-            <button onclick="takeSelfie()" id="selfie-take-btn"
-              style="padding:8px 20px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer;">
-              📸 Take Selfie
-            </button>
-            <button onclick="retakeSelfie()" id="selfie-retake-btn" style="display:none;padding:8px 20px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);font-size:13px;cursor:pointer;">
-              🔄 Retake
-            </button>
+            <button onclick="takeSelfie()" id="selfie-take-btn" style="padding:8px 20px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer;">📸 Take Selfie</button>
+            <button onclick="retakeSelfie()" id="selfie-retake-btn" style="display:none;padding:8px 20px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);font-size:13px;cursor:pointer;">🔄 Retake</button>
           </div>
         </div>
-        <!-- Selfie preview after capture -->
         <div id="selfie-preview-wrap" style="display:none;text-align:center;margin-bottom:12px;">
-          <canvas id="selfie-canvas" width="280" height="210"
-            style="border-radius:10px;border:2px solid #34d399;display:block;margin:0 auto;"></canvas>
+          <canvas id="selfie-canvas" width="280" height="210" style="border-radius:10px;border:2px solid #34d399;display:block;margin:0 auto;"></canvas>
           <div style="font-size:12px;color:#34d399;margin-top:6px;">✅ Selfie captured</div>
         </div>
         <div id="sched-photo-status" style="font-size:11px;color:var(--muted);margin-bottom:10px;"></div>
@@ -693,16 +656,13 @@ body.preview-active .p-slot-tab {
   </div>
 </div>
 
-<!-- BEGIN SESSION MODAL -->
+<!-- BEGIN SESSION MODAL (legacy — kept for compatibility) -->
 <div id="session-modal" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(10,12,20,.95);backdrop-filter:blur(8px);overflow-y:auto;">
   <div style="max-width:520px;margin:60px auto;padding:0 20px 80px;">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;">
       <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px;">🎥 Identity Verification</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;">
-        Please look at the camera. We will take 5 snapshots over 15 seconds to verify your identity. Your proctor will review these before admitting you to the exam.
-      </div>
-      <video id="session-video" autoplay playsinline muted
-        style="width:100%;border-radius:10px;border:2px solid var(--accent);margin-bottom:16px;display:none;"></video>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;">Please look at the camera. We will take 5 snapshots over 15 seconds to verify your identity.</div>
+      <video id="session-video" autoplay playsinline muted style="width:100%;border-radius:10px;border:2px solid var(--accent);margin-bottom:16px;display:none;"></video>
       <div id="session-status" style="text-align:center;font-size:14px;color:var(--muted);margin-bottom:16px;min-height:24px;"></div>
       <div id="session-thumbs" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;"></div>
       <div id="session-waiting" style="display:none;text-align:center;padding:20px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:10px;margin-bottom:16px;">
@@ -715,2233 +675,12 @@ body.preview-active .p-slot-tab {
         <div style="font-size:14px;font-weight:700;color:#f87171;">Access Denied by Proctor</div>
         <div style="font-size:12px;color:var(--muted);margin-top:4px;">Your proctor could not verify your identity. This attempt has been recorded.</div>
       </div>
-      <button onclick="closeSessionModal()" id="session-close-btn"
-        style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);font-size:14px;cursor:pointer;">Cancel</button>
+      <button onclick="closeSessionModal()" id="session-close-btn" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);font-size:14px;cursor:pointer;">Cancel</button>
     </div>
   </div>
 </div>
 
-<footer style="text-align:center;padding:24px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:40px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">
-  <span>🤖 AI-Generated &amp; Expert-Reviewed</span>
-  <span>📚 Educational Use Only</span>
-  <span>🔒 Data stored securely in Firebase</span>
-  <span>🔗 External links for reference only</span>
-  <span>🗓 Content current as of March 2026</span>
-  <span>© 2026 SourceFuse Technologies</span>
-</footer>
-
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
-  from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
-import {
-  getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc, addDoc, serverTimestamp,
-  query, where, onSnapshot
-} from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js';
-
-const FB = {
-  apiKey:"AIzaSyA-8fatW5D7uR69rcuGFPH54IFqrz0PhU0",
-  authDomain:"sfcertification-grafana.firebaseapp.com",
-  projectId:"sfcertification-grafana",
-  appId:"1:227322696511:web:12e7ced7dd3d45fa06798a"
-};
-const ADMINS = ['jv.ravichandran@sourcefuse.com', 'noushin.khan@sourcefuse.com']; // noushin.khan temporarily removed for learner test
-const DOMAIN = 'sourcefuse.com';
-
-const app  = initializeApp(FB);
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-let me = null, meEmail = null, myRole = null, isPreviewMode = false, previewEmail = null;
-
-function lookupEmail() { return (isPreviewMode && previewEmail) ? previewEmail : meEmail; }
-
-async function lookupUid() {
-  if (!isPreviewMode || !previewEmail) return me.uid;
-  try {
-    const snap = await getDocs(collection(db, 'users'));
-    let uid = null;
-    snap.forEach(d => { if ((d.data().email||'').toLowerCase() === previewEmail) uid = d.id; });
-    return uid;
-  } catch { return null; }
-}
-
-let courses = [], people = [];
-let selCourse = null, selPerson = null, adminTab = 'courses';
-let inLearnerView = false;
-let toastTimer;
-
-// ══ UTILS ══
-function $(id) { return document.getElementById(id); }
-function show(id) { const el=$(id); if(el) el.style.display='block'; }
-function hide(id) { const el=$(id); if(el) el.style.display='none'; }
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-function lighten(hex) {
-  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-  return `rgb(${Math.min(255,r+40)},${Math.min(255,g+40)},${Math.min(255,b+40)})`;
-}
-function toast(msg,type='info') {
-  const t=$('toast'); t.textContent=msg; t.className='show '+type;
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-// ══ AUTH ══
-const authTimeout = setTimeout(() => {
-  $('loading-splash').classList.add('hidden');
-  $('choice-screen').style.display = 'flex';
-}, 6000);
-
-const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({ hd: 'sourcefuse.com', prompt: 'select_account' });
-
-let authResolved = false;
-
-onAuthStateChanged(auth, async user => {
-  clearTimeout(authTimeout);
-
-  if (!user) {
-    $('loading-splash').classList.add('hidden');
-    // Hide all screens that might be showing
-    $('admin-choice-screen').style.display = 'none';
-    $('app').style.display = 'none';
-    // Reset sign-in button
-    const btn = $('manual-signin-btn');
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="G"> Sign in with Google';
-    }
-    $('choice-screen').style.display = 'flex';
-    return;
-  }
-
-  authResolved = true;
-  $('loading-splash').classList.add('hidden');
-
-  if (user.email.split('@')[1] !== DOMAIN) {
-    await signOut(auth);
-    $('choice-screen').style.display = 'flex';
-    toast('Access denied — please use your @sourcefuse.com account.', 'error');
-    return;
-  }
-
-  me = user;
-  meEmail = user.email.toLowerCase();
-  console.log('[SF Auth] meEmail:', meEmail, '| displayName:', user.displayName, '| uid:', user.uid);
-
-  $('user-name').textContent = user.displayName || user.email;
-  if (user.photoURL) $('user-avatar').src = user.photoURL;
-
-  if (ADMINS.includes(meEmail)) {
-    myRole = 'admin';
-  } else {
-    const snap = await getDoc(doc(db, 'users', meEmail));
-    myRole = snap.exists() ? (snap.data().role || 'student') : 'student';
-  }
-
-  if (myRole === 'admin') {
-    const params = new URLSearchParams(window.location.search);
-    const view = params.get('view');
-    if (view === 'courses') {
-      $('app').style.display = 'block';
-      showChips();
-      hide('student-view'); hide('reviewer-view');
-      show('admin-view');
-      loadAdminCourses();
-      history.replaceState({}, '', window.location.pathname);
-      return;
-    }
-    const firstName = (user.displayName || user.email).split(' ')[0].split('@')[0];
-    $('admin-first-name').textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1);
-    // Admins go directly to admin console — no landing screen
-    $('choice-screen').style.display = 'none';
-    $('admin-choice-screen').style.display = 'flex';
-    return;
-  }
-
-  // Non-admin — auto route
-  if (myRole === 'reviewer') { window.location.href = 'reviewer.html'; return; }
-  if (myRole === 'proctor')  { window.location.href = 'sf-certs-hub.html'; return; }
-  $('choice-screen').style.display = 'none';
-  $('app').style.display = 'block';
-  showChips();
-  route();
-  startNotifListener();
-});
-
-window.manualSignIn = async function() {
-  const btn = $('manual-signin-btn');
-  btn.disabled = true; btn.textContent = 'Signing in...';
-  try { await signInWithPopup(auth, googleProvider); }
-  catch(e) {
-    if (e.code !== 'auth/cancelled-popup-request') toast('Sign-in failed. Please try again.','error');
-    btn.disabled = false;
-    btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="G"> Sign in with Google';
-  }
-};
-
-window.selectMode = function(mode) {
-  $('choice-screen').style.display = 'none';
-  if (mode === 'certify') { window.location.href = 'sf-certs-hub.html'; }
-  else { $('app').style.display = 'block'; showChips(); route(); }
-};
-
-window.backToAdminConsole = function() {
-  $('app').style.display = 'none';
-  inLearnerView = false;
-  $('admin-choice-screen').style.display = 'flex';
-};
-
-window.adminNav = function(section) {
-  if (section === 'certifications') { window.location.href = 'sf-certs-hub.html'; return; }
-  if (section === 'learner')        { previewAsStudent(); return; }
-  // assignProctor now uses modal, not navigation
-  $('admin-choice-screen').style.display = 'none';
-  inLearnerView = false;
-  $('app').style.display = 'block';
-  showChips();
-  hide('student-view'); hide('reviewer-view');
-  show('admin-view');
-  loadAdminCourses();
-};
-
-window.adminSignOut = async function() {
-  // Hide all screens — let onAuthStateChanged handle showing choice-screen cleanly
-  $('admin-choice-screen').style.display = 'none';
-  $('choice-screen').style.display       = 'none';
-  $('app').style.display                 = 'none';
-  await signOut(auth);
-}
-
-$('signout-btn').addEventListener('click', () => adminSignOut());
-
-function showChips() {
-  $('chip-admin').style.display    = myRole==='admin'    ? 'inline-flex' : 'none';
-  $('chip-reviewer').style.display = myRole==='reviewer' ? 'inline-flex' : 'none';
-  $('chip-proctor').style.display  = myRole==='proctor'  ? 'inline-flex' : 'none';
-  $('certs-link').style.display    = (myRole==='student' || myRole==='reviewer') ? 'inline-flex' : 'none';
-  $('learner-view-btn').style.display  = (myRole==='admin' || myRole==='reviewer') ? 'inline-flex' : 'none';
-  $('admin-console-btn').style.display = myRole==='admin' ? 'inline-flex' : 'none';
-}
-
-function route() {
-  hide('student-view'); hide('admin-view'); hide('reviewer-view');
-  inLearnerView = false;
-  if      (myRole==='admin')    { show('admin-view');    loadAdminCourses(); }
-  else if (myRole==='reviewer') { window.location.href = 'reviewer.html'; }
-  else if (myRole==='proctor')  { window.location.href = 'sf-certs-hub.html'; }
-  else                          { show('student-view');  loadStudentCourses(); }
-}
-
-window.toggleLearnerView = function() {
-  if (!inLearnerView) {
-    inLearnerView = true;
-    hide('admin-view'); hide('reviewer-view');
-    show('student-view');
-    loadStudentCourses();
-  } else {
-    inLearnerView = false;
-    route();
-  }
-};
-
-// ══ STUDENT TABS ══
-window.switchStudentTab = function(tab) {
-  if (tab === 'courses') {
-    $('sStudentTab').className = 's-tab active';
-    $('sExamTab').className = 's-tab';
-    show('tab-courses'); hide('tab-exams');
-    loadStudentCourses();
-  } else {
-    $('sStudentTab').className = 's-tab';
-    $('sExamTab').className = 's-tab active';
-    hide('tab-courses'); show('tab-exams');
-    loadStudentExams();
-  }
-};
-
-// ══ STUDENT COURSES ══
-async function loadStudentCourses() {
-  console.log('[SF Load] loadStudentCourses called, meEmail:', meEmail, 'myRole:', myRole);
-  show('loading-courses'); hide('courses-grid'); hide('empty-state');
-  $('courses-grid').innerHTML = '';
-  try {
-    const snap = await getDocs(collection(db, 'courses'));
-    courses = [];
-    snap.forEach(d => { if(d.data().status==='live') courses.push({id:d.id,...d.data()}); });
-    courses.sort((a,b) => (a.order||0)-(b.order||0));
-    hide('loading-courses');
-    if (!courses.length) { show('empty-state'); return; }
-    show('courses-grid');
-    for (const c of courses) $('courses-grid').appendChild(await buildCard(c));
-  } catch(e) { hide('loading-courses'); toast('Error loading courses','error'); }
-}
-
-async function buildCard(c) {
-  let nom = myRole === 'admin' && !isPreviewMode;
-  if (!nom) {
-    try {
-      const s = await getDoc(doc(db,'courses',c.id,'nominations',lookupEmail()));
-      console.log('[SF Card]', c.title, '| lookupEmail:', lookupEmail(), '| exists:', s.exists(), '| data:', s.exists() ? JSON.stringify(s.data()) : 'n/a');
-      nom = s.exists() && s.data().nominated !== false;
-    } catch{}
-  }
-  const ac = c.accentColor || '#3b82f6';
-  const el = document.createElement('div');
-  el.className = 'course-card' + (nom ? '' : ' locked');
-  el.innerHTML = `
-    <div class="card-banner" style="background:linear-gradient(90deg,${ac},${lighten(ac)})"></div>
-    <div class="card-body">
-      <div class="card-meta">
-        <span class="card-tag">${esc(c.category||'Course')}</span>
-        <span class="card-status ${nom?'s-nom':'s-not'}">${nom?'🟠 Nominated':'Not Nominated'}</span>
-      </div>
-      <div class="card-icon">${esc(c.icon||'📘')}</div>
-      <div class="card-title">${esc(c.title)}</div>
-      <div class="card-desc">${esc(c.description||'')}</div>
-      <div class="not-nom-notice">You are not nominated for this course. Please request your manager to nominate you.</div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        ${c.duration ? `<div class="card-info-item">&#8987; ${esc(c.duration)}</div>` : ''}
-        ${c.level    ? `<div class="card-info-item">&#128214; ${esc(c.level)}</div>`    : ''}
-      </div>
-      ${nom
-        ? `<a href="${esc(c.url||'#')}" class="card-btn btn-enter">Enter Course &rarr;</a>`
-        : `<button class="card-btn btn-locked" disabled>🔒 Access Restricted</button>`}
-    </div>`;
-  return el;
-}
-
-// ══ STUDENT EXAMS ══
-let _currentExams = [];
-window._currentExams = _currentExams;
-
-async function loadStudentExams() {
-  const grid    = $('student-exams-grid');
-  const loading = $('loading-exams');
-  grid.innerHTML = '';
-  loading.style.display = 'block';
-  hide('empty-exams');
-
-  try {
-    const snap = await getDocs(collection(db, 'exams'));
-    const allExams = [];
-    snap.forEach(d => { if (d.data().status==='live') allExams.push({id:d.id,...d.data()}); });
-
-    const nominatedExams = [];
-    for (const exam of allExams) {
-      let nominated = myRole === 'admin' && !isPreviewMode;
-      if (!nominated) {
-        try {
-          const s = await getDoc(doc(db,'exams',exam.id,'nominations',lookupEmail()));
-          nominated = s.exists() && (s.data().nominated !== false || s.data().examEligible === true);
-        } catch {}
-      }
-      if (nominated) nominatedExams.push(exam);
-    }
-
-    loading.style.display = 'none';
-    if (!nominatedExams.length) { show('empty-exams'); return; }
-
-    const _uid = await lookupUid();
-    let myResults = {};
-    try {
-      if (_uid) {
-        const rs = await getDoc(doc(db,'examResults',_uid));
-        if (rs.exists()) myResults = rs.data();
-      }
-    } catch {}
-
-    let myProgress = {};
-    try {
-      if (_uid) {
-        const ps = await getDoc(doc(db,'progress',_uid));
-        if (ps.exists()) myProgress = ps.data();
-      }
-    } catch {}
-
-    const examEligibilityMap = {};
-    for (const exam of nominatedExams) {
-      try {
-        const nomDoc = await getDoc(doc(db,'exams',exam.id,'nominations',lookupEmail()));
-        examEligibilityMap[exam.id] = nomDoc.exists() && nomDoc.data().examEligible === true;
-      } catch {}
-    }
-
-    // Fetch existing exam slots for this learner
-    const slotMap = {};
-    try {
-      const slotSnap = await getDocs(query(
-        collection(db, 'examSlots'),
-        where('learnerEmail', '==', lookupEmail())
-      ));
-      slotSnap.forEach(d => {
-        const s = {id: d.id, ...d.data()};
-        if (!slotMap[s.examId] || (s.bookedAt?.seconds||0) > (slotMap[s.examId].bookedAt?.seconds||0))
-          slotMap[s.examId] = s;
-      });
-    } catch(e) { console.warn('slot fetch:', e); }
-
-    _currentExams = nominatedExams;
-    window._currentExams = _currentExams;
-
-    for (const exam of nominatedExams) {
-      const examWithFlag = {
-        ...exam,
-        examEligible: examEligibilityMap[exam.id] || false,
-        _slot: slotMap[exam.id] || null
-      };
-      grid.appendChild(buildStudentExamCard(examWithFlag, myResults, myProgress));
-    }
-  } catch(err) {
-    loading.style.display = 'none';
-    console.error('loadStudentExams:', err);
-    toast('Error loading exams','error');
-  }
-}
-
-function buildStudentExamCard(exam, myResults, myProgress) {
-  const ac          = exam.accentColor || '#f59e0b';
-  const maxAttempts = exam.maxAttempts || 3;
-  const passMark    = exam.passMark || exam.passmark || 66;
-  const res         = myResults[exam.id] || null;
-  const attemptCount = res?.attemptCount || 0;
-  const bestScore    = res?.bestScore    ?? null;
-  const bestPassed   = res?.bestPassed   ?? null;
-  const attemptsLeft = Math.max(0, maxAttempts - attemptCount);
-  const examEligible = exam.examEligible === true;
-
-  let courseComplete = true;
-  if (exam.linkedCourseId && !examEligible) {
-    courseComplete = myProgress['course_'+exam.linkedCourseId] === true;
-  }
-  const canTake = (courseComplete || examEligible) && attemptsLeft > 0;
-
-  const statusBadge = bestPassed === true
-    ? '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2);">🟢 Passed</span>'
-    : bestPassed === false
-    ? '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.15);">🔴 Not Passed</span>'
-    : attemptCount > 0
-    ? '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(245,158,11,.08);color:#fbbf24;border:1px solid rgba(245,158,11,.2);">🟡 In Progress</span>'
-    : '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(59,130,246,.08);color:#60a5fa;border:1px solid rgba(59,130,246,.2);">&#9898; Not Attempted</span>';
-
-  const dots = Array.from({length: maxAttempts}, (_,i) =>
-    `<div class="a-dot ${i < attemptCount ? 'used' : 'avail'}"></div>`).join('');
-
-  let notice = '';
-  if (!courseComplete && exam.linkedCourseId && !examEligible)
-    notice = `<div class="notice-box notice-course-lock" style="margin-top:12px;">&#9888;&#65039; Complete the linked course before attempting this exam.</div>`;
-  else if (examEligible && !courseComplete)
-    notice = `<div class="notice-box" style="margin-top:12px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fbbf24;">&#9889; Course override enabled &mdash; you can take this exam directly.</div>`;
-  else if (attemptsLeft === 0)
-    notice = `<div class="notice-box notice-no-attempts" style="margin-top:12px;">All ${maxAttempts} attempts used for this exam.</div>`;
-
-  // Slot status
-  const slot = exam._slot || null;
-  const slotStatus = slot ? slot.status : null;
-  let slotStatusHtml = '';
-  if (slotStatus === 'bookedByLearner') {
-    const rc = slot.rescheduleCount || 0;
-    const reschedTag = rc > 0
-      ? `<span style="font-size:11px;margin-left:8px;padding:2px 8px;border-radius:50px;background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.2);">Rescheduled ${rc}/2</span>`
-      : '';
-    slotStatusHtml = `<div class="slot-status awaiting">&#9203; Awaiting proctor confirmation &middot; ${slot.requestedDate||''} ${slot.requestedTime||''}${reschedTag}</div>`;
-  } else if (slotStatus === 'confirmed') {
-    slotStatusHtml = `<div class="slot-status confirmed">&#10003; Slot confirmed &middot; ${slot.requestedDate||''} ${slot.requestedTime||''}</div>`;
-
-    // Flag delay logic — show checkbox 5+ mins after scheduled start
-    if (slot.requestedDate && slot.requestedTime) {
-      const scheduledMs = new Date(slot.requestedDate + 'T' + slot.requestedTime + ':00').getTime();
-      const minsLate    = Math.floor((Date.now() - scheduledMs) / 60000);
-      if (slot.admitted === true) {
-        slotStatusHtml += '<div class="flag-actioned-box">&#10003; Actioned by Proctor</div>';
-      } else if (slot.rejectedAt) {
-        slotStatusHtml += '<div class="flag-actioned-box">&#10003; Actioned by Proctor (denied)</div>';
-      } else if (slot.flagged) {
-        slotStatusHtml += '<div class="flag-raised-box">&#128680; Delay flagged &mdash; awaiting admin action</div>';
-      } else if (minsLate >= 5) {
-        slotStatusHtml += '<div class="flag-delay-box">' +
-          '<div class="flag-delay-label">&#9888;&#65039; Proctor has not responded ('+minsLate+' min delay)</div>' +
-          '<label class="flag-delay-check">' +
-          '<input type="checkbox" id="flag-check-'+slot.id+'" onchange="raiseDelayFlag(\'' + slot.id + '\', this.checked)">' +
-          'I want to flag this delay for admin attention' +
-          '</label></div>';
-      } else if (minsLate >= -10) {
-        const minsToStart = Math.max(0, -minsLate);
-        slotStatusHtml += '<div style="font-size:12px;color:var(--muted);margin-top:8px;">&#128338; ' +
-          (minsLate < 0 ? 'Exam starts in ' + minsToStart + ' min. Be ready 10 min before.' : 'Waiting for proctor. Flag option activates after 5 min delay.') +
-          '</div>';
-      }
-    }
-
-  } else if (slotStatus === 'awaitingAdmit') {
-    slotStatusHtml = `<div class="slot-status awaiting">&#128250; Snapshots sent &mdash; waiting for proctor to admit</div>`;
-  }
-
-  // Footer action
-  let footerHtml = '';
-  if (slotStatus === 'confirmed') {
-    // Show Begin Setup only within 10 minutes of scheduled time
-    const _scheduledMs = slot.requestedDate && slot.requestedTime
-      ? new Date(slot.requestedDate + 'T' + slot.requestedTime + ':00').getTime()
-      : null;
-    const _minsToExam  = _scheduledMs ? Math.floor((_scheduledMs - Date.now()) / 60000) : 999;
-    if (_minsToExam <= 10) {
-      footerHtml = `<button class="card-btn btn-enter" onclick="openBeginSetup('${exam.id}','${slot?.id||''}')">&#128247; Begin Setup &rarr;</button>`;
-    } else {
-      footerHtml = `<button class="card-btn btn-locked" disabled style="cursor:default;">
-        &#128197; Exam on ${slot.requestedDate||''} ${slot.requestedTime||''} &mdash; Setup available 10 min before
-      </button>`;
-    }
-  } else if (slotStatus === 'inProgress' && slot?.admitted === true) {
-    footerHtml = `<button class="card-btn btn-enter" onclick="beginActualExam('${exam.id}','${slot?.id||''}')">&#127891; Begin Exam &rarr;</button>`;
-  } else if (slotStatus === 'inProgress' && slot?.denied === true) {
-    const reschedLeft = Math.max(0, 2 - (slot.rescheduleCount || 0));
-    footerHtml = `<div style="text-align:center;">
-      <div style="font-size:13px;color:#f87171;padding:10px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);margin-bottom:8px;">
-        &#9888;&#65039; Additional verification required. Please reschedule.
-      </div>
-      ${reschedLeft > 0 ? `<button class="card-btn btn-enter" style="background:#7c3aed;" onclick="openRescheduleModal('${slot.id}','${esc(exam.title)}',${reschedLeft})">&#128197; Reschedule (${reschedLeft} left)</button>` : '<div style="font-size:13px;color:var(--muted);">No reschedules remaining.</div>'}
-    </div>`;
-  } else if (slotStatus === 'awaitingAdmit') {
-    footerHtml = `<button class="card-btn btn-locked" disabled>&#9203; Awaiting Confirmation</button>`;
-  } else if (slotStatus === 'bookedByLearner') {
-    const reschedCount = slot.rescheduleCount || 0;
-    const reschedLeft  = 2 - reschedCount;
-    if (reschedLeft > 0) {
-      footerHtml = `<div style="display:flex;gap:10px;">
-        <button class="card-btn btn-locked" disabled style="flex:1;">&#9203; Awaiting Confirmation</button>
-        <button class="card-btn btn-enter" style="flex:1;background:#7c3aed;" onclick="openRescheduleModal('${slot.id}','${esc(exam.title)}',${reschedLeft})">
-          &#128197; Reschedule (${reschedLeft} left)
-        </button>
-      </div>`;
-    } else {
-      footerHtml = `<button class="card-btn btn-locked" disabled>&#9203; Awaiting Confirmation</button>`;
-    }
-  } else if (canTake) {
-    footerHtml = `<button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}')">&#128197; Schedule Exam</button>`;
-  } else {
-    footerHtml = `<button class="card-btn btn-locked" disabled>${attemptsLeft===0?'No Attempts Left':'🔒 Complete Course First'}</button>`;
-  }
-
-  const el = document.createElement('div');
-  el.className = 'course-card';
-  el.innerHTML = `
-    <div class="card-banner" style="background:linear-gradient(90deg,${ac},${lighten(ac)})"></div>
-    <div class="card-body">
-      <div class="card-meta">
-        <span class="card-tag" style="color:${ac};background:${ac}22;">${esc(exam.category||'Exam')}</span>
-        ${statusBadge}
-      </div>
-      <div class="card-icon">${esc(exam.icon||'🎓')}</div>
-      <div class="card-title">${esc(exam.title)}</div>
-      <div class="card-desc">${esc(exam.description||'')}</div>
-      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:4px;">
-        ${exam.duration ? `<span style="font-size:12px;color:var(--muted);">&#8987; ${esc(exam.duration)}</span>` : ''}
-        <span style="font-size:12px;color:var(--muted);">&#127919; Pass: ${passMark}%</span>
-        ${bestScore !== null ? `<span style="font-size:12px;color:var(--muted);">&#11088; Best: ${bestScore}%</span>` : ''}
-      </div>
-      <div class="attempts-bar" style="margin-top:8px;">
-        <span style="font-size:12px;color:var(--muted);">Attempts: ${attemptCount}/${maxAttempts}</span>
-        <div class="attempts-dots">${dots}</div>
-      </div>
-      ${notice}
-      ${slotStatusHtml}
-    </div>
-    <div class="card-footer">${footerHtml}</div>`;
-  return el;
-}
-
-// ══ ADMIN COURSES ══
-async function loadAdminCourses() {
-  const list = $('course-list');
-  list.innerHTML = '<div class="sb-empty">Loading...</div>';
-  try {
-    const snap = await getDocs(collection(db,'courses'));
-    courses = [];
-    snap.forEach(d => courses.push({id:d.id,...d.data()}));
-    courses.sort((a,b)=>(a.order||0)-(b.order||0));
-    if (!courses.length) { list.innerHTML='<div class="sb-empty">No courses yet.<br>Click <b>+ New</b> to add one.</div>'; return; }
-    renderCourseList();
-    // People list intentionally not shown — managed via nominations
-  } catch { list.innerHTML='<div class="sb-empty">Error loading.</div>'; }
-}
-
-function renderCourseList() {
-  const list = $('course-list');
-  list.innerHTML = '';
-  courses.forEach(c => {
-    const item = document.createElement('div');
-    item.className = 'course-list-item' + (c.id===selCourse?' active':'');
-    item.onclick = () => selectCourse(c.id);
-    const statusCls = c.status==='live'?'status-live':c.status==='review'?'status-review':'status-draft';
-    item.innerHTML = `<span class="cli-icon">${esc(c.icon||'📘')}</span><span class="cli-title">${esc(c.title||'Untitled')}</span><span class="cli-status ${statusCls}">${c.status||'draft'}</span>`;
-    list.appendChild(item);
-  });
-}
-
-async function selectCourse(id) {
-  selCourse = id; selPerson = null;
-  renderCourseList();
-  hide('admin-placeholder'); hide('person-panel');
-  show('course-panel');
-  const c = courses.find(x=>x.id===id)||{};
-  $('f-title').value    = c.title||'';
-  $('f-category').value = c.category||'';
-  $('f-desc').value     = c.description||'';
-  $('f-url').value      = c.url||'';
-  $('f-duration').value = c.duration||'';
-  $('f-level').value    = c.level||'Beginner';
-  $('f-icon').value     = c.icon||'📘';
-  $('f-color').value    = c.accentColor||'#3b82f6';
-  $('f-order').value    = c.order!=null ? c.order : '';
-  $('f-status').value   = c.status||'draft';
-  await loadNominations(id);
-}
-
-$('save-course-btn').addEventListener('click', async () => {
-  if (!selCourse) return;
-  const btn = $('save-course-btn'); btn.disabled=true; btn.textContent='Saving...';
-  try {
-    const data = {
-      title:$('f-title').value.trim()||'Untitled', category:$('f-category').value.trim(),
-      description:$('f-desc').value.trim(), url:$('f-url').value.trim(),
-      duration:$('f-duration').value.trim(), level:$('f-level').value,
-      icon:$('f-icon').value.trim()||'📘', accentColor:$('f-color').value.trim()||'#3b82f6',
-      order:parseInt($('f-order').value)||0, status:$('f-status').value, updatedAt:serverTimestamp()
-    };
-    await setDoc(doc(db,'courses',selCourse), data, {merge:true});
-    const i = courses.findIndex(c=>c.id===selCourse);
-    if (i>=0) Object.assign(courses[i], data);
-    renderCourseList(); toast('Course saved!','success');
-  } catch { toast('Error saving.','error'); }
-  btn.disabled=false; btn.textContent='Save Course';
-});
-
-$('delete-course-btn').addEventListener('click', async () => {
-  if (!selCourse || !confirm('Delete this course?')) return;
-  await deleteDoc(doc(db,'courses',selCourse));
-  courses = courses.filter(c=>c.id!==selCourse);
-  selCourse=null; renderCourseList();
-  hide('course-panel'); show('admin-placeholder');
-  toast('Course deleted.','success');
-});
-
-$('sb-add-course').addEventListener('click', async () => {
-  const ref = await addDoc(collection(db,'courses'),{title:'New Course',category:'',description:'',url:'',duration:'',level:'Beginner',icon:'📘',accentColor:'#3b82f6',order:courses.length,status:'draft',createdAt:serverTimestamp()});
-  courses.push({id:ref.id,title:'New Course',category:'',status:'draft',order:courses.length,icon:'📘',accentColor:'#3b82f6'});
-  renderCourseList(); selectCourse(ref.id);
-});
-
-// ══ NOMINATIONS ══
-async function loadNominations(courseId) {
-  const container = $('nom-container');
-  container.innerHTML = '<div class="inline-loading"><div class="spinner"></div>Loading...</div>';
-  try {
-    const snap = await getDocs(collection(db,'courses',courseId,'nominations'));
-    const noms = [];
-    snap.forEach(d => noms.push({email:d.id,...d.data()}));
-    if (!noms.length) { container.innerHTML='<div class="nom-empty">No users nominated yet.</div>'; return; }
-    container.innerHTML = '';
-    noms.forEach(n => {
-      const row = document.createElement('div');
-      row.className = 'nom-row';
-      row.innerHTML = `<div class="nom-info"><div class="nom-name">${esc(n.name||n.email)}</div><div class="nom-email">${esc(n.email)}</div></div>
-        <span class="nom-badge">${esc(n.role||'student')}</span>
-        <button class="danger-btn" style="padding:4px 10px;font-size:12px;" onclick="removeNomination('${courseId}','${esc(n.email)}')">Remove</button>`;
-      container.appendChild(row);
-    });
-  } catch { container.innerHTML='<div class="nom-empty">Error loading nominations.</div>'; }
-}
-
-window.addNomination = async function() {
-  const email = $('nom-email-input').value.trim().toLowerCase();
-  const role  = $('nom-role-select').value;
-  if (!email || !selCourse) return;
-  try {
-    const payload = {nominated:true, nominatedAt:serverTimestamp(), nominatedBy:me.email, role};
-    if (role === 'reviewer') {
-      await setDoc(doc(db,'users',email), {role:'reviewer', assignedCourseId:selCourse, updatedAt:serverTimestamp(), updatedBy:me.email}, {merge:true});
-      payload.nominated = true;
-    }
-    await setDoc(doc(db,'courses',selCourse,'nominations',email), payload, {merge:true});
-    $('nom-email-input').value='';
-    await loadNominations(selCourse);
-    toast('Nomination added!','success');
-  } catch { toast('Error adding nomination.','error'); }
-};
-
-window.removeNomination = async function(courseId, email) {
-  if (!confirm('Remove nomination for '+email+'?')) return;
-  await deleteDoc(doc(db,'courses',courseId,'nominations',email));
-  await loadNominations(courseId);
-  toast('Nomination removed.','success');
-};
-
-// ══ PEOPLE ══
-async function loadPeople() {
-  const list = $('people-list');
-  list.innerHTML = '<div class="sb-empty">Loading...</div>';
-  try {
-    const snap = await getDocs(collection(db,'users'));
-    people = [];
-    snap.forEach(d => people.push({id:d.id,...d.data()}));
-    if (!people.length) { list.innerHTML='<div class="sb-empty">No users yet.<br>Click <b>+ Add</b> to add one.</div>'; return; }
-    renderPeopleList();
-  } catch { list.innerHTML='<div class="sb-empty">Error loading.</div>'; }
-}
-
-function renderPeopleList() {
-  const list = $('people-list');
-  list.innerHTML = '';
-  people.forEach(p => {
-    const item = document.createElement('div');
-    item.className = 'course-list-item' + (p.id===selPerson?' active':'');
-    item.onclick = () => selectPerson(p.id);
-    item.innerHTML = `<span class="cli-title">${esc(p.name||p.id)}</span><span class="role-badge role-${p.role||'student'}">${p.role||'student'}</span>`;
-    list.appendChild(item);
-  });
-}
-
-async function selectPerson(id) {
-  selPerson=id; selCourse=null;
-  renderPeopleList(); renderCourseList();
-  hide('admin-placeholder'); hide('course-panel');
-  show('person-panel');
-  const p = people.find(x=>x.id===id)||{};
-  $('p-name').value  = p.name||'';
-  $('p-email').value = p.id||'';
-  $('p-role').value  = p.role||'student';
-  updatePersonRoleUI(p.role||'student', p.assignedCourseId||'');
-}
-
-function updatePersonRoleUI(role, assignedCourseId='') {
-  const cg = $('p-course-group');
-  cg.style.display = role==='reviewer' ? 'flex' : 'none';
-  if (role==='reviewer') {
-    const sel = $('p-assigned-course');
-    sel.innerHTML = '<option value="">— Select course —</option>';
-    courses.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value=c.id; opt.textContent=c.title;
-      if (c.id===assignedCourseId) opt.selected=true;
-      sel.appendChild(opt);
-    });
-  }
-}
-
-$('p-role').addEventListener('change', () => updatePersonRoleUI($('p-role').value));
-
-$('save-person-btn').addEventListener('click', async () => {
-  if (!selPerson) return;
-  const role = $('p-role').value;
-  const data = {role, updatedAt:serverTimestamp(), updatedBy:me.email};
-  if (role === 'reviewer') {
-    const courseId = $('p-assigned-course').value;
-    if (courseId) data.assignedCourseId = courseId;
-  }
-  await setDoc(doc(db,'users',selPerson), data, {merge:true});
-  const i = people.findIndex(p=>p.id===selPerson);
-  if (i>=0) Object.assign(people[i], data);
-  renderPeopleList(); toast('User saved!','success');
-});
-
-$('delete-person-btn').addEventListener('click', async () => {
-  if (!selPerson || !confirm('Delete this user?')) return;
-  await deleteDoc(doc(db,'users',selPerson));
-  people = people.filter(p=>p.id!==selPerson);
-  selPerson=null; renderPeopleList();
-  hide('person-panel'); show('admin-placeholder');
-  toast('User deleted.','success');
-});
-
-$('sb-add-person').addEventListener('click', () => openSetRoleModal());
-
-// ══ REVIEWER VIEW (admin inline) ══
-async function loadReviewerQueue() {
-  const container = $('review-queue-list');
-  container.innerHTML = '<div class="inline-loading"><div class="spinner"></div>Loading...</div>';
-  try {
-    const snap = await getDocs(collection(db,'courses'));
-    const toReview = [];
-    snap.forEach(d => { if(d.data().status==='review') toReview.push({id:d.id,...d.data()}); });
-    if (!toReview.length) {
-      container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;">No courses pending review.</div>';
-      return;
-    }
-    container.innerHTML = '';
-    toReview.forEach(c => {
-      const item = document.createElement('div');
-      item.className = 'review-queue-item';
-      item.innerHTML = `
-        <div class="rq-title">${esc(c.title||'Untitled')}</div>
-        <div class="rq-meta">${esc(c.category||'')} &middot; ${esc(c.level||'')}</div>
-        ${c.url ? `<a href="${esc(c.url)}" target="_blank" style="font-size:13px;color:var(--accent);display:block;margin-bottom:12px;">${esc(c.url)}</a>` : ''}
-        <textarea class="rq-comment" id="rq-comment-${c.id}" placeholder="Optional comment for admin..."></textarea>
-        <div class="rq-actions">
-          <button class="approve-btn" onclick="reviewAction('${c.id}','live')">&#10003; Approve</button>
-          <button class="reject-btn" onclick="reviewAction('${c.id}','draft')">&#10007; Reject</button>
-        </div>`;
-      container.appendChild(item);
-    });
-  } catch { container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;">Error loading.</div>'; }
-}
-
-window.reviewAction = async function(courseId, status) {
-  const comment = $('rq-comment-'+courseId)?.value?.trim()||'';
-  await setDoc(doc(db,'courses',courseId), {status, reviewComment:comment, reviewedBy:me.email, reviewedAt:serverTimestamp()}, {merge:true});
-  toast(status==='live' ? 'Course approved and live!' : 'Course rejected back to draft.', status==='live'?'success':'error');
-  loadReviewerQueue();
-};
-
-// ══ PREVIEW AS LEARNER ══
-let _pickerUsers = [];
-
-window.previewAsStudent = async function() {
-  $('preview-picker').style.display = 'block';
-  $('picker-loading').style.display = 'block';
-  $('picker-list').style.display    = 'none';
-  $('picker-empty').style.display   = 'none';
-  $('picker-search').value = '';
-
-  const emailSet = new Set();
-  try {
-    const cSnap = await getDocs(collection(db,'courses'));
-    for (const cd of cSnap.docs) {
-      const nSnap = await getDocs(collection(db,'courses',cd.id,'nominations'));
-      nSnap.forEach(n => emailSet.add(n.id));
-    }
-    const eSnap = await getDocs(collection(db,'exams'));
-    for (const ed of eSnap.docs) {
-      const nSnap = await getDocs(collection(db,'exams',ed.id,'nominations'));
-      nSnap.forEach(n => emailSet.add(n.id));
-    }
-  } catch {}
-
-  _pickerUsers = [];
-  for (const email of emailSet) {
-    let name = email;
-    try {
-      const uSnap = await getDoc(doc(db,'users',email));
-      if (uSnap.exists()) name = uSnap.data().name || email;
-    } catch {}
-    _pickerUsers.push({email, name});
-  }
-
-  $('picker-loading').style.display = 'none';
-  renderPickerList(_pickerUsers);
-};
-
-function renderPickerList(users) {
-  const list = $('picker-list');
-  list.innerHTML = '';
-  if (!users.length) { $('picker-empty').style.display='block'; list.style.display='none'; return; }
-  $('picker-empty').style.display = 'none';
-  list.style.display = 'flex';
-  users.forEach(u => {
-    const card = document.createElement('div');
-    card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s;';
-    card.onmouseover = () => { card.style.background='rgba(59,130,246,.08)'; card.style.borderColor='rgba(59,130,246,.3)'; };
-    card.onmouseleave = () => { card.style.background='var(--card)'; card.style.borderColor='rgba(255,255,255,.08)'; };
-    const av = document.createElement('div');
-    if (u.photoURL) {
-      av.innerHTML = '<img src="'+u.photoURL+'" style="width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);" onerror="this.style.display=&apos;none&apos;">';
-    } else {
-      const initials = (u.name ? u.name.charAt(0) : u.email.charAt(0)).toUpperCase();
-      av.innerHTML = '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;">'+initials+'</div>';
-    }
-    card.appendChild(av);
-    const info = document.createElement('div');
-    info.style.flex='1';
-    info.innerHTML = '<div style="font-size:14px;font-weight:600;">'+esc(u.name)+'</div><div style="font-size:12px;color:var(--muted);">'+esc(u.email)+'</div>';
-    card.appendChild(info);
-    card.appendChild(Object.assign(document.createElement('div'),{textContent:'→',style:'font-size:18px;color:var(--accent);'}));
-    card.onclick = () => launchPreviewAs(u);
-    card.appendChild(info);
-    card.appendChild(Object.assign(document.createElement('div'),{textContent:'→',style:'font-size:18px;color:var(--accent);'}));
-    card.onclick = () => launchPreviewAs(u);
-    list.appendChild(card);
-  });
-}
-
-window.filterPickerList = function() {
-  const q = $('picker-search').value.toLowerCase();
-  renderPickerList(_pickerUsers.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)));
-};
-
-function launchPreviewAs(u) {
-  isPreviewMode = true;
-  previewEmail  = u.email;
-  $('preview-picker').style.display = 'none';
-  $('admin-choice-screen').style.display = 'none';
-  $('app').style.display = 'block';
-  showChips();
-  hide('admin-view'); hide('reviewer-view'); hide('examresults-view');
-  show('student-view');
-  loadStudentCourses();
-  showPreviewBanner('Learner', u);
-}
-
-function showPreviewBanner(role, u) {
-  const banner = $('preview-banner');
-  $('preview-banner-text').innerHTML = '&#129514; Previewing as <strong>' + role + '</strong> &mdash; ' + (u.name||u.email);
-  banner.style.display = 'flex';
-  toast('Viewing as ' + role + ': ' + (u.name||u.email), 'info');
-  applyPreviewReadOnly(role, u);
-}
-
-function applyPreviewReadOnly(role, u) {
-  removePreviewReadOnly();
-
-  const label = '&#128065; Preview Mode &mdash; Read Only &nbsp;&bull;&nbsp; Viewing as <strong>' +
-    role + ':</strong> ' + (u.name||u.email) + ' &nbsp;&bull;&nbsp; No actions will be saved.';
-
-  // 1. Sticky read-only banner at top of #app
-  const banner = document.createElement('div');
-  banner.className = 'preview-readonly-banner';
-  banner.id = 'preview-ro-banner';
-  banner.innerHTML = label;
-  const app = $('app');
-  if (app) app.insertBefore(banner, app.firstChild);
-
-  // 2. Add class to the active view — CSS handles disabling buttons while keeping tabs clickable
-  ['student-view', 'reviewer-view'].forEach(id => {
-    const view = $(id);
-    if (view) view.classList.add('preview-mode-active');
-  });
-}
-
-function removePreviewReadOnly() {
-  // Remove banner
-  const banner = document.getElementById('preview-ro-banner');
-  if (banner) banner.remove();
-  // Remove class from all views
-  ['student-view', 'reviewer-view'].forEach(id => {
-    const view = $(id);
-    if (view) view.classList.remove('preview-mode-active');
-  });
-  // Clean up any legacy elements
-  document.querySelectorAll('.preview-readonly-banner').forEach(el => el.remove());
-  document.querySelectorAll('.preview-ro-overlay').forEach(el => el.remove());
-  const legacyOverlay = document.getElementById('preview-ro-overlay');
-  if (legacyOverlay) legacyOverlay.remove();
-}
-
-window.closePreviewPicker  = function() { $('preview-picker').style.display  = 'none'; };
-window.closeReviewerPicker = function() { $('reviewer-picker').style.display = 'none'; };
-window.closeProctorPicker  = function() { $('proctor-picker').style.display  = 'none'; };
-
-window.exitPreview = function() {
-  isPreviewMode = false;
-  previewEmail  = null;
-  removePreviewReadOnly();
-  $('preview-banner').style.display = 'none';
-  // Hide all views and return to admin choice screen
-  hide('student-view'); hide('reviewer-view'); hide('admin-view'); hide('examresults-view');
-  $('app').style.display         = 'none';
-  $('admin-choice-screen').style.display = 'flex';
-};
-
-window.previewAsReviewer = async function() {
-  // Show reviewer picker
-  $('reviewer-picker').style.display        = 'block';
-  $('reviewer-picker-loading').style.display = 'block';
-  $('reviewer-picker-list').style.display    = 'none';
-  $('reviewer-picker-empty').style.display   = 'none';
-
-  try {
-    // Fetch all users with role === 'reviewer' from users collection
-    const uSnap = await getDocs(collection(db, 'users'));
-    const reviewerMap = new Map();
-    uSnap.forEach(d => {
-      if (d.data().role === 'reviewer') {
-        reviewerMap.set(d.id, {email: d.id, ...d.data()});
-      }
-    });
-
-    // Also check course nominations for reviewer role (fallback source)
-    try {
-      const cSnap = await getDocs(collection(db, 'courses'));
-      for (const cd of cSnap.docs) {
-        const nSnap = await getDocs(collection(db, 'courses', cd.id, 'nominations'));
-        nSnap.forEach(n => {
-          if ((n.data().role === 'reviewer') && !reviewerMap.has(n.id)) {
-            reviewerMap.set(n.id, {email: n.id, name: n.id, assignedCourseId: cd.id});
-          }
-        });
-      }
-    } catch {}
-
-    const reviewers = Array.from(reviewerMap.values());
-    $('reviewer-picker-loading').style.display = 'none';
-
-    if (!reviewers.length) {
-      const el = $('reviewer-picker-empty');
-      el.style.display = 'block';
-      el.innerHTML = '<div style="font-size:32px;margin-bottom:12px;">📋</div>' +
-        '<div style="font-weight:700;margin-bottom:6px;">No reviewers found</div>' +
-        '<div style="font-size:13px;">Nominate a user as Reviewer in Course Manager to see them here.</div>';
-      return;
-    }
-
-    // For each reviewer, fetch their assigned course
-    const list = $('reviewer-picker-list');
-    list.innerHTML = '';
-    list.style.display = 'flex';
-
-    for (const r of reviewers) {
-      let courseTitle = r.assignedCourseId || 'No course assigned';
-      if (r.assignedCourseId) {
-        try {
-          const cSnap = await getDoc(doc(db, 'courses', r.assignedCourseId));
-          if (cSnap.exists()) courseTitle = cSnap.data().title || r.assignedCourseId;
-        } catch {}
-      }
-
-      // Check review status
-      let reviewStatus = 'Not started';
-      let reviewColor  = 'var(--muted)';
-      if (r.assignedCourseId) {
-        try {
-          const revSnap = await getDoc(doc(db, 'courses', r.assignedCourseId, 'review', 'data'));
-          if (revSnap.exists()) {
-            const rev = revSnap.data();
-            if (rev.reviewCompleted && rev.goLive) {
-              reviewStatus = 'Completed'; reviewColor = '#34d399';
-            } else if (rev.reviewCompleted || rev.overallNotes) {
-              reviewStatus = 'In Progress'; reviewColor = '#fbbf24';
-            }
-          }
-        } catch {}
-      }
-
-      const card = document.createElement('div');
-      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s;';
-      card.onmouseover  = () => { card.style.background='rgba(139,92,246,.08)'; card.style.borderColor='rgba(139,92,246,.3)'; };
-      card.onmouseleave = () => { card.style.background='var(--card)'; card.style.borderColor='var(--border)'; };
-
-      const initials = (r.name||r.email||'?').charAt(0).toUpperCase();
-      card.innerHTML = `
-        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0;">${initials}</div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:700;">${esc(r.name||r.email)}</div>
-          <div style="font-size:12px;color:var(--muted);">${esc(r.email)}</div>
-          <div style="font-size:12px;margin-top:4px;">
-            <span style="color:var(--muted);">Assigned:</span>
-            <span style="color:var(--text);font-weight:600;"> ${esc(courseTitle)}</span>
-            <span style="margin-left:10px;font-weight:600;color:${reviewColor};">${esc(reviewStatus)}</span>
-          </div>
-        </div>
-        <div style="font-size:18px;color:#a78bfa;">&rarr;</div>`;
-
-      card.onclick = () => launchReviewerPreview(r, courseTitle);
-      list.appendChild(card);
-    }
-  } catch(e) {
-    console.error('previewAsReviewer:', e);
-    $('reviewer-picker-loading').style.display = 'none';
-    $('reviewer-picker-empty').style.display   = 'block';
-  }
-};
-
-function launchReviewerPreview(reviewer, courseTitle) {
-  $('reviewer-picker').style.display = 'none';
-  $('admin-choice-screen').style.display = 'none';
-  $('app').style.display = 'block';
-  showChips();
-  hide('admin-view'); hide('student-view'); hide('examresults-view');
-  show('reviewer-view');
-
-  // Show preview banner
-  showPreviewBanner('Reviewer', {name: reviewer.name||reviewer.email, email: reviewer.email});
-
-  // Load reviewer queue filtered to this reviewer's assigned course
-  loadReviewerQueueForPreview(reviewer);
-}
-
-async function loadReviewerQueueForPreview(reviewer) {
-  const container = $('review-queue-list');
-  container.innerHTML = '<div class="inline-loading"><div class="spinner"></div>Loading...</div>';
-  try {
-    // Show only the course assigned to this reviewer
-    const courseId = reviewer.assignedCourseId;
-    if (!courseId) {
-      container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;">This reviewer has no assigned course.</div>';
-      return;
-    }
-    const cSnap = await getDoc(doc(db, 'courses', courseId));
-    if (!cSnap.exists() || cSnap.data().status !== 'review') {
-      container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;">No course pending review for this reviewer. Course may not be in Review status yet.</div>';
-      return;
-    }
-    const c = {id: cSnap.id, ...cSnap.data()};
-    container.innerHTML = '';
-
-    // Fetch existing review data
-    let existingReview = null;
-    try {
-      const revSnap = await getDoc(doc(db, 'courses', courseId, 'review', 'data'));
-      if (revSnap.exists()) existingReview = revSnap.data();
-    } catch {}
-
-    const item = document.createElement('div');
-    item.className = 'review-queue-item';
-    const reviewerNote = existingReview
-      ? `<div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--muted);">
-          <strong style="color:#a78bfa;">Reviewer notes:</strong> ${esc(existingReview.overallNotes||'None yet')}
-          &nbsp;&middot;&nbsp; Review Completed: ${existingReview.reviewCompleted?'&#10003;':'&#10007;'}
-          &nbsp;&middot;&nbsp; Go Live consent: ${existingReview.goLive?'&#10003;':'&#10007;'}
-         </div>`
-      : '<div style="font-size:12px;color:var(--muted);margin-bottom:12px;">No review submitted yet.</div>';
-
-    item.innerHTML = `
-      <div class="rq-title">${esc(c.title||'Untitled')}</div>
-      <div class="rq-meta">${esc(c.category||'')} &middot; ${esc(c.level||'')} &middot; Status: <strong>${esc(c.status||'')}</strong></div>
-      ${c.url ? `<a href="${esc(c.url)}" target="_blank" style="font-size:13px;color:var(--accent);display:block;margin-bottom:12px;">${esc(c.url)}</a>` : ''}
-      ${reviewerNote}
-      <div style="font-size:12px;color:#fbbf24;padding:8px 12px;background:rgba(245,158,11,.06);border-radius:8px;border:1px solid rgba(245,158,11,.2);">
-        &#128065; Admin preview mode &mdash; actions are disabled
-      </div>`;
-    container.appendChild(item);
-  } catch(e) {
-    console.error('loadReviewerQueueForPreview:', e);
-    container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;">Error loading.</div>';
-  }
-}
-
-window.previewAsProctor = async function() {
-  // Show proctor picker
-  $('proctor-picker').style.display        = 'block';
-  $('proctor-picker-loading').style.display = 'block';
-  $('proctor-picker-list').style.display    = 'none';
-  $('proctor-picker-empty').style.display   = 'none';
-
-  try {
-    // Fetch all users with role === 'proctor'
-    const uSnap = await getDocs(collection(db, 'users'));
-    const proctors = [];
-    uSnap.forEach(d => {
-      if (d.data().role === 'proctor') {
-        proctors.push({email: d.id, ...d.data()});
-      }
-    });
-
-    $('proctor-picker-loading').style.display = 'none';
-
-    if (!proctors.length) {
-      const emptyEl = $('proctor-picker-empty');
-      emptyEl.style.display = 'block';
-      emptyEl.innerHTML = '<div style="font-size:32px;margin-bottom:12px;">🛡</div>' +
-        '<div style="font-weight:700;margin-bottom:6px;">No proctors found</div>' +
-        '<div style="font-size:13px;">Use <strong>Set Person Role</strong> in Course Manager to assign the Proctor role to a user, then return here.</div>';
-      return;
-    }
-
-    // For each proctor, fetch their active exam slots
-    const list = $('proctor-picker-list');
-    list.innerHTML = '';
-    list.style.display = 'flex';
-
-    for (const p of proctors) {
-      // Fetch slots assigned to or confirmed by this proctor
-      let activeSlots = [];
-      try {
-        const sSnap = await getDocs(query(
-          collection(db, 'examSlots'),
-          where('assignedProctor', '==', p.email)
-        ));
-        sSnap.forEach(d => {
-          const s = {id: d.id, ...d.data()};
-          if (['confirmed','awaitingAdmit','inProgress'].includes(s.status)) {
-            activeSlots.push(s);
-          }
-        });
-      } catch {}
-
-      const slotCount = activeSlots.length;
-      const slotColor = slotCount > 0 ? '#34d399' : 'var(--muted)';
-      const slotLabel = slotCount > 0
-        ? slotCount + ' active candidate' + (slotCount > 1 ? 's' : '')
-        : 'No active candidates';
-
-      // Show awaiting admit count
-      const awaitingCount = activeSlots.filter(s => s.status === 'awaitingAdmit').length;
-      const flaggedCount  = activeSlots.filter(s => s.flagged).length;
-
-      const card = document.createElement('div');
-      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;cursor:pointer;transition:all .2s;';
-      card.onmouseover  = () => { card.style.background='rgba(16,185,129,.06)'; card.style.borderColor='rgba(16,185,129,.3)'; };
-      card.onmouseleave = () => { card.style.background='var(--card)'; card.style.borderColor='var(--border)'; };
-
-      const initials = (p.name||p.email||'?').charAt(0).toUpperCase();
-      const flagBadge = flaggedCount > 0
-        ? `<span style="margin-left:8px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:50px;background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);">&#128680; ${flaggedCount} flagged</span>`
-        : '';
-      const awaitBadge = awaitingCount > 0
-        ? `<span style="margin-left:8px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:50px;background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.2);">&#127909; ${awaitingCount} awaiting admit</span>`
-        : '';
-
-      card.innerHTML = `
-        <div style="display:flex;align-items:center;gap:16px;">
-          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#059669,#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0;">${initials}</div>
-          <div style="flex:1;">
-            <div style="font-size:14px;font-weight:700;">${esc(p.name||p.email)}</div>
-            <div style="font-size:12px;color:var(--muted);">${esc(p.email)}</div>
-            <div style="font-size:12px;margin-top:4px;font-weight:600;color:${slotColor};">
-              ${esc(slotLabel)}${awaitBadge}${flagBadge}
-            </div>
-          </div>
-          <div style="font-size:18px;color:#34d399;">&rarr;</div>
-        </div>
-        ${slotCount > 0 ? buildProctorSlotSummary(activeSlots) : ''}`;
-
-      card.onclick = () => launchProctorPreview(p, activeSlots);
-      list.appendChild(card);
-    }
-
-    // If no proctors have active slots, show info
-    const hasAny = proctors.some(p => true); // proctors exist
-    if (!hasAny) $('proctor-picker-empty').style.display = 'block';
-
-  } catch(e) {
-    console.error('previewAsProctor:', e);
-    $('proctor-picker-loading').style.display = 'none';
-    $('proctor-picker-empty').style.display   = 'block';
-  }
-};
-
-function buildProctorSlotSummary(slots) {
-  if (!slots.length) return '';
-  let html = '<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:6px;">';
-  slots.forEach(s => {
-    const statusColor = s.status==='awaitingAdmit' ? '#60a5fa' : s.status==='inProgress' ? '#34d399' : '#fbbf24';
-    const flagHtml = s.flagged ? ' <span style="color:#f87171;font-weight:700;">&#128680; FLAGGED</span>' : '';
-    html += `<div style="font-size:12px;display:flex;align-items:center;gap:10px;">
-      <span style="color:${statusColor};font-weight:700;">${esc(s.status||'')}</span>
-      <span style="color:var(--text);">${esc(s.learnerName||s.learnerEmail||'')}</span>
-      <span style="color:var(--muted);">${esc(s.requestedDate||'')} ${esc(s.requestedTime||'')}</span>
-      ${flagHtml}
-    </div>`;
-  });
-  html += '</div>';
-  return html;
-}
-
-function launchProctorPreview(proctor, slots) {
-  $('proctor-picker').style.display = 'none';
-  // Open sf-certs-hub in a new tab with this proctor's view
-  // Pass proctor email as query param so sf-certs-hub can filter to their slots
-  window.open('sf-certs-hub.html?previewProctor=' + encodeURIComponent(proctor.email), '_blank');
-}
-
-// ══ EXAM SCHEDULING — WEBCAM SELFIE ══
-
-let _schedExamId   = null;
-let _selfieBase64  = null;
-let _selfieStream  = null;
-let _detectedTz    = Intl.DateTimeFormat().resolvedOptions().timeZone;
-let _activeTz      = _detectedTz;
-let _faceApiLoaded = false;
-
-async function loadFaceApi() {
-  if (_faceApiLoaded) return true;
-  try {
-    const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-    await faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL);
-    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-    _faceApiLoaded = true;
-    return true;
-  } catch(e) {
-    console.warn('face-api load failed:', e);
-    return false;
-  }
-}
-
-window.openScheduleModal = function(examId, examTitle) {
-  _schedExamId  = examId;
-  _selfieBase64 = null;
-  $('sched-exam-title').textContent  = examTitle;
-  $('sched-error').style.display     = 'none';
-  $('sched-consent-check').checked   = false;
-  $('sched-photo-status').textContent = '';
-  $('sched-submit-btn').textContent  = 'Request Slot \u2192';
-  $('sched-submit-btn').disabled     = false;
-  $('selfie-start-btn').style.display    = 'block';
-  $('selfie-cam-wrap').style.display     = 'none';
-  $('selfie-preview-wrap').style.display = 'none';
-  $('selfie-retake-btn').style.display   = 'none';
-  $('selfie-countdown').style.display    = 'none';
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  $('sched-date').min   = tomorrow.toISOString().split('T')[0];
-  $('sched-date').value = '';
-  updateTzDisplay();
-  $('schedule-modal').style.display = 'block';
-};
-
-function updateTzDisplay() {
-  $('sched-tz-display').innerHTML =
-    `Scheduling in <strong>${_activeTz}</strong>. <a onclick="promptTzOverride()">Not you? Change here</a>`;
-}
-
-window.promptTzOverride = function() {
-  const zones = ['Asia/Kolkata','Asia/Dubai','Europe/London','Europe/Berlin',
-    'America/New_York','America/Chicago','America/Los_Angeles',
-    'Asia/Singapore','Asia/Tokyo','Australia/Sydney'];
-  const msg = 'Enter your timezone (e.g. Asia/Kolkata):\n\nCommon options:\n' + zones.join('\n');
-  const sel = prompt(msg, _activeTz);
-  if (sel && sel.trim()) {
-    try {
-      new Intl.DateTimeFormat('en', {timeZone: sel.trim()}).format(new Date());
-      _activeTz = sel.trim();
-      updateTzDisplay();
-    } catch { alert('Invalid timezone. Please try again.'); }
-  }
-};
-
-window.startSelfieCamera = async function() {
-  try {
-    _selfieStream = await navigator.mediaDevices.getUserMedia({video: {facingMode:'user'}, audio: false});
-    $('selfie-video').srcObject = _selfieStream;
-    $('selfie-start-btn').style.display = 'none';
-    $('selfie-cam-wrap').style.display  = 'block';
-    $('sched-photo-status').textContent = 'Camera ready. Position your face and click Take Selfie.';
-  } catch(e) {
-    $('sched-photo-status').textContent = 'Camera access denied. Please allow camera access and try again.';
-  }
-};
-
-window.takeSelfie = async function() {
-  const video     = $('selfie-video');
-  const canvas    = $('selfie-canvas');
-  const countdown = $('selfie-countdown');
-  const takeBtn   = $('selfie-take-btn');
-  takeBtn.disabled = true;
-  countdown.style.display = 'block';
-  for (let i = 3; i >= 1; i--) {
-    countdown.textContent = i;
-    await new Promise(r => setTimeout(r, 1000));
-  }
-  countdown.textContent = '📸';
-  await new Promise(r => setTimeout(r, 200));
-  countdown.style.display = 'none';
-  const ctx = canvas.getContext('2d');
-  canvas.width  = video.videoWidth  || 280;
-  canvas.height = video.videoHeight || 210;
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  _selfieBase64 = canvas.toDataURL('image/jpeg', 0.7);
-  stopSelfieStream();
-  $('selfie-cam-wrap').style.display     = 'none';
-  $('selfie-preview-wrap').style.display = 'block';
-  $('selfie-retake-btn').style.display   = 'inline-block';
-  $('sched-photo-status').textContent    = 'Selfie captured. You can retake if needed.';
-  takeBtn.disabled = false;
-};
-
-window.retakeSelfie = function() {
-  _selfieBase64 = null;
-  $('selfie-preview-wrap').style.display = 'none';
-  $('selfie-retake-btn').style.display   = 'none';
-  $('selfie-start-btn').style.display    = 'block';
-  $('sched-photo-status').textContent    = '';
-};
-
-function stopSelfieStream() {
-  if (_selfieStream) { _selfieStream.getTracks().forEach(t => t.stop()); _selfieStream = null; }
-}
-
-window.closeScheduleModal = function() {
-  stopSelfieStream();
-  $('schedule-modal').style.display = 'none';
-  _schedExamId  = null;
-  _selfieBase64 = null;
-};
-
-window.submitExamSlot = async function() {
-  const date    = $('sched-date').value;
-  const time    = $('sched-time').value;
-  const consent = $('sched-consent-check').checked;
-  if (!date)          { showSchedError('Please select a date.'); return; }
-  if (!time)          { showSchedError('Please select a time.'); return; }
-  if (!_selfieBase64) { showSchedError('Please take a selfie using your webcam.'); return; }
-  if (!consent)       { showSchedError('Please give consent to share your selfie with the proctor.'); return; }
-  let utcDateTime;
-  try { utcDateTime = new Date(`${date}T${time}:00`); }
-  catch { showSchedError('Invalid date/time.'); return; }
-  if (utcDateTime <= new Date()) { showSchedError('Please select a future date and time.'); return; }
-  const btn = $('sched-submit-btn');
-  btn.disabled = true; btn.textContent = 'Submitting\u2026';
-  try {
-    await addDoc(collection(db, 'examSlots'), {
-      examId:              _schedExamId,
-      learnerEmail:        lookupEmail(),
-      learnerName:         me.displayName || lookupEmail(),
-      learnerSelfie:       _selfieBase64,
-      learnerPhotoConsent: true,
-      requestedDate:       date,
-      requestedTime:       time,
-      requestedTimezone:   _activeTz,
-      utcDateTime:         utcDateTime.toISOString(),
-      status:              'bookedByLearner',
-      bookedAt:            serverTimestamp(),
-      assignedProctor:     null,
-      confirmedBy:         null,
-      confirmedAt:         null,
-      admitted:            false,
-      admittedBy:          null,
-      adminOverride:       false,
-      snapshots:           []
-    });
-    await addDoc(collection(db, 'notifications', lookupEmail(), 'items'), {
-      message:   'Your exam slot for ' + date + ' at ' + time + ' (' + _activeTz + ') has been submitted. Awaiting proctor confirmation.',
-      type:      'slot_requested',
-      read:      false,
-      createdAt: serverTimestamp()
-    });
-    closeScheduleModal();
-    toast('Slot requested! Awaiting proctor confirmation.', 'success');
-    await loadStudentExams();
-  } catch(err) {
-    console.error('submitExamSlot:', err);
-    showSchedError('Error submitting slot. Please try again.');
-    btn.disabled = false; btn.textContent = 'Request Slot \u2192';
-  }
-};
-
-function showSchedError(msg) {
-  const el = $('sched-error');
-  el.textContent   = msg;
-  el.style.display = 'block';
-}
-
-// ══ BEGIN SETUP — Camera consent, snapshots, proctor admit/deny ══
-
-let _sessionExamId  = null;
-let _sessionSlotId  = null;
-let _sessionStream  = null;
-let _sessionSnaps   = [];
-let _admitListener  = null;
-
-window.openBeginSetup = function(examId, slotId) {
-  _sessionExamId = examId;
-  _sessionSlotId = slotId;
-  _sessionSnaps  = [];
-
-  // Show only consent step
-  ['setup-step-consent','setup-step-camera','setup-step-waiting','setup-step-admitted','setup-step-denied']
-    .forEach(id => { const el = $(id); if (el) el.style.display = 'none'; });
-
-  $('setup-step-consent').style.display = 'block';
-  $('setup-consent-check').checked      = false;
-  $('setup-consent-error').style.display = 'none';
-
-  // Show exam title
-  const exam = (window._currentExams || []).find(e => e.id === examId);
-  $('setup-exam-title').textContent = exam ? exam.title : 'Exam Setup';
-
-  $('begin-setup-modal').style.display = 'block';
-};
-
-window.closeBeginSetup = function() {
-  if (_sessionStream) { _sessionStream.getTracks().forEach(t => t.stop()); _sessionStream = null; }
-  if (_admitListener) { _admitListener(); _admitListener = null; }
-  $('begin-setup-modal').style.display = 'none';
-};
-
-window.startBeginSetupCamera = async function() {
-  if (!$('setup-consent-check').checked) {
-    $('setup-consent-error').textContent   = 'Please check the consent box first.';
-    $('setup-consent-error').style.display = 'block';
-    return;
-  }
-  $('setup-consent-error').style.display = 'none';
-  $('setup-step-consent').style.display  = 'none';
-  $('setup-step-camera').style.display   = 'block';
-  $('setup-snap-status').textContent     = 'Starting camera…';
-  $('setup-snap-thumbs').innerHTML       = '';
-  $('setup-snap-bar').style.width        = '0%';
-
-  try {
-    _sessionStream = await navigator.mediaDevices.getUserMedia({video: {facingMode:'user'}, audio: false});
-    $('setup-video').srcObject = _sessionStream;
-
-    // Load face-api if available
-    loadFaceApi();
-
-    // Fetch scheduling selfie for comparison
-    let referenceImage = null;
-    try {
-      const slotDoc = await getDoc(doc(db, 'examSlots', _sessionSlotId));
-      if (slotDoc.exists()) referenceImage = slotDoc.data().learnerSelfie || null;
-    } catch {}
-
-    await takeBeginSetupSnapshots(referenceImage);
-  } catch(e) {
-    $('setup-snap-status').textContent = 'Camera access denied. Please allow camera and try again.';
-    console.error('setup camera:', e);
-  }
-};
-
-async function takeBeginSetupSnapshots(referenceImage) {
-  const video   = $('setup-video');
-  const canvas  = document.createElement('canvas');
-  const ctx     = canvas.getContext('2d');
-  const thumbs  = $('setup-snap-thumbs');
-  const bar     = $('setup-snap-bar');
-  _sessionSnaps = [];
-
-  let refDescriptor = null;
-  if (_faceApiLoaded && referenceImage) {
-    try {
-      const refImg = await faceapi.fetchImage(referenceImage);
-      const refDet = await faceapi.detectSingleFace(refImg, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks(true).withFaceDescriptor();
-      if (refDet) refDescriptor = refDet.descriptor;
-    } catch(e) { console.warn('ref face:', e); }
-  }
-
-  for (let i = 0; i < 5; i++) {
-    $('setup-snap-status').textContent = 'Taking snapshot ' + (i+1) + ' of 5…';
-    await new Promise(r => setTimeout(r, 3000));
-
-    canvas.width  = video.videoWidth  || 320;
-    canvas.height = video.videoHeight || 240;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const snapBase64 = canvas.toDataURL('image/jpeg', 0.6);
-
-    let matchScore = null;
-    if (_faceApiLoaded && refDescriptor) {
-      try {
-        const snapImg = await faceapi.fetchImage(snapBase64);
-        const snapDet = await faceapi.detectSingleFace(snapImg, new faceapi.TinyFaceDetectorOptions())
-          .withFaceLandmarks(true).withFaceDescriptor();
-        if (snapDet) {
-          const dist = faceapi.euclideanDistance(refDescriptor, snapDet.descriptor);
-          matchScore = Math.round((1 - Math.min(dist, 1)) * 100);
-        }
-      } catch {}
-    }
-
-    _sessionSnaps.push({image: snapBase64, takenAt: new Date().toISOString(), matchScore});
-    bar.style.width = ((i+1)/5*100) + '%';
-
-    // Add thumbnail
-    const scoreColor = matchScore == null ? 'var(--border)' : matchScore >= 70 ? '#34d399' : matchScore >= 50 ? '#f59e0b' : '#f87171';
-    const thumb = document.createElement('div');
-    thumb.style.cssText = 'text-align:center;';
-    thumb.innerHTML = '<img src="'+snapBase64+'" style="width:60px;height:45px;object-fit:cover;border-radius:6px;border:2px solid '+scoreColor+';">' +
-      '<div style="font-size:10px;font-weight:700;color:'+scoreColor+';">'+(matchScore!=null?matchScore+'%':'—')+'</div>';
-    thumbs.appendChild(thumb);
-  }
-
-  // Stop camera
-  if (_sessionStream) { _sessionStream.getTracks().forEach(t => t.stop()); _sessionStream = null; }
-  $('setup-video').style.display = 'none';
-  $('setup-snap-status').textContent = 'Snapshots complete. Sending to proctor…';
-
-  // Write snapshots to Firestore
-  try {
-    await setDoc(doc(db, 'examSlots', _sessionSlotId), {
-      snapshots:        _sessionSnaps,
-      status:           'awaitingAdmit',
-      snapshotsTakenAt: new Date().toISOString()
-    }, {merge: true});
-  } catch(e) { console.error('snapshot save:', e); }
-
-  // Deduct attempt
-  try {
-    const uid = await lookupUid();
-    if (uid) {
-      const resRef  = doc(db, 'examResults', uid);
-      const resSnap = await getDoc(resRef);
-      const cur = resSnap.exists() ? ((resSnap.data()[_sessionExamId]||{}).attemptCount||0) : 0;
-      await setDoc(resRef, {[_sessionExamId]: {attemptCount: cur+1, lastAttemptAt: serverTimestamp()}}, {merge: true});
-    }
-  } catch {}
-
-  // Show waiting step with thumb strip
-  $('setup-step-camera').style.display  = 'none';
-  $('setup-step-waiting').style.display = 'block';
-  const strip = $('setup-thumb-strip');
-  strip.innerHTML = thumbs.innerHTML; // copy thumbnails
-
-  // Listen for proctor decision
-  listenForProctorDecision(_sessionSlotId);
-}
-
-function listenForProctorDecision(slotId) {
-  if (_admitListener) { _admitListener(); _admitListener = null; }
-  _admitListener = onSnapshot(doc(db, 'examSlots', slotId), snap => {
-    if (!snap.exists()) return;
-    const data = snap.data();
-
-    if (data.admitted === true && data.status === 'inProgress') {
-      if (_admitListener) { _admitListener(); _admitListener = null; }
-      $('setup-step-waiting').style.display  = 'none';
-      $('setup-step-admitted').style.display = 'block';
-      // Wire Begin Exam button
-      $('setup-begin-exam-btn').onclick = () => {
-        closeBeginSetup();
-        const examData = (window._currentExams || []).find(e => e.id === _sessionExamId);
-        if (examData && examData.url) window.open(examData.url, '_blank');
-        loadStudentExams();
-      };
-      toast('Admitted by proctor! You may begin your exam.', 'success');
-    } else if (data.denied === true) {
-      if (_admitListener) { _admitListener(); _admitListener = null; }
-      $('setup-step-waiting').style.display = 'none';
-      $('setup-step-denied').style.display  = 'block';
-      toast('Additional verification required. Please reschedule.', 'error');
-      loadStudentExams(); // refresh card to show new reschedule count
-    }
-  });
-}
-
-window.beginActualExam = function(examId, slotId) {
-  const examData = (window._currentExams || []).find(e => e.id === examId);
-  if (examData && examData.url) window.open(examData.url, '_blank');
-};
-
-// Keep old function name for any lingering references
-window.beginExamSession = window.openBeginSetup;
-
-// ══ BEGIN SETUP (old beginExamSession body — unused, kept for reference) ══
-
-window._legacyBeginExamSession = async function(examId, slotId) {
-  _sessionExamId = examId;
-  _sessionSlotId = slotId;
-  _sessionSnaps  = [];
-  $('session-video').style.display    = 'none';
-  $('session-waiting').style.display  = 'none';
-  $('session-rejected').style.display = 'none';
-  $('session-thumbs').innerHTML       = '';
-  $('session-status').textContent     = 'Starting camera\u2026';
-  $('session-close-btn').style.display = 'block';
-  $('session-modal').style.display    = 'block';
-  loadFaceApi();
-  try {
-    _sessionStream = await navigator.mediaDevices.getUserMedia({video: {facingMode:'user'}, audio: false});
-    const video = $('session-video');
-    video.srcObject = _sessionStream;
-    video.style.display = 'block';
-    $('session-status').textContent = 'Camera ready. Taking identity snapshots\u2026';
-    let referenceImage = null;
-    try {
-      const slotDoc = await getDoc(doc(db, 'examSlots', slotId));
-      if (slotDoc.exists()) referenceImage = slotDoc.data().learnerSelfie || null;
-    } catch {}
-    await takeSessionSnapshots(video, referenceImage, slotId);
-  } catch(e) {
-    $('session-status').textContent = 'Camera access denied. Please allow camera access.';
-    console.error('session camera:', e);
-  }
-};
-
-async function takeSessionSnapshots(video, referenceImage, slotId) {
-  const canvas = document.createElement('canvas');
-  const ctx    = canvas.getContext('2d');
-  let refDescriptor = null;
-  if (_faceApiLoaded && referenceImage) {
-    try {
-      const refImg = await faceapi.fetchImage(referenceImage);
-      const refDet = await faceapi.detectSingleFace(refImg, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks(true).withFaceDescriptor();
-      if (refDet) refDescriptor = refDet.descriptor;
-    } catch(e) { console.warn('ref face:', e); }
-  }
-  for (let i = 0; i < 5; i++) {
-    $('session-status').textContent = 'Taking snapshot ' + (i+1) + ' of 5\u2026';
-    await new Promise(r => setTimeout(r, 3000));
-    canvas.width  = video.videoWidth  || 320;
-    canvas.height = video.videoHeight || 240;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const snapBase64 = canvas.toDataURL('image/jpeg', 0.6);
-    let matchScore = null;
-    if (_faceApiLoaded && refDescriptor) {
-      try {
-        const snapImg = await faceapi.fetchImage(snapBase64);
-        const snapDet = await faceapi.detectSingleFace(snapImg, new faceapi.TinyFaceDetectorOptions())
-          .withFaceLandmarks(true).withFaceDescriptor();
-        if (snapDet) {
-          const dist = faceapi.euclideanDistance(refDescriptor, snapDet.descriptor);
-          matchScore = Math.round((1 - Math.min(dist, 1)) * 100);
-        }
-      } catch(e) { console.warn('face match:', e); }
-    }
-    _sessionSnaps.push({image: snapBase64, takenAt: new Date().toISOString(), matchScore});
-    const scoreColor = matchScore === null ? 'var(--muted)' : matchScore >= 70 ? '#34d399' : matchScore >= 50 ? '#f59e0b' : '#f87171';
-    const thumb = document.createElement('div');
-    thumb.style.cssText = 'text-align:center;';
-    thumb.innerHTML = '<img src="'+snapBase64+'" class="snapshot-thumb" style="border-color:'+scoreColor+';">' +
-      '<div class="match-score" style="color:'+scoreColor+';">'+(matchScore !== null ? matchScore+'%' : '&mdash;')+'</div>';
-    $('session-thumbs').appendChild(thumb);
-  }
-  if (_sessionStream) { _sessionStream.getTracks().forEach(t => t.stop()); _sessionStream = null; }
-  $('session-video').style.display = 'none';
-  $('session-status').textContent = 'Snapshots sent to proctor\u2026';
-  try {
-    await setDoc(doc(db, 'examSlots', slotId), {
-      snapshots: _sessionSnaps,
-      status:    'awaitingAdmit',
-      snapshotsTakenAt: new Date().toISOString()
-    }, {merge: true});
-  } catch(e) { console.error('snapshot save:', e); }
-  try {
-    const _uid = await lookupUid();
-    if (_uid) {
-      const resRef  = doc(db, 'examResults', _uid);
-      const resSnap = await getDoc(resRef);
-      const examData = resSnap.exists() ? (resSnap.data()[_sessionExamId]||{}) : {};
-      const cur = examData.attemptCount || 0;
-      await setDoc(resRef, {
-        [_sessionExamId]: {attemptCount: cur + 1, lastAttemptAt: serverTimestamp()}
-      }, {merge: true});
-    }
-  } catch(e) { console.warn('attempt deduct:', e); }
-  $('session-status').textContent  = '';
-  $('session-close-btn').style.display = 'none';
-  $('session-waiting').style.display   = 'block';
-  listenForAdmit(slotId);
-}
-
-function listenForAdmit(slotId) {
-  if (_admitListener) _admitListener();
-  _admitListener = onSnapshot(doc(db, 'examSlots', slotId), snap => {
-    if (!snap.exists()) return;
-    const data = snap.data();
-    if (data.admitted === true) {
-      if (_admitListener) { _admitListener(); _admitListener = null; }
-      $('session-modal').style.display = 'none';
-      toast('Admitted by proctor! Starting exam\u2026', 'success');
-      setTimeout(() => {
-        const examData = (window._currentExams || []).find(e => e.id === _sessionExamId);
-        if (examData && examData.url) window.open(examData.url, '_blank');
-      }, 1500);
-    } else if (data.admitted === false && data.rejectedAt) {
-      if (_admitListener) { _admitListener(); _admitListener = null; }
-      $('session-waiting').style.display  = 'none';
-      $('session-rejected').style.display = 'block';
-      $('session-close-btn').style.display = 'block';
-      toast('Access denied by proctor.', 'error');
-    }
-  });
-}
-
-window.closeSessionModal = function() {
-  if (_sessionStream) { _sessionStream.getTracks().forEach(t => t.stop()); _sessionStream = null; }
-  if (_admitListener) { _admitListener(); _admitListener = null; }
-  $('session-modal').style.display = 'none';
-};
-
-// ══ FLAG DELAY ══
-window.raiseDelayFlag = async function(slotId, checked) {
-  if (!checked) return;
-  const checkbox = document.getElementById('flag-check-' + slotId);
-  if (checkbox) checkbox.disabled = true;
-  try {
-    await setDoc(doc(db, 'examSlots', slotId), {
-      flagged:    true,
-      flaggedAt:  serverTimestamp(),
-      flaggedBy:  lookupEmail()
-    }, {merge: true});
-
-    // Notify admin
-    for (const adminEmail of ['jv.ravichandran@sourcefuse.com','noushin.khan@sourcefuse.com']) {
-      await addDoc(collection(db, 'notifications', adminEmail, 'items'), {
-        message:   'FLAGGED: Learner ' + (me.displayName||lookupEmail()) + ' has flagged a proctor delay for their exam slot.',
-        type:      'proctor_delay_flag',
-        slotId:    slotId,
-        read:      false,
-        createdAt: serverTimestamp()
-      });
-    }
-
-    toast('Delay flagged. Admin has been notified.', 'success');
-    // Reload exams to show updated flag status
-    await loadStudentExams();
-  } catch(e) {
-    console.error('raiseDelayFlag:', e);
-    toast('Error raising flag.', 'error');
-    if (checkbox) checkbox.disabled = false;
-  }
-};
-
-// ══ NOTIFICATIONS ══
-let _notifUnsubscribe = null;
-
-function startNotifListener() {
-  if (!lookupEmail()) return;
-  try {
-    const q = query(collection(db, 'notifications', lookupEmail(), 'items'), where('read', '==', false));
-    _notifUnsubscribe = onSnapshot(q, snap => {
-      const count = snap.size;
-      const badge = $('notif-badge');
-      const bell  = $('notif-bell');
-      if (badge && bell) {
-        badge.textContent = count;
-        badge.style.display = count > 0 ? 'flex' : 'none';
-        bell.style.display = 'flex';
-        bell.style.alignItems = 'center';
-      }
-      renderNotifications(snap);
-    });
-  } catch(e) { console.warn('notif listener:', e); }
-}
-
-function renderNotifications(snap) {
-  const list = $('notif-list');
-  if (!list) return;
-  if (snap.empty) { list.innerHTML = '<div class="notif-empty">No new notifications.</div>'; return; }
-  list.innerHTML = '';
-  snap.forEach(d => {
-    const data = d.data();
-    const item = document.createElement('div');
-    item.className = 'notif-item unread';
-    item.innerHTML = '<div>' + (data.message||'') + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">' +
-      (data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : 'Just now') + '</div>';
-    item.onclick = () => markNotifRead(d.id);
-    list.appendChild(item);
-  });
-}
-
-async function markNotifRead(notifId) {
-  try { await setDoc(doc(db, 'notifications', lookupEmail(), 'items', notifId), {read: true}, {merge: true}); }
-  catch {}
-}
-
-window.toggleNotifPanel = function() {
-  const panel = $('notif-panel');
-  if (panel) panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-};
-
-document.addEventListener('click', e => {
-  const bell = $('notif-bell');
-  if (bell && !bell.contains(e.target)) {
-    const panel = $('notif-panel');
-    if (panel) panel.style.display = 'none';
-  }
-});
-
-// ══ RESCHEDULE EXAM SLOT ══
-let _reschedSlotId = null;
-
-window.openRescheduleModal = function(slotId, examTitle, reschedLeft) {
-  _reschedSlotId = slotId;
-  $('reschedule-subtitle').textContent = examTitle + ' — ' + reschedLeft + ' reschedule' + (reschedLeft===1?'':'s') + ' remaining after this.';
-  $('resched-error').style.display = 'none';
-  $('resched-date').value = '';
-  $('resched-time').value = '';
-  $('resched-submit-btn').disabled    = false;
-  $('resched-submit-btn').textContent = 'Confirm Reschedule';
-
-  // Min date = tomorrow (enforce 24h via validation, not just date)
-  const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  $('resched-date').min = minDate.toISOString().split('T')[0];
-
-  $('reschedule-modal').style.display = 'block';
-};
-
-window.closeRescheduleModal = function() {
-  $('reschedule-modal').style.display = 'none';
-  _reschedSlotId = null;
-};
-
-window.submitReschedule = async function() {
-  const date = $('resched-date').value;
-  const time = $('resched-time').value;
-  if (!date) { showReschedError('Please select a new date.'); return; }
-  if (!time) { showReschedError('Please select a new time.'); return; }
-
-  // Enforce 24h minimum
-  const chosen = new Date(date + 'T' + time + ':00');
-  const minAllowed = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  if (chosen < minAllowed) {
-    showReschedError('New date/time must be at least 24 hours from now. Please choose a later time.');
-    return;
-  }
-
-  const btn = $('resched-submit-btn');
-  btn.disabled = true; btn.textContent = 'Rescheduling…';
-
-  try {
-    // Read old slot data
-    const slotSnap = await getDoc(doc(db, 'examSlots', _reschedSlotId));
-    if (!slotSnap.exists()) { showReschedError('Slot not found.'); btn.disabled=false; btn.textContent='Confirm Reschedule'; return; }
-
-    const oldSlot      = slotSnap.data();
-    const currentCount = oldSlot.rescheduleCount || 0;
-    if (currentCount >= 2) { showReschedError('Maximum reschedules reached.'); btn.disabled=false; btn.textContent='Confirm Reschedule'; return; }
-
-    const newCount = currentCount + 1;
-    const tz = _activeTz || Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-    // 1. Write reschedule history record (for Reports)
-    await addDoc(collection(db, 'rescheduleHistory'), {
-      originalSlotId:     _reschedSlotId,
-      examId:             oldSlot.examId         || null,
-      learnerEmail:       oldSlot.learnerEmail    || lookupEmail(),
-      learnerName:        oldSlot.learnerName     || lookupEmail(),
-      assignedProctor:    oldSlot.assignedProctor || null,
-      originalDate:       oldSlot.requestedDate   || null,
-      originalTime:       oldSlot.requestedTime   || null,
-      newDate:            date,
-      newTime:            time,
-      rescheduleCount:    newCount,
-      rescheduledAt:      serverTimestamp(),
-      rescheduledBy:      lookupEmail()
-    });
-
-    // 2. Delete the old slot — it should not appear anywhere
-    await deleteDoc(doc(db, 'examSlots', _reschedSlotId));
-
-    // 3. Create a fresh slot with the new date/time
-    const newSlotRef = await addDoc(collection(db, 'examSlots'), {
-      examId:              oldSlot.examId             || null,
-      learnerEmail:        oldSlot.learnerEmail        || lookupEmail(),
-      learnerName:         oldSlot.learnerName         || (me.displayName || lookupEmail()),
-      learnerSelfie:       oldSlot.learnerSelfie       || null,
-      learnerPhotoConsent: oldSlot.learnerPhotoConsent || false,
-      requestedDate:       date,
-      requestedTime:       time,
-      requestedTimezone:   tz,
-      utcDateTime:         chosen.toISOString(),
-      status:              'bookedByLearner',
-      bookedAt:            serverTimestamp(),
-      rescheduleCount:     newCount,
-      rescheduledAt:       serverTimestamp(),
-      assignedProctor:     oldSlot.assignedProctor || null,
-      confirmedBy:         null,
-      confirmedAt:         null,
-      admitted:            false,
-      denied:              false,
-      flagged:             false,
-      snapshots:           []
-    });
-
-    // 4. Notify the assigned proctor
-    if (oldSlot.assignedProctor) {
-      await addDoc(collection(db, 'notifications', oldSlot.assignedProctor, 'items'), {
-        message:   'Learner ' + (oldSlot.learnerName||oldSlot.learnerEmail||lookupEmail()) +
-                   ' has rescheduled their exam to ' + date + ' at ' + time +
-                   '. New slot created. (' + newCount + '/2 reschedules used)',
-        type:      'slot_rescheduled',
-        slotId:    newSlotRef.id,
-        read:      false,
-        createdAt: serverTimestamp()
-      });
-    }
-
-    // 5. Notify the learner
-    await addDoc(collection(db, 'notifications', lookupEmail(), 'items'), {
-      message:   'Your exam has been rescheduled to ' + date + ' at ' + time +
-                 '. Awaiting proctor confirmation. (' + newCount + '/2 reschedules used)',
-      type:      'slot_rescheduled',
-      read:      false,
-      createdAt: serverTimestamp()
-    });
-
-    closeRescheduleModal();
-    toast('Exam rescheduled! Awaiting proctor confirmation.', 'success');
-    await loadStudentExams();
-  } catch(e) {
-    console.error('submitReschedule:', e);
-    showReschedError('Error rescheduling. Please try again.');
-    btn.disabled = false; btn.textContent = 'Confirm Reschedule';
-  }
-};
-
-function showReschedError(msg) {
-  const el = $('resched-error');
-  el.textContent   = msg;
-  el.style.display = 'block';
-}
-
-// ══ SET PERSON ROLE MODAL ══
-let _setRoleUsers = [];
-let _setRoleSelected = null;
-let _setRoleValue = null;
-
-window.openSetRoleModal = async function() {
-  $('set-role-modal').style.display  = 'block';
-  $('set-role-loading').style.display = 'block';
-  $('set-role-list').style.display   = 'none';
-  $('set-role-empty').style.display  = 'none';
-  $('set-role-selector').style.display = 'none';
-  $('set-role-search').value = '';
-  _setRoleSelected = null;
-  _setRoleValue    = null;
-
-  try {
-    // Collect all nominated users from courses + exams nominations
-    const emailSet = new Map(); // email -> {name, currentRole}
-
-    // From users collection
-    try {
-      const uSnap = await getDocs(collection(db, 'users'));
-      uSnap.forEach(d => emailSet.set(d.id, {email: d.id, name: d.data().name||d.id, role: d.data().role||'student'}));
-    } catch {}
-
-    // From course nominations
-    const cSnap = await getDocs(collection(db, 'courses'));
-    for (const cd of cSnap.docs) {
-      const nSnap = await getDocs(collection(db, 'courses', cd.id, 'nominations'));
-      nSnap.forEach(n => {
-        if (!emailSet.has(n.id)) emailSet.set(n.id, {email: n.id, name: n.id, role: n.data().role||'student'});
-      });
-    }
-
-    // From exam nominations
-    const eSnap = await getDocs(collection(db, 'exams'));
-    for (const ed of eSnap.docs) {
-      const nSnap = await getDocs(collection(db, 'exams', ed.id, 'nominations'));
-      nSnap.forEach(n => {
-        if (!emailSet.has(n.id)) emailSet.set(n.id, {email: n.id, name: n.id, role: 'student'});
-      });
-    }
-
-    _setRoleUsers = Array.from(emailSet.values());
-    $('set-role-loading').style.display = 'none';
-
-    if (!_setRoleUsers.length) {
-      $('set-role-empty').style.display = 'block';
-      return;
-    }
-    renderSetRoleList(_setRoleUsers);
-  } catch(e) {
-    console.error('openSetRoleModal:', e);
-    $('set-role-loading').style.display = 'none';
-    $('set-role-empty').style.display   = 'block';
-    $('set-role-empty').textContent     = 'Error loading users.';
-  }
-};
-
-function renderSetRoleList(users) {
-  const list = $('set-role-list');
-  list.innerHTML = '';
-  list.style.display = users.length ? 'block' : 'none';
-  $('set-role-empty').style.display = users.length ? 'none' : 'block';
-
-  users.forEach(u => {
-    const roleColors = {admin:'#f59e0b', reviewer:'#a78bfa', proctor:'#34d399', student:'#60a5fa'};
-    const roleColor  = roleColors[u.role] || 'var(--muted)';
-    const initials   = (u.name||u.email).charAt(0).toUpperCase();
-    const row = document.createElement('div');
-    row.className = 'set-role-user-row' + (_setRoleSelected===u.email ? ' selected' : '');
-    row.innerHTML = `
-      <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0;">${initials}</div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(u.name||u.email)}</div>
-        <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(u.email)}</div>
-      </div>
-      <span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:50px;background:${roleColor}22;color:${roleColor};border:1px solid ${roleColor}44;">${esc(u.role||'student')}</span>`;
-    row.onclick = () => selectSetRoleUser(u);
-    list.appendChild(row);
-  });
-}
-
-window.filterSetRoleList = function() {
-  const q = $('set-role-search').value.toLowerCase();
-  renderSetRoleList(_setRoleUsers.filter(u =>
-    (u.name||'').toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
-  ));
-};
-
-function selectSetRoleUser(u) {
-  _setRoleSelected = u.email;
-  _setRoleValue    = null;
-  renderSetRoleList(
-    $('set-role-search').value
-      ? _setRoleUsers.filter(x => (x.name||'').toLowerCase().includes($('set-role-search').value.toLowerCase()) || x.email.toLowerCase().includes($('set-role-search').value.toLowerCase()))
-      : _setRoleUsers
-  );
-  $('set-role-selected-email').textContent = u.email;
-  $('set-role-selector').style.display     = 'block';
-  $('set-role-submit-btn').disabled        = true;
-  $('set-role-submit-btn').style.opacity   = '.5';
-  $('set-role-error').style.display        = 'none';
-
-  // Highlight current role button
-  ['student','reviewer','proctor','admin'].forEach(r => {
-    const btn = $('role-btn-' + r);
-    btn.className = 'role-pick-btn' + (r === u.role ? ' selected' : '');
-  });
-  if (u.role) { _setRoleValue = u.role; enableSetRoleSubmit(); }
-}
-
-window.setRoleSelect = function(role) {
-  _setRoleValue = role;
-  ['student','reviewer','proctor','admin'].forEach(r => {
-    const btn = $('role-btn-' + r);
-    const selClass = r==='reviewer'?'selected-reviewer':r==='proctor'?'selected-proctor':r==='admin'?'selected-admin':'selected';
-    btn.className = 'role-pick-btn' + (r===role?' '+selClass:'');
-  });
-  enableSetRoleSubmit();
-};
-
-function enableSetRoleSubmit() {
-  if (_setRoleSelected && _setRoleValue) {
-    $('set-role-submit-btn').disabled      = false;
-    $('set-role-submit-btn').style.opacity = '1';
-  }
-}
-
-window.closeSetRoleModal = function() {
-  $('set-role-modal').style.display = 'none';
-  _setRoleSelected = null;
-  _setRoleValue    = null;
-};
-
-window.submitSetRole = async function() {
-  if (!_setRoleSelected || !_setRoleValue) return;
-  const btn = $('set-role-submit-btn');
-  btn.disabled = true; btn.textContent = 'Saving...';
-  try {
-    await setDoc(doc(db,'users',_setRoleSelected), {
-      role: _setRoleValue, updatedAt: serverTimestamp(), updatedBy: me.email
-    }, {merge: true});
-
-    // Update local cache
-    const idx = _setRoleUsers.findIndex(u => u.email === _setRoleSelected);
-    if (idx >= 0) _setRoleUsers[idx].role = _setRoleValue;
-
-    toast(_setRoleSelected + ' role set to ' + _setRoleValue, 'success');
-    closeSetRoleModal();
-  } catch(e) {
-    console.error('submitSetRole:', e);
-    $('set-role-error').textContent   = 'Error saving. Please try again.';
-    $('set-role-error').style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Save Role';
-    btn.style.opacity = '1';
-  }
-};
-
-// ══ ASSIGN PROCTOR ══
-window.openAssignProctorModal = async function() {
-  $('assign-proctor-modal').style.display = 'block';
-  $('ap-error').style.display    = 'none';
-  $('ap-nominee-wrap').style.display  = 'none';
-  $('ap-proctor-wrap').style.display  = 'none';
-  $('ap-current-wrap').style.display  = 'none';
-  $('ap-exam-select').innerHTML   = '<option value="">Loading exams...</option>';
-  $('ap-submit-btn').disabled     = false;
-  $('ap-submit-btn').textContent  = 'Assign Proctor';
-
-  try {
-    const snap = await getDocs(collection(db, 'exams'));
-    const exams = [];
-    snap.forEach(d => { if (d.data().status === 'live') exams.push({id: d.id, ...d.data()}); });
-    const sel = $('ap-exam-select');
-    sel.innerHTML = '<option value="">— Select an exam —</option>';
-    exams.forEach(e => {
-      const opt = document.createElement('option');
-      opt.value = e.id; opt.textContent = e.title || e.id;
-      sel.appendChild(opt);
-    });
-    const uSnap = await getDocs(collection(db, 'users'));
-    const proctorSel = $('ap-proctor-select');
-    proctorSel.innerHTML = '<option value="">— Select a proctor —</option>';
-    uSnap.forEach(d => {
-      if (d.data().role === 'proctor') {
-        const opt = document.createElement('option');
-        opt.value = d.id;
-        opt.textContent = (d.data().name || d.id) + ' (' + d.id + ')';
-        proctorSel.appendChild(opt);
-      }
-    });
-  } catch(e) { console.error('openAssignProctorModal:', e); }
-};
-
-window.loadApNominees = async function() {
-  const examId = $('ap-exam-select').value;
-  $('ap-nominee-wrap').style.display = 'none';
-  $('ap-proctor-wrap').style.display = 'none';
-  $('ap-current-wrap').style.display = 'none';
-  if (!examId) return;
-  try {
-    const snap = await getDocs(collection(db, 'exams', examId, 'nominations'));
-    const sel  = $('ap-nominee-select');
-    sel.innerHTML = '<option value="">— Select a nominee —</option>';
-    snap.forEach(d => {
-      if (d.data().nominated !== false || d.data().examEligible === true) {
-        const opt = document.createElement('option');
-        opt.value = d.id; opt.textContent = d.id;
-        opt.dataset.currentProctor = d.data().assignedProctor || '';
-        sel.appendChild(opt);
-      }
-    });
-    $('ap-nominee-wrap').style.display = 'block';
-  } catch(e) { console.error('loadApNominees:', e); }
-};
-
-window.loadApCurrentProctor = function() {
-  const sel = $('ap-nominee-select');
-  const opt = sel.options[sel.selectedIndex];
-  if (!sel.value) {
-    $('ap-proctor-wrap').style.display = 'none';
-    $('ap-current-wrap').style.display = 'none';
-    return;
-  }
-  const current = opt && opt.dataset ? opt.dataset.currentProctor : '';
-  $('ap-current-proctor').textContent = current || 'None assigned yet';
-  $('ap-current-wrap').style.display  = 'block';
-  $('ap-proctor-wrap').style.display  = 'block';
-  if (current) $('ap-proctor-select').value = current;
-};
-
-window.closeAssignProctorModal = function() {
-  $('assign-proctor-modal').style.display = 'none';
-};
-
-window.submitAssignProctor = async function() {
-  const examId       = $('ap-exam-select').value;
-  const nominee      = $('ap-nominee-select').value;
-  const proctorEmail = $('ap-proctor-select').value;
-  const examTitle    = $('ap-exam-select').options[$('ap-exam-select').selectedIndex]
-                        ? $('ap-exam-select').options[$('ap-exam-select').selectedIndex].textContent : examId;
-  if (!examId)       { showApError('Please select an exam.'); return; }
-  if (!nominee)      { showApError('Please select a nominee.'); return; }
-  if (!proctorEmail) { showApError('Please select a proctor.'); return; }
-  const btn = $('ap-submit-btn');
-  btn.disabled = true; btn.textContent = 'Assigning...';
-  try {
-    await setDoc(doc(db, 'exams', examId, 'nominations', nominee), {
-      assignedProctor: proctorEmail, assignedProctorBy: me.email,
-      assignedProctorAt: serverTimestamp()
-    }, {merge: true});
-    await setDoc(doc(db, 'users', proctorEmail), {
-      assignedCandidate: nominee, assignedExamId: examId,
-      updatedAt: serverTimestamp(), updatedBy: me.email
-    }, {merge: true});
-    try {
-      const slotSnap = await getDocs(query(
-        collection(db,'examSlots'),
-        where('learnerEmail','==',nominee),
-        where('examId','==',examId)
-      ));
-      for (const sd of slotSnap.docs) {
-        await setDoc(doc(db,'examSlots',sd.id), {assignedProctor: proctorEmail}, {merge:true});
-      }
-    } catch {}
-    await addDoc(collection(db,'notifications',proctorEmail,'items'), {
-      message: 'You have been assigned as proctor for ' + nominee + ' on exam "' + examTitle + '".',
-      type: 'proctor_assigned', read: false, createdAt: serverTimestamp()
-    });
-    closeAssignProctorModal();
-    toast('Proctor assigned successfully!', 'success');
-  } catch(e) {
-    console.error('submitAssignProctor:', e);
-    showApError('Error assigning. Please try again.');
-    btn.disabled = false; btn.textContent = 'Assign Proctor';
-  }
-};
-
-function showApError(msg) {
-  const el = $('ap-error');
-  el.textContent = msg; el.style.display = 'block';
-}
-</script>
-<!-- REVIEWER PICKER OVERLAY -->
+<!-- REVIEWER PICKER -->
 <div id="reviewer-picker" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(10,12,20,.92);backdrop-filter:blur(8px);overflow-y:auto;">
   <div style="max-width:680px;margin:60px auto;padding:0 20px 60px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
@@ -2957,7 +696,7 @@ function showApError(msg) {
   </div>
 </div>
 
-<!-- PROCTOR PICKER OVERLAY -->
+<!-- PROCTOR PICKER -->
 <div id="proctor-picker" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(10,12,20,.92);backdrop-filter:blur(8px);overflow-y:auto;">
   <div style="max-width:680px;margin:60px auto;padding:0 20px 60px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
@@ -2983,40 +722,24 @@ function showApError(msg) {
       </div>
       <button onclick="closeAssignProctorModal()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;">&#10005;</button>
     </div>
-
     <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;">
-      <!-- Step 1: Select Exam -->
       <div style="margin-bottom:20px;">
         <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Step 1 — Select Exam</div>
-        <select id="ap-exam-select" class="schedule-input" onchange="loadApNominees()">
-          <option value="">— Select an exam —</option>
-        </select>
+        <select id="ap-exam-select" class="schedule-input" onchange="loadApNominees()"><option value="">— Select an exam —</option></select>
       </div>
-
-      <!-- Step 2: Select Nominee -->
       <div id="ap-nominee-wrap" style="display:none;margin-bottom:20px;">
         <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Step 2 — Select Nominee</div>
-        <select id="ap-nominee-select" class="schedule-input" onchange="loadApCurrentProctor()">
-          <option value="">— Select a nominee —</option>
-        </select>
+        <select id="ap-nominee-select" class="schedule-input" onchange="loadApCurrentProctor()"><option value="">— Select a nominee —</option></select>
       </div>
-
-      <!-- Current assignment info -->
       <div id="ap-current-wrap" style="display:none;margin-bottom:20px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;">
         <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Currently assigned proctor:</div>
         <div id="ap-current-proctor" style="font-size:14px;font-weight:600;color:var(--text);">None</div>
       </div>
-
-      <!-- Step 3: Select Proctor -->
       <div id="ap-proctor-wrap" style="display:none;margin-bottom:20px;">
         <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Step 3 — Assign Proctor</div>
-        <select id="ap-proctor-select" class="schedule-input">
-          <option value="">— Select a proctor —</option>
-        </select>
+        <select id="ap-proctor-select" class="schedule-input"><option value="">— Select a proctor —</option></select>
       </div>
-
       <div id="ap-error" style="display:none;font-size:13px;color:#f87171;padding:10px 14px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);margin-bottom:14px;"></div>
-
       <div style="display:flex;gap:12px;">
         <button onclick="closeAssignProctorModal()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--muted);font-size:14px;cursor:pointer;">Cancel</button>
         <button onclick="submitAssignProctor()" id="ap-submit-btn" style="flex:2;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Assign Proctor</button>
@@ -3036,16 +759,10 @@ function showApError(msg) {
       <button onclick="closeSetRoleModal()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;">&#10005;</button>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;">
-      <!-- Search -->
-      <input id="set-role-search" placeholder="Search by name or email..." oninput="filterSetRoleList()"
-        style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;margin-bottom:16px;">
-
-      <!-- User list -->
+      <input id="set-role-search" placeholder="Search by name or email..." oninput="filterSetRoleList()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;margin-bottom:16px;">
       <div id="set-role-list" style="max-height:300px;overflow-y:auto;margin-bottom:20px;"></div>
       <div id="set-role-loading" style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">Loading users&hellip;</div>
       <div id="set-role-empty" style="display:none;text-align:center;color:var(--muted);padding:20px;font-size:13px;">No users found.</div>
-
-      <!-- Role selector — shown after user is selected -->
       <div id="set-role-selector" style="display:none;border-top:1px solid var(--border);padding-top:16px;">
         <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">
           Assign role for: <span id="set-role-selected-email" style="color:var(--accent);"></span>
@@ -3057,10 +774,7 @@ function showApError(msg) {
           <button onclick="setRoleSelect('admin')"    id="role-btn-admin"    class="role-pick-btn">Admin</button>
         </div>
         <div id="set-role-error" style="display:none;font-size:12px;color:#f87171;margin-bottom:10px;"></div>
-        <button onclick="submitSetRole()" id="set-role-submit-btn"
-          style="width:100%;padding:11px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;opacity:.5;" disabled>
-          Save Role
-        </button>
+        <button onclick="submitSetRole()" id="set-role-submit-btn" style="width:100%;padding:11px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;opacity:.5;" disabled>Save Role</button>
       </div>
     </div>
   </div>
@@ -3112,7 +826,7 @@ function showApError(msg) {
     <div id="setup-step-consent" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;">
       <div style="font-size:15px;font-weight:700;margin-bottom:12px;">&#128247; Identity Verification</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;">
-        To begin your exam, your camera will be turned on and <strong>5 snapshots</strong> will be taken over the next <strong>15 seconds</strong> (one every 3 seconds). These snapshots will be sent to your assigned proctor for identity verification before you can start.
+        To begin your exam, your camera will be turned on and <strong>5 snapshots</strong> will be taken over the next <strong>15 seconds</strong>. These snapshots will be sent to your assigned proctor for identity verification before you can start.
       </p>
       <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;margin-bottom:20px;">
         <input type="checkbox" id="setup-consent-check" style="width:18px;height:18px;flex-shrink:0;margin-top:2px;">
@@ -3142,6 +856,8 @@ function showApError(msg) {
       <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Your snapshots have been sent to your proctor for review. Please wait — they will admit or deny your session shortly.</p>
       <div id="setup-thumb-strip" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;"></div>
       <div style="font-size:12px;color:var(--muted);">&#128338; Do not close this window. This page will update automatically.</div>
+      <!-- PATCH 2: Flag delay section — revealed after 5 minutes by listenForProctorDecision timer -->
+      <div id="setup-flag-wrap" style="display:none;margin-top:20px;"></div>
     </div>
 
     <!-- Step 4a: Admitted -->
@@ -3163,9 +879,1169 @@ function showApError(msg) {
         Close &amp; Reschedule from Your Exam Card
       </button>
     </div>
-
   </div>
 </div>
 
+<footer style="text-align:center;padding:24px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:40px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">
+  <span>🤖 AI-Generated &amp; Expert-Reviewed</span>
+  <span>📚 Educational Use Only</span>
+  <span>🔒 Data stored securely in Firebase</span>
+  <span>🔗 External links for reference only</span>
+  <span>🗓 Content current as of March 2026</span>
+  <span>© 2026 SourceFuse Technologies</span>
+</footer>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
+import {
+  getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc, addDoc, serverTimestamp,
+  query, where, onSnapshot
+} from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js';
+
+const FB = {
+  apiKey:"AIzaSyA-8fatW5D7uR69rcuGFPH54IFqrz0PhU0",
+  authDomain:"sfcertification-grafana.firebaseapp.com",
+  projectId:"sfcertification-grafana",
+  appId:"1:227322696511:web:12e7ced7dd3d45fa06798a"
+};
+// PATCH 1: FLAG_WAIT_MS constant added
+const ADMINS       = ['jv.ravichandran@sourcefuse.com', 'noushin.khan@sourcefuse.com'];
+const DOMAIN       = 'sourcefuse.com';
+const FLAG_WAIT_MS = 5 * 60 * 1000; // 5 minutes — proctor delay threshold
+
+const app  = initializeApp(FB);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let me = null, meEmail = null, myRole = null, isPreviewMode = false, previewEmail = null;
+
+function lookupEmail() { return (isPreviewMode && previewEmail) ? previewEmail : meEmail; }
+
+async function lookupUid() {
+  if (!isPreviewMode || !previewEmail) return me.uid;
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    let uid = null;
+    snap.forEach(d => { if ((d.data().email||'').toLowerCase() === previewEmail) uid = d.id; });
+    return uid;
+  } catch { return null; }
+}
+
+let courses = [], people = [];
+let selCourse = null, selPerson = null, adminTab = 'courses';
+let inLearnerView = false;
+let toastTimer;
+
+// ══ UTILS ══
+function $(id) { return document.getElementById(id); }
+function show(id) { const el=$(id); if(el) el.style.display='block'; }
+function hide(id) { const el=$(id); if(el) el.style.display='none'; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function lighten(hex) {
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgb(${Math.min(255,r+40)},${Math.min(255,g+40)},${Math.min(255,b+40)})`;
+}
+function toast(msg,type='info') {
+  const t=$('toast'); t.textContent=msg; t.className='show '+type;
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ══ AUTH ══
+const authTimeout = setTimeout(() => {
+  $('loading-splash').classList.add('hidden');
+  $('choice-screen').style.display = 'flex';
+}, 6000);
+
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ hd: 'sourcefuse.com', prompt: 'select_account' });
+
+onAuthStateChanged(auth, async user => {
+  clearTimeout(authTimeout);
+  if (!user) {
+    $('loading-splash').classList.add('hidden');
+    $('admin-choice-screen').style.display = 'none';
+    $('app').style.display = 'none';
+    const btn = $('manual-signin-btn');
+    if (btn) { btn.disabled=false; btn.innerHTML='<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="G"> Sign in with Google'; }
+    $('choice-screen').style.display = 'flex';
+    return;
+  }
+  $('loading-splash').classList.add('hidden');
+  if (user.email.split('@')[1] !== DOMAIN) {
+    await signOut(auth);
+    $('choice-screen').style.display = 'flex';
+    toast('Access denied — please use your @sourcefuse.com account.', 'error');
+    return;
+  }
+  me = user; meEmail = user.email.toLowerCase();
+  $('user-name').textContent = user.displayName || user.email;
+  if (user.photoURL) $('user-avatar').src = user.photoURL;
+  if (ADMINS.includes(meEmail)) {
+    myRole = 'admin';
+  } else {
+    const snap = await getDoc(doc(db, 'users', meEmail));
+    myRole = snap.exists() ? (snap.data().role || 'student') : 'student';
+  }
+  if (myRole === 'admin') {
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get('view');
+    if (view === 'courses') {
+      $('app').style.display = 'block'; showChips();
+      hide('student-view'); hide('reviewer-view'); show('admin-view');
+      loadAdminCourses();
+      history.replaceState({}, '', window.location.pathname);
+      return;
+    }
+    const firstName = (user.displayName || user.email).split(' ')[0].split('@')[0];
+    $('admin-first-name').textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+    $('choice-screen').style.display = 'none';
+    $('admin-choice-screen').style.display = 'flex';
+    return;
+  }
+  if (myRole === 'reviewer') { window.location.href = 'reviewer.html'; return; }
+  if (myRole === 'proctor')  { window.location.href = 'sf-certs-hub.html'; return; }
+  $('choice-screen').style.display = 'none';
+  $('app').style.display = 'block'; showChips(); route(); startNotifListener();
+});
+
+window.manualSignIn = async function() {
+  const btn=$('manual-signin-btn'); btn.disabled=true; btn.textContent='Signing in...';
+  try { await signInWithPopup(auth, googleProvider); }
+  catch(e) {
+    if (e.code !== 'auth/cancelled-popup-request') toast('Sign-in failed. Please try again.','error');
+    btn.disabled=false; btn.innerHTML='<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="G"> Sign in with Google';
+  }
+};
+
+window.selectMode = function(mode) {
+  $('choice-screen').style.display='none';
+  if (mode==='certify') { window.location.href='sf-certs-hub.html'; }
+  else { $('app').style.display='block'; showChips(); route(); }
+};
+
+window.backToAdminConsole = function() {
+  $('app').style.display='none'; inLearnerView=false;
+  $('admin-choice-screen').style.display='flex';
+};
+
+window.adminNav = function(section) {
+  if (section==='certifications') { window.location.href='sf-certs-hub.html'; return; }
+  if (section==='learner') { previewAsStudent(); return; }
+  $('admin-choice-screen').style.display='none'; inLearnerView=false;
+  $('app').style.display='block'; showChips();
+  hide('student-view'); hide('reviewer-view'); show('admin-view');
+  loadAdminCourses();
+};
+
+window.adminSignOut = async function() {
+  $('admin-choice-screen').style.display='none';
+  $('choice-screen').style.display='none';
+  $('app').style.display='none';
+  await signOut(auth);
+};
+
+$('signout-btn').addEventListener('click', () => window.adminSignOut());
+
+function showChips() {
+  $('chip-admin').style.display    = myRole==='admin'    ? 'inline-flex' : 'none';
+  $('chip-reviewer').style.display = myRole==='reviewer' ? 'inline-flex' : 'none';
+  $('chip-proctor').style.display  = myRole==='proctor'  ? 'inline-flex' : 'none';
+  $('certs-link').style.display    = (myRole==='student'||myRole==='reviewer') ? 'inline-flex' : 'none';
+  $('learner-view-btn').style.display  = (myRole==='admin'||myRole==='reviewer') ? 'inline-flex' : 'none';
+  $('admin-console-btn').style.display = myRole==='admin' ? 'inline-flex' : 'none';
+}
+
+function route() {
+  hide('student-view'); hide('admin-view'); hide('reviewer-view'); inLearnerView=false;
+  if      (myRole==='admin')    { show('admin-view');    loadAdminCourses(); }
+  else if (myRole==='reviewer') { window.location.href='reviewer.html'; }
+  else if (myRole==='proctor')  { window.location.href='sf-certs-hub.html'; }
+  else                          { show('student-view');  loadStudentCourses(); }
+}
+
+window.toggleLearnerView = function() {
+  if (!inLearnerView) { inLearnerView=true; hide('admin-view'); hide('reviewer-view'); show('student-view'); loadStudentCourses(); }
+  else { inLearnerView=false; route(); }
+};
+
+// ══ STUDENT TABS ══
+window.switchStudentTab = function(tab) {
+  if (tab==='courses') {
+    $('sStudentTab').className='s-tab active'; $('sExamTab').className='s-tab';
+    show('tab-courses'); hide('tab-exams'); loadStudentCourses();
+  } else {
+    $('sStudentTab').className='s-tab'; $('sExamTab').className='s-tab active';
+    hide('tab-courses'); show('tab-exams'); loadStudentExams();
+  }
+};
+
+// ══ STUDENT COURSES ══
+async function loadStudentCourses() {
+  show('loading-courses'); hide('courses-grid'); hide('empty-state');
+  $('courses-grid').innerHTML='';
+  try {
+    const snap=await getDocs(collection(db,'courses'));
+    courses=[]; snap.forEach(d=>{if(d.data().status==='live') courses.push({id:d.id,...d.data()});});
+    courses.sort((a,b)=>(a.order||0)-(b.order||0));
+    hide('loading-courses');
+    if (!courses.length) { show('empty-state'); return; }
+    show('courses-grid');
+    for (const c of courses) $('courses-grid').appendChild(await buildCard(c));
+  } catch(e) { hide('loading-courses'); toast('Error loading courses','error'); }
+}
+
+async function buildCard(c) {
+  let nom=myRole==='admin'&&!isPreviewMode;
+  if (!nom) {
+    try { const s=await getDoc(doc(db,'courses',c.id,'nominations',lookupEmail())); nom=s.exists()&&s.data().nominated!==false; } catch{}
+  }
+  const ac=c.accentColor||'#3b82f6';
+  const el=document.createElement('div'); el.className='course-card'+(nom?'':' locked');
+  el.innerHTML=`
+    <div class="card-banner" style="background:linear-gradient(90deg,${ac},${lighten(ac)})"></div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-tag">${esc(c.category||'Course')}</span>
+        <span class="card-status ${nom?'s-nom':'s-not'}">${nom?'🟠 Nominated':'Not Nominated'}</span>
+      </div>
+      <div class="card-icon">${esc(c.icon||'📘')}</div>
+      <div class="card-title">${esc(c.title)}</div>
+      <div class="card-desc">${esc(c.description||'')}</div>
+      <div class="not-nom-notice">You are not nominated for this course. Please request your manager to nominate you.</div>
+    </div>
+    <div class="card-footer">
+      <div class="card-info">
+        ${c.duration?`<div class="card-info-item">&#8987; ${esc(c.duration)}</div>`:''}
+        ${c.level?`<div class="card-info-item">&#128214; ${esc(c.level)}</div>`:''}
+      </div>
+      ${nom?`<a href="${esc(c.url||'#')}" class="card-btn btn-enter">Enter Course &rarr;</a>`:`<button class="card-btn btn-locked" disabled>🔒 Access Restricted</button>`}
+    </div>`;
+  return el;
+}
+
+// ══ STUDENT EXAMS ══
+let _currentExams=[];
+window._currentExams=_currentExams;
+
+async function loadStudentExams() {
+  const grid=$('student-exams-grid'), loading=$('loading-exams');
+  grid.innerHTML=''; loading.style.display='block'; hide('empty-exams');
+  try {
+    const snap=await getDocs(collection(db,'exams'));
+    const allExams=[]; snap.forEach(d=>{if(d.data().status==='live') allExams.push({id:d.id,...d.data()});});
+    const nominatedExams=[];
+    for (const exam of allExams) {
+      let nominated=myRole==='admin'&&!isPreviewMode;
+      if (!nominated) {
+        try { const s=await getDoc(doc(db,'exams',exam.id,'nominations',lookupEmail())); nominated=s.exists()&&(s.data().nominated!==false||s.data().examEligible===true); } catch{}
+      }
+      if (nominated) nominatedExams.push(exam);
+    }
+    loading.style.display='none';
+    if (!nominatedExams.length) { show('empty-exams'); return; }
+    const _uid=await lookupUid();
+    let myResults={};
+    try { if(_uid){const rs=await getDoc(doc(db,'examResults',_uid));if(rs.exists()) myResults=rs.data();}} catch{}
+    let myProgress={};
+    try { if(_uid){const ps=await getDoc(doc(db,'progress',_uid));if(ps.exists()) myProgress=ps.data();}} catch{}
+    const examEligibilityMap={};
+    for (const exam of nominatedExams) {
+      try { const nd=await getDoc(doc(db,'exams',exam.id,'nominations',lookupEmail())); examEligibilityMap[exam.id]=nd.exists()&&nd.data().examEligible===true; } catch{}
+    }
+    const slotMap={};
+    try {
+      const slotSnap=await getDocs(query(collection(db,'examSlots'),where('learnerEmail','==',lookupEmail())));
+      slotSnap.forEach(d=>{const s={id:d.id,...d.data()};if(!slotMap[s.examId]||(s.bookedAt?.seconds||0)>(slotMap[s.examId].bookedAt?.seconds||0)) slotMap[s.examId]=s;});
+    } catch(e){console.warn('slot fetch:',e);}
+    _currentExams=nominatedExams; window._currentExams=_currentExams;
+    for (const exam of nominatedExams) {
+      grid.appendChild(buildStudentExamCard({...exam,examEligible:examEligibilityMap[exam.id]||false,_slot:slotMap[exam.id]||null},myResults,myProgress));
+    }
+  } catch(err) { loading.style.display='none'; console.error('loadStudentExams:',err); toast('Error loading exams','error'); }
+}
+
+function buildStudentExamCard(exam,myResults,myProgress) {
+  const ac=exam.accentColor||'#f59e0b', maxAttempts=exam.maxAttempts||3, passMark=exam.passMark||exam.passmark||66;
+  const res=myResults[exam.id]||null, attemptCount=res?.attemptCount||0, bestScore=res?.bestScore??null, bestPassed=res?.bestPassed??null;
+  const attemptsLeft=Math.max(0,maxAttempts-attemptCount), examEligible=exam.examEligible===true;
+  let courseComplete=true;
+  if (exam.linkedCourseId&&!examEligible) courseComplete=myProgress['course_'+exam.linkedCourseId]===true;
+  const canTake=(courseComplete||examEligible)&&attemptsLeft>0;
+  const statusBadge=bestPassed===true?'<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2);">🟢 Passed</span>':bestPassed===false?'<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.15);">🔴 Not Passed</span>':attemptCount>0?'<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(245,158,11,.08);color:#fbbf24;border:1px solid rgba(245,158,11,.2);">🟡 In Progress</span>':'<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(59,130,246,.08);color:#60a5fa;border:1px solid rgba(59,130,246,.2);">&#9898; Not Attempted</span>';
+  const dots=Array.from({length:maxAttempts},(_,i)=>`<div class="a-dot ${i<attemptCount?'used':'avail'}"></div>`).join('');
+  let notice='';
+  if (!courseComplete&&exam.linkedCourseId&&!examEligible) notice=`<div class="notice-box notice-course-lock" style="margin-top:12px;">&#9888;&#65039; Complete the linked course before attempting this exam.</div>`;
+  else if (examEligible&&!courseComplete) notice=`<div class="notice-box" style="margin-top:12px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fbbf24;">&#9889; Course override enabled &mdash; you can take this exam directly.</div>`;
+  else if (attemptsLeft===0) notice=`<div class="notice-box notice-no-attempts" style="margin-top:12px;">All ${maxAttempts} attempts used for this exam.</div>`;
+
+  const slot=exam._slot||null, slotStatus=slot?slot.status:null;
+  let slotStatusHtml='';
+  if (slotStatus==='bookedByLearner') {
+    const rc=slot.rescheduleCount||0;
+    const reschedTag=rc>0?`<span style="font-size:11px;margin-left:8px;padding:2px 8px;border-radius:50px;background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.2);">Rescheduled ${rc}/2</span>`:'';
+    slotStatusHtml=`<div class="slot-status awaiting">&#9203; Awaiting proctor confirmation &middot; ${slot.requestedDate||''} ${slot.requestedTime||''}${reschedTag}</div>`;
+  } else if (slotStatus==='confirmed') {
+    slotStatusHtml=`<div class="slot-status confirmed">&#10003; Slot confirmed &middot; ${slot.requestedDate||''} ${slot.requestedTime||''}</div>`;
+    if (slot.requestedDate&&slot.requestedTime) {
+      const scheduledMs=new Date(slot.requestedDate+'T'+slot.requestedTime+':00').getTime();
+      const minsLate=Math.floor((Date.now()-scheduledMs)/60000);
+      if (slot.admitted===true) {
+        slotStatusHtml+='<div class="flag-actioned-box">&#10003; Actioned by Proctor</div>';
+      } else if (slot.rejectedAt) {
+        slotStatusHtml+='<div class="flag-actioned-box">&#10003; Actioned by Proctor (denied)</div>';
+      } else if (slot.flagged) {
+        slotStatusHtml+='<div class="flag-raised-box">&#128680; Delay flagged &mdash; awaiting admin action</div>';
+      } else if (minsLate>=5) {
+        slotStatusHtml+='<div class="flag-delay-box"><div class="flag-delay-label">&#9888;&#65039; Proctor has not responded ('+minsLate+' min delay)</div><label class="flag-delay-check"><input type="checkbox" id="flag-check-'+slot.id+'" onchange="raiseDelayFlag(\''+slot.id+'\', this.checked)">I want to flag this delay for admin attention</label></div>';
+      } else if (minsLate>=-10) {
+        const minsToStart=Math.max(0,-minsLate);
+        slotStatusHtml+='<div style="font-size:12px;color:var(--muted);margin-top:8px;">&#128338; '+(minsLate<0?'Exam starts in '+minsToStart+' min. Be ready 10 min before.':'Waiting for proctor. Flag option activates after 5 min delay.')+'</div>';
+      }
+    }
+  } else if (slotStatus==='awaitingAdmit') {
+    slotStatusHtml=`<div class="slot-status awaiting">&#128250; Snapshots sent &mdash; waiting for proctor to admit</div>`;
+  }
+
+  let footerHtml='';
+  if (slotStatus==='confirmed') {
+    const _scheduledMs=slot.requestedDate&&slot.requestedTime?new Date(slot.requestedDate+'T'+slot.requestedTime+':00').getTime():null;
+    const _minsToExam=_scheduledMs?Math.floor((_scheduledMs-Date.now())/60000):999;
+    if (_minsToExam<=10) {
+      footerHtml=`<button class="card-btn btn-enter" onclick="openBeginSetup('${exam.id}','${slot?.id||''}')">&#128247; Begin Setup &rarr;</button>`;
+    } else {
+      footerHtml=`<button class="card-btn btn-locked" disabled style="cursor:default;">&#128197; Exam on ${slot.requestedDate||''} ${slot.requestedTime||''} &mdash; Setup available 10 min before</button>`;
+    }
+  } else if (slotStatus==='inProgress'&&slot?.admitted===true) {
+    footerHtml=`<button class="card-btn btn-enter" onclick="beginActualExam('${exam.id}','${slot?.id||''}')">&#127891; Begin Exam &rarr;</button>`;
+  } else if (slotStatus==='inProgress'&&slot?.denied===true) {
+    const reschedLeft=Math.max(0,2-(slot.rescheduleCount||0));
+    footerHtml=`<div style="text-align:center;"><div style="font-size:13px;color:#f87171;padding:10px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);margin-bottom:8px;">&#9888;&#65039; Additional verification required. Please reschedule.</div>${reschedLeft>0?`<button class="card-btn btn-enter" style="background:#7c3aed;" onclick="openRescheduleModal('${slot.id}','${esc(exam.title)}',${reschedLeft})">&#128197; Reschedule (${reschedLeft} left)</button>`:'<div style="font-size:13px;color:var(--muted);">No reschedules remaining.</div>'}</div>`;
+  } else if (slotStatus==='awaitingAdmit') {
+    footerHtml=`<button class="card-btn btn-locked" disabled>&#9203; Awaiting Confirmation</button>`;
+  } else if (slotStatus==='bookedByLearner') {
+    const reschedLeft=2-(slot.rescheduleCount||0);
+    footerHtml=reschedLeft>0?`<div style="display:flex;gap:10px;"><button class="card-btn btn-locked" disabled style="flex:1;">&#9203; Awaiting Confirmation</button><button class="card-btn btn-enter" style="flex:1;background:#7c3aed;" onclick="openRescheduleModal('${slot.id}','${esc(exam.title)}',${reschedLeft})">&#128197; Reschedule (${reschedLeft} left)</button></div>`:`<button class="card-btn btn-locked" disabled>&#9203; Awaiting Confirmation</button>`;
+  } else if (canTake) {
+    footerHtml=`<button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}')">&#128197; Schedule Exam</button>`;
+  } else {
+    footerHtml=`<button class="card-btn btn-locked" disabled>${attemptsLeft===0?'No Attempts Left':'🔒 Complete Course First'}</button>`;
+  }
+
+  const el=document.createElement('div'); el.className='course-card';
+  el.innerHTML=`
+    <div class="card-banner" style="background:linear-gradient(90deg,${ac},${lighten(ac)})"></div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-tag" style="color:${ac};background:${ac}22;">${esc(exam.category||'Exam')}</span>
+        ${statusBadge}
+      </div>
+      <div class="card-icon">${esc(exam.icon||'🎓')}</div>
+      <div class="card-title">${esc(exam.title)}</div>
+      <div class="card-desc">${esc(exam.description||'')}</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:4px;">
+        ${exam.duration?`<span style="font-size:12px;color:var(--muted);">&#8987; ${esc(exam.duration)}</span>`:''}
+        <span style="font-size:12px;color:var(--muted);">&#127919; Pass: ${passMark}%</span>
+        ${bestScore!==null?`<span style="font-size:12px;color:var(--muted);">&#11088; Best: ${bestScore}%</span>`:''}
+      </div>
+      <div class="attempts-bar" style="margin-top:8px;">
+        <span style="font-size:12px;color:var(--muted);">Attempts: ${attemptCount}/${maxAttempts}</span>
+        <div class="attempts-dots">${dots}</div>
+      </div>
+      ${notice}
+      ${slotStatusHtml}
+    </div>
+    <div class="card-footer">${footerHtml}</div>`;
+  return el;
+}
+
+// ══ ADMIN COURSES ══
+async function loadAdminCourses() {
+  const list=$('course-list'); list.innerHTML='<div class="sb-empty">Loading...</div>';
+  try {
+    const snap=await getDocs(collection(db,'courses'));
+    courses=[]; snap.forEach(d=>courses.push({id:d.id,...d.data()}));
+    courses.sort((a,b)=>(a.order||0)-(b.order||0));
+    if (!courses.length) { list.innerHTML='<div class="sb-empty">No courses yet.<br>Click <b>+ New</b> to add one.</div>'; return; }
+    renderCourseList();
+  } catch { list.innerHTML='<div class="sb-empty">Error loading.</div>'; }
+}
+
+function renderCourseList() {
+  const list=$('course-list'); list.innerHTML='';
+  courses.forEach(c=>{
+    const item=document.createElement('div'); item.className='course-list-item'+(c.id===selCourse?' active':'');
+    item.onclick=()=>selectCourse(c.id);
+    const statusCls=c.status==='live'?'status-live':c.status==='review'?'status-review':'status-draft';
+    item.innerHTML=`<span class="cli-icon">${esc(c.icon||'📘')}</span><span class="cli-title">${esc(c.title||'Untitled')}</span><span class="cli-status ${statusCls}">${c.status||'draft'}</span>`;
+    list.appendChild(item);
+  });
+}
+
+async function selectCourse(id) {
+  selCourse=id; selPerson=null; renderCourseList();
+  hide('admin-placeholder'); hide('person-panel'); show('course-panel');
+  const c=courses.find(x=>x.id===id)||{};
+  $('f-title').value=c.title||''; $('f-category').value=c.category||''; $('f-desc').value=c.description||'';
+  $('f-url').value=c.url||''; $('f-duration').value=c.duration||''; $('f-level').value=c.level||'Beginner';
+  $('f-icon').value=c.icon||'📘'; $('f-color').value=c.accentColor||'#3b82f6';
+  $('f-order').value=c.order!=null?c.order:''; $('f-status').value=c.status||'draft';
+  await loadNominations(id);
+}
+
+$('save-course-btn').addEventListener('click', async()=>{
+  if (!selCourse) return;
+  const btn=$('save-course-btn'); btn.disabled=true; btn.textContent='Saving...';
+  try {
+    const data={title:$('f-title').value.trim()||'Untitled',category:$('f-category').value.trim(),description:$('f-desc').value.trim(),url:$('f-url').value.trim(),duration:$('f-duration').value.trim(),level:$('f-level').value,icon:$('f-icon').value.trim()||'📘',accentColor:$('f-color').value.trim()||'#3b82f6',order:parseInt($('f-order').value)||0,status:$('f-status').value,updatedAt:serverTimestamp()};
+    await setDoc(doc(db,'courses',selCourse),data,{merge:true});
+    const i=courses.findIndex(c=>c.id===selCourse); if(i>=0) Object.assign(courses[i],data);
+    renderCourseList(); toast('Course saved!','success');
+  } catch { toast('Error saving.','error'); }
+  btn.disabled=false; btn.textContent='Save Course';
+});
+
+$('delete-course-btn').addEventListener('click', async()=>{
+  if (!selCourse||!confirm('Delete this course?')) return;
+  await deleteDoc(doc(db,'courses',selCourse));
+  courses=courses.filter(c=>c.id!==selCourse); selCourse=null; renderCourseList();
+  hide('course-panel'); show('admin-placeholder'); toast('Course deleted.','success');
+});
+
+$('sb-add-course').addEventListener('click', async()=>{
+  const ref=await addDoc(collection(db,'courses'),{title:'New Course',category:'',description:'',url:'',duration:'',level:'Beginner',icon:'📘',accentColor:'#3b82f6',order:courses.length,status:'draft',createdAt:serverTimestamp()});
+  courses.push({id:ref.id,title:'New Course',category:'',status:'draft',order:courses.length,icon:'📘',accentColor:'#3b82f6'});
+  renderCourseList(); selectCourse(ref.id);
+});
+
+// ══ NOMINATIONS ══
+async function loadNominations(courseId) {
+  const container=$('nom-container'); container.innerHTML='<div class="inline-loading"><div class="spinner"></div>Loading...</div>';
+  try {
+    const snap=await getDocs(collection(db,'courses',courseId,'nominations'));
+    const noms=[]; snap.forEach(d=>noms.push({email:d.id,...d.data()}));
+    if (!noms.length) { container.innerHTML='<div class="nom-empty">No users nominated yet.</div>'; return; }
+    container.innerHTML='';
+    noms.forEach(n=>{
+      const row=document.createElement('div'); row.className='nom-row';
+      row.innerHTML=`<div class="nom-info"><div class="nom-name">${esc(n.name||n.email)}</div><div class="nom-email">${esc(n.email)}</div></div>
+        <span class="nom-badge">${esc(n.role||'student')}</span>
+        <button class="danger-btn" style="padding:4px 10px;font-size:12px;" onclick="removeNomination('${courseId}','${esc(n.email)}')">Remove</button>`;
+      container.appendChild(row);
+    });
+  } catch { container.innerHTML='<div class="nom-empty">Error loading nominations.</div>'; }
+}
+
+window.addNomination = async function() {
+  const email=$('nom-email-input').value.trim().toLowerCase(), role=$('nom-role-select').value;
+  if (!email||!selCourse) return;
+  try {
+    const payload={nominated:true,nominatedAt:serverTimestamp(),nominatedBy:me.email,role};
+    if (role==='reviewer') { await setDoc(doc(db,'users',email),{role:'reviewer',assignedCourseId:selCourse,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true}); payload.nominated=true; }
+    await setDoc(doc(db,'courses',selCourse,'nominations',email),payload,{merge:true});
+    $('nom-email-input').value=''; await loadNominations(selCourse); toast('Nomination added!','success');
+  } catch { toast('Error adding nomination.','error'); }
+};
+
+window.removeNomination = async function(courseId,email) {
+  if (!confirm('Remove nomination for '+email+'?')) return;
+  await deleteDoc(doc(db,'courses',courseId,'nominations',email));
+  await loadNominations(courseId); toast('Nomination removed.','success');
+};
+
+// ══ PEOPLE ══
+async function selectPerson(id) {
+  selPerson=id; selCourse=null; renderCourseList();
+  hide('admin-placeholder'); hide('course-panel'); show('person-panel');
+  const snap=await getDoc(doc(db,'users',id));
+  const p=snap.exists()?{id:snap.id,...snap.data()}:{};
+  $('p-name').value=p.name||''; $('p-email').value=p.id||''; $('p-role').value=p.role||'student';
+  updatePersonRoleUI(p.role||'student',p.assignedCourseId||'');
+}
+
+function updatePersonRoleUI(role,assignedCourseId='') {
+  const cg=$('p-course-group'); cg.style.display=role==='reviewer'?'flex':'none';
+  if (role==='reviewer') {
+    const sel=$('p-assigned-course'); sel.innerHTML='<option value="">— Select course —</option>';
+    courses.forEach(c=>{const opt=document.createElement('option');opt.value=c.id;opt.textContent=c.title;if(c.id===assignedCourseId)opt.selected=true;sel.appendChild(opt);});
+  }
+}
+
+$('p-role').addEventListener('change',()=>updatePersonRoleUI($('p-role').value));
+
+$('save-person-btn').addEventListener('click', async()=>{
+  if (!selPerson) return;
+  const role=$('p-role').value, data={role,updatedAt:serverTimestamp(),updatedBy:me.email};
+  if (role==='reviewer') { const courseId=$('p-assigned-course').value; if(courseId) data.assignedCourseId=courseId; }
+  await setDoc(doc(db,'users',selPerson),data,{merge:true});
+  toast('User saved!','success');
+});
+
+$('delete-person-btn').addEventListener('click', async()=>{
+  if (!selPerson||!confirm('Delete this user?')) return;
+  await deleteDoc(doc(db,'users',selPerson)); selPerson=null;
+  hide('person-panel'); show('admin-placeholder'); toast('User deleted.','success');
+});
+
+$('sb-add-person').addEventListener('click',()=>openSetRoleModal());
+
+// ══ REVIEWER VIEW ══
+async function loadReviewerQueue() {
+  const container=$('review-queue-list'); container.innerHTML='<div class="inline-loading"><div class="spinner"></div>Loading...</div>';
+  try {
+    const snap=await getDocs(collection(db,'courses'));
+    const toReview=[]; snap.forEach(d=>{if(d.data().status==='review') toReview.push({id:d.id,...d.data()});});
+    if (!toReview.length) { container.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px;">No courses pending review.</div>'; return; }
+    container.innerHTML='';
+    toReview.forEach(c=>{
+      const item=document.createElement('div'); item.className='review-queue-item';
+      item.innerHTML=`<div class="rq-title">${esc(c.title||'Untitled')}</div><div class="rq-meta">${esc(c.category||'')} &middot; ${esc(c.level||'')}</div>${c.url?`<a href="${esc(c.url)}" target="_blank" style="font-size:13px;color:var(--accent);display:block;margin-bottom:12px;">${esc(c.url)}</a>`:''}<textarea class="rq-comment" id="rq-comment-${c.id}" placeholder="Optional comment for admin..."></textarea><div class="rq-actions"><button class="approve-btn" onclick="reviewAction('${c.id}','live')">&#10003; Approve</button><button class="reject-btn" onclick="reviewAction('${c.id}','draft')">&#10007; Reject</button></div>`;
+      container.appendChild(item);
+    });
+  } catch { container.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px;">Error loading.</div>'; }
+}
+
+window.reviewAction = async function(courseId,status) {
+  const comment=$('rq-comment-'+courseId)?.value?.trim()||'';
+  await setDoc(doc(db,'courses',courseId),{status,reviewComment:comment,reviewedBy:me.email,reviewedAt:serverTimestamp()},{merge:true});
+  toast(status==='live'?'Course approved and live!':'Course rejected back to draft.',status==='live'?'success':'error');
+  loadReviewerQueue();
+};
+
+// ══ PREVIEW AS LEARNER ══
+let _pickerUsers=[];
+
+window.previewAsStudent = async function() {
+  $('preview-picker').style.display='block';
+  $('picker-loading').style.display='block'; $('picker-list').style.display='none'; $('picker-empty').style.display='none'; $('picker-search').value='';
+  const emailSet=new Set();
+  try {
+    const cSnap=await getDocs(collection(db,'courses'));
+    for (const cd of cSnap.docs) { const nSnap=await getDocs(collection(db,'courses',cd.id,'nominations')); nSnap.forEach(n=>emailSet.add(n.id)); }
+    const eSnap=await getDocs(collection(db,'exams'));
+    for (const ed of eSnap.docs) { const nSnap=await getDocs(collection(db,'exams',ed.id,'nominations')); nSnap.forEach(n=>emailSet.add(n.id)); }
+  } catch{}
+  _pickerUsers=[];
+  for (const email of emailSet) {
+    let name=email;
+    try { const uSnap=await getDoc(doc(db,'users',email)); if(uSnap.exists()) name=uSnap.data().name||email; } catch{}
+    _pickerUsers.push({email,name});
+  }
+  $('picker-loading').style.display='none'; renderPickerList(_pickerUsers);
+};
+
+function renderPickerList(users) {
+  const list=$('picker-list'); list.innerHTML='';
+  if (!users.length) { $('picker-empty').style.display='block'; list.style.display='none'; return; }
+  $('picker-empty').style.display='none'; list.style.display='flex';
+  users.forEach(u=>{
+    const card=document.createElement('div');
+    card.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s;';
+    card.onmouseover=()=>{card.style.background='rgba(59,130,246,.08)';card.style.borderColor='rgba(59,130,246,.3)';};
+    card.onmouseleave=()=>{card.style.background='var(--card)';card.style.borderColor='rgba(255,255,255,.08)';};
+    const initials=(u.name?u.name.charAt(0):u.email.charAt(0)).toUpperCase();
+    const av=document.createElement('div');
+    av.innerHTML=u.photoURL?`<img src="${u.photoURL}" style="width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);" onerror="this.style.display='none'">`:`<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;">${initials}</div>`;
+    card.appendChild(av);
+    const info=document.createElement('div'); info.style.flex='1';
+    info.innerHTML=`<div style="font-size:14px;font-weight:600;">${esc(u.name)}</div><div style="font-size:12px;color:var(--muted);">${esc(u.email)}</div>`;
+    card.appendChild(info);
+    card.appendChild(Object.assign(document.createElement('div'),{textContent:'→',style:'font-size:18px;color:var(--accent);'}));
+    card.onclick=()=>launchPreviewAs(u);
+    list.appendChild(card);
+  });
+}
+
+window.filterPickerList = function() {
+  const q=$('picker-search').value.toLowerCase();
+  renderPickerList(_pickerUsers.filter(u=>u.name.toLowerCase().includes(q)||u.email.toLowerCase().includes(q)));
+};
+
+function launchPreviewAs(u) {
+  isPreviewMode=true; previewEmail=u.email;
+  $('preview-picker').style.display='none'; $('admin-choice-screen').style.display='none';
+  $('app').style.display='block'; showChips();
+  hide('admin-view'); hide('reviewer-view'); hide('examresults-view'); show('student-view');
+  loadStudentCourses(); showPreviewBanner('Learner',u);
+}
+
+function showPreviewBanner(role,u) {
+  const banner=$('preview-banner');
+  $('preview-banner-text').innerHTML='&#129514; Previewing as <strong>'+role+'</strong> &mdash; '+(u.name||u.email);
+  banner.style.display='flex'; toast('Viewing as '+role+': '+(u.name||u.email),'info');
+  applyPreviewReadOnly(role,u);
+}
+
+function applyPreviewReadOnly(role,u) {
+  removePreviewReadOnly();
+  const label='&#128065; Preview Mode &mdash; Read Only &nbsp;&bull;&nbsp; Viewing as <strong>'+role+':</strong> '+(u.name||u.email)+' &nbsp;&bull;&nbsp; No actions will be saved.';
+  const banner=document.createElement('div'); banner.className='preview-readonly-banner'; banner.id='preview-ro-banner'; banner.innerHTML=label;
+  const appEl=$('app'); if(appEl) appEl.insertBefore(banner,appEl.firstChild);
+  ['student-view','reviewer-view'].forEach(id=>{const view=$(id); if(view) view.classList.add('preview-mode-active');});
+}
+
+function removePreviewReadOnly() {
+  const banner=document.getElementById('preview-ro-banner'); if(banner) banner.remove();
+  ['student-view','reviewer-view'].forEach(id=>{const view=$(id); if(view) view.classList.remove('preview-mode-active');});
+  document.querySelectorAll('.preview-readonly-banner').forEach(el=>el.remove());
+}
+
+window.closePreviewPicker  = function() { $('preview-picker').style.display='none'; };
+window.closeReviewerPicker = function() { $('reviewer-picker').style.display='none'; };
+window.closeProctorPicker  = function() { $('proctor-picker').style.display='none'; };
+
+window.exitPreview = function() {
+  isPreviewMode=false; previewEmail=null; removePreviewReadOnly();
+  $('preview-banner').style.display='none';
+  hide('student-view'); hide('reviewer-view'); hide('admin-view'); hide('examresults-view');
+  $('app').style.display='none'; $('admin-choice-screen').style.display='flex';
+};
+
+window.previewAsReviewer = async function() {
+  $('reviewer-picker').style.display='block';
+  $('reviewer-picker-loading').style.display='block'; $('reviewer-picker-list').style.display='none'; $('reviewer-picker-empty').style.display='none';
+  try {
+    const uSnap=await getDocs(collection(db,'users'));
+    const reviewerMap=new Map();
+    uSnap.forEach(d=>{if(d.data().role==='reviewer') reviewerMap.set(d.id,{email:d.id,...d.data()});});
+    try {
+      const cSnap=await getDocs(collection(db,'courses'));
+      for (const cd of cSnap.docs) {
+        const nSnap=await getDocs(collection(db,'courses',cd.id,'nominations'));
+        nSnap.forEach(n=>{if(n.data().role==='reviewer'&&!reviewerMap.has(n.id)) reviewerMap.set(n.id,{email:n.id,name:n.id,assignedCourseId:cd.id});});
+      }
+    } catch{}
+    const reviewers=Array.from(reviewerMap.values());
+    $('reviewer-picker-loading').style.display='none';
+    if (!reviewers.length) { $('reviewer-picker-empty').style.display='block'; return; }
+    const list=$('reviewer-picker-list'); list.innerHTML=''; list.style.display='flex';
+    for (const r of reviewers) {
+      let courseTitle=r.assignedCourseId||'No course assigned';
+      if (r.assignedCourseId) { try { const cSnap=await getDoc(doc(db,'courses',r.assignedCourseId)); if(cSnap.exists()) courseTitle=cSnap.data().title||r.assignedCourseId; } catch{} }
+      const card=document.createElement('div');
+      card.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s;';
+      card.onmouseover=()=>{card.style.background='rgba(139,92,246,.08)';card.style.borderColor='rgba(139,92,246,.3)';};
+      card.onmouseleave=()=>{card.style.background='var(--card)';card.style.borderColor='var(--border)';};
+      const initials=(r.name||r.email||'?').charAt(0).toUpperCase();
+      card.innerHTML=`<div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0;">${initials}</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">${esc(r.name||r.email)}</div><div style="font-size:12px;color:var(--muted);">${esc(r.email)}</div><div style="font-size:12px;margin-top:4px;"><span style="color:var(--muted);">Assigned:</span><span style="color:var(--text);font-weight:600;"> ${esc(courseTitle)}</span></div></div><div style="font-size:18px;color:#a78bfa;">&rarr;</div>`;
+      card.onclick=()=>launchReviewerPreview(r,courseTitle); list.appendChild(card);
+    }
+  } catch(e) { console.error('previewAsReviewer:',e); $('reviewer-picker-loading').style.display='none'; $('reviewer-picker-empty').style.display='block'; }
+};
+
+function launchReviewerPreview(reviewer,courseTitle) {
+  $('reviewer-picker').style.display='none'; $('admin-choice-screen').style.display='none';
+  $('app').style.display='block'; showChips();
+  hide('admin-view'); hide('student-view'); hide('examresults-view'); show('reviewer-view');
+  showPreviewBanner('Reviewer',{name:reviewer.name||reviewer.email,email:reviewer.email});
+  loadReviewerQueueForPreview(reviewer);
+}
+
+async function loadReviewerQueueForPreview(reviewer) {
+  const container=$('review-queue-list'); container.innerHTML='<div class="inline-loading"><div class="spinner"></div>Loading...</div>';
+  try {
+    const courseId=reviewer.assignedCourseId;
+    if (!courseId) { container.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px;">This reviewer has no assigned course.</div>'; return; }
+    const cSnap=await getDoc(doc(db,'courses',courseId));
+    if (!cSnap.exists()||cSnap.data().status!=='review') { container.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px;">No course pending review for this reviewer.</div>'; return; }
+    const c={id:cSnap.id,...cSnap.data()};
+    let existingReview=null;
+    try { const revSnap=await getDoc(doc(db,'courses',courseId,'review','data')); if(revSnap.exists()) existingReview=revSnap.data(); } catch{}
+    container.innerHTML='';
+    const item=document.createElement('div'); item.className='review-queue-item';
+    const reviewerNote=existingReview?`<div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--muted);"><strong style="color:#a78bfa;">Reviewer notes:</strong> ${esc(existingReview.overallNotes||'None yet')}</div>`:'<div style="font-size:12px;color:var(--muted);margin-bottom:12px;">No review submitted yet.</div>';
+    item.innerHTML=`<div class="rq-title">${esc(c.title||'Untitled')}</div><div class="rq-meta">${esc(c.category||'')} &middot; Status: <strong>${esc(c.status||'')}</strong></div>${c.url?`<a href="${esc(c.url)}" target="_blank" style="font-size:13px;color:var(--accent);display:block;margin-bottom:12px;">${esc(c.url)}</a>`:''}<div style="font-size:12px;color:#fbbf24;padding:8px 12px;background:rgba(245,158,11,.06);border-radius:8px;border:1px solid rgba(245,158,11,.2);">&#128065; Admin preview mode &mdash; actions are disabled</div>`;
+    container.appendChild(item);
+  } catch(e) { console.error('loadReviewerQueueForPreview:',e); container.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px;">Error loading.</div>'; }
+}
+
+window.previewAsProctor = async function() {
+  $('proctor-picker').style.display='block';
+  $('proctor-picker-loading').style.display='block'; $('proctor-picker-list').style.display='none'; $('proctor-picker-empty').style.display='none';
+  try {
+    const uSnap=await getDocs(collection(db,'users'));
+    const proctors=[]; uSnap.forEach(d=>{if(d.data().role==='proctor') proctors.push({email:d.id,...d.data()});});
+    $('proctor-picker-loading').style.display='none';
+    if (!proctors.length) { $('proctor-picker-empty').style.display='block'; return; }
+    const list=$('proctor-picker-list'); list.innerHTML=''; list.style.display='flex';
+    for (const p of proctors) {
+      let activeSlots=[];
+      try { const sSnap=await getDocs(query(collection(db,'examSlots'),where('assignedProctor','==',p.email))); sSnap.forEach(d=>{const s={id:d.id,...d.data()};if(['confirmed','awaitingAdmit','inProgress'].includes(s.status)) activeSlots.push(s);}); } catch{}
+      const slotCount=activeSlots.length, slotColor=slotCount>0?'#34d399':'var(--muted)';
+      const slotLabel=slotCount>0?slotCount+' active candidate'+(slotCount>1?'s':''):'No active candidates';
+      const card=document.createElement('div');
+      card.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;cursor:pointer;transition:all .2s;';
+      card.onmouseover=()=>{card.style.background='rgba(16,185,129,.06)';card.style.borderColor='rgba(16,185,129,.3)';};
+      card.onmouseleave=()=>{card.style.background='var(--card)';card.style.borderColor='var(--border)';};
+      const initials=(p.name||p.email||'?').charAt(0).toUpperCase();
+      card.innerHTML=`<div style="display:flex;align-items:center;gap:16px;"><div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#059669,#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0;">${initials}</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">${esc(p.name||p.email)}</div><div style="font-size:12px;color:var(--muted);">${esc(p.email)}</div><div style="font-size:12px;margin-top:4px;font-weight:600;color:${slotColor};">${esc(slotLabel)}</div></div><div style="font-size:18px;color:#34d399;">&rarr;</div></div>`;
+      card.onclick=()=>launchProctorPreview(p,activeSlots); list.appendChild(card);
+    }
+  } catch(e) { console.error('previewAsProctor:',e); $('proctor-picker-loading').style.display='none'; $('proctor-picker-empty').style.display='block'; }
+};
+
+function launchProctorPreview(proctor,slots) {
+  $('proctor-picker').style.display='none';
+  window.open('sf-certs-hub.html?previewProctor='+encodeURIComponent(proctor.email),'_blank');
+}
+
+// ══ EXAM SCHEDULING — WEBCAM SELFIE ══
+let _schedExamId=null, _selfieBase64=null, _selfieStream=null;
+let _detectedTz=Intl.DateTimeFormat().resolvedOptions().timeZone, _activeTz=_detectedTz, _faceApiLoaded=false;
+
+async function loadFaceApi() {
+  if (_faceApiLoaded) return true;
+  try {
+    const MODEL_URL='https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+    _faceApiLoaded=true; return true;
+  } catch(e) { console.warn('face-api load failed:',e); return false; }
+}
+
+window.openScheduleModal = function(examId,examTitle) {
+  _schedExamId=examId; _selfieBase64=null;
+  $('sched-exam-title').textContent=examTitle; $('sched-error').style.display='none';
+  $('sched-consent-check').checked=false; $('sched-photo-status').textContent='';
+  $('sched-submit-btn').textContent='Request Slot \u2192'; $('sched-submit-btn').disabled=false;
+  $('selfie-start-btn').style.display='block'; $('selfie-cam-wrap').style.display='none';
+  $('selfie-preview-wrap').style.display='none'; $('selfie-retake-btn').style.display='none';
+  $('selfie-countdown').style.display='none';
+  const tomorrow=new Date(); tomorrow.setDate(tomorrow.getDate()+1);
+  $('sched-date').min=tomorrow.toISOString().split('T')[0]; $('sched-date').value='';
+  updateTzDisplay(); $('schedule-modal').style.display='block';
+};
+
+function updateTzDisplay() {
+  $('sched-tz-display').innerHTML=`Scheduling in <strong>${_activeTz}</strong>. <a onclick="promptTzOverride()">Not you? Change here</a>`;
+}
+
+window.promptTzOverride = function() {
+  const zones=['Asia/Kolkata','Asia/Dubai','Europe/London','Europe/Berlin','America/New_York','America/Chicago','America/Los_Angeles','Asia/Singapore','Asia/Tokyo','Australia/Sydney'];
+  const sel=prompt('Enter your timezone (e.g. Asia/Kolkata):\n\nCommon options:\n'+zones.join('\n'),_activeTz);
+  if (sel&&sel.trim()) {
+    try { new Intl.DateTimeFormat('en',{timeZone:sel.trim()}).format(new Date()); _activeTz=sel.trim(); updateTzDisplay(); }
+    catch { alert('Invalid timezone. Please try again.'); }
+  }
+};
+
+window.startSelfieCamera = async function() {
+  try {
+    _selfieStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
+    $('selfie-video').srcObject=_selfieStream; $('selfie-start-btn').style.display='none'; $('selfie-cam-wrap').style.display='block';
+    $('sched-photo-status').textContent='Camera ready. Position your face and click Take Selfie.';
+  } catch(e) { $('sched-photo-status').textContent='Camera access denied. Please allow camera access and try again.'; }
+};
+
+window.takeSelfie = async function() {
+  const video=$('selfie-video'), canvas=$('selfie-canvas'), countdown=$('selfie-countdown'), takeBtn=$('selfie-take-btn');
+  takeBtn.disabled=true; countdown.style.display='block';
+  for (let i=3;i>=1;i--) { countdown.textContent=i; await new Promise(r=>setTimeout(r,1000)); }
+  countdown.textContent='📸'; await new Promise(r=>setTimeout(r,200)); countdown.style.display='none';
+  const ctx=canvas.getContext('2d'); canvas.width=video.videoWidth||280; canvas.height=video.videoHeight||210;
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  _selfieBase64=canvas.toDataURL('image/jpeg',0.7);
+  stopSelfieStream(); $('selfie-cam-wrap').style.display='none'; $('selfie-preview-wrap').style.display='block';
+  $('selfie-retake-btn').style.display='inline-block'; $('sched-photo-status').textContent='Selfie captured. You can retake if needed.';
+  takeBtn.disabled=false;
+};
+
+window.retakeSelfie = function() {
+  _selfieBase64=null; $('selfie-preview-wrap').style.display='none'; $('selfie-retake-btn').style.display='none';
+  $('selfie-start-btn').style.display='block'; $('sched-photo-status').textContent='';
+};
+
+function stopSelfieStream() {
+  if (_selfieStream) { _selfieStream.getTracks().forEach(t=>t.stop()); _selfieStream=null; }
+}
+
+window.closeScheduleModal = function() { stopSelfieStream(); $('schedule-modal').style.display='none'; _schedExamId=null; _selfieBase64=null; };
+
+window.submitExamSlot = async function() {
+  const date=$('sched-date').value, time=$('sched-time').value, consent=$('sched-consent-check').checked;
+  if (!date) { showSchedError('Please select a date.'); return; }
+  if (!time) { showSchedError('Please select a time.'); return; }
+  if (!_selfieBase64) { showSchedError('Please take a selfie using your webcam.'); return; }
+  if (!consent) { showSchedError('Please give consent to share your selfie with the proctor.'); return; }
+  let utcDateTime;
+  try { utcDateTime=new Date(`${date}T${time}:00`); } catch { showSchedError('Invalid date/time.'); return; }
+  if (utcDateTime<=new Date()) { showSchedError('Please select a future date and time.'); return; }
+  const btn=$('sched-submit-btn'); btn.disabled=true; btn.textContent='Submitting\u2026';
+  try {
+    await addDoc(collection(db,'examSlots'),{examId:_schedExamId,learnerEmail:lookupEmail(),learnerName:me.displayName||lookupEmail(),learnerSelfie:_selfieBase64,learnerPhotoConsent:true,requestedDate:date,requestedTime:time,requestedTimezone:_activeTz,utcDateTime:utcDateTime.toISOString(),status:'bookedByLearner',bookedAt:serverTimestamp(),assignedProctor:null,confirmedBy:null,confirmedAt:null,admitted:false,admittedBy:null,adminOverride:false,snapshots:[]});
+    await addDoc(collection(db,'notifications',lookupEmail(),'items'),{message:'Your exam slot for '+date+' at '+time+' ('+_activeTz+') has been submitted. Awaiting proctor confirmation.',type:'slot_requested',read:false,createdAt:serverTimestamp()});
+    closeScheduleModal(); toast('Slot requested! Awaiting proctor confirmation.','success');
+    await loadStudentExams();
+  } catch(err) { console.error('submitExamSlot:',err); showSchedError('Error submitting slot. Please try again.'); btn.disabled=false; btn.textContent='Request Slot \u2192'; }
+};
+
+function showSchedError(msg) { const el=$('sched-error'); el.textContent=msg; el.style.display='block'; }
+
+// ══ BEGIN SETUP — Camera consent, snapshots, proctor admit/deny ══
+let _sessionExamId=null, _sessionSlotId=null, _sessionStream=null, _sessionSnaps=[], _admitListener=null;
+
+window.openBeginSetup = function(examId,slotId) {
+  _sessionExamId=examId; _sessionSlotId=slotId; _sessionSnaps=[];
+  ['setup-step-consent','setup-step-camera','setup-step-waiting','setup-step-admitted','setup-step-denied']
+    .forEach(id=>{const el=$(id); if(el) el.style.display='none';});
+  $('setup-step-consent').style.display='block'; $('setup-consent-check').checked=false; $('setup-consent-error').style.display='none';
+  const exam=(window._currentExams||[]).find(e=>e.id===examId);
+  $('setup-exam-title').textContent=exam?exam.title:'Exam Setup';
+  $('begin-setup-modal').style.display='block';
+};
+
+// PATCH 4: closeBeginSetup clears the flag delay timer
+window.closeBeginSetup = function() {
+  if (_sessionStream) { _sessionStream.getTracks().forEach(t=>t.stop()); _sessionStream=null; }
+  if (_admitListener) { _admitListener(); _admitListener=null; }
+  if (_flagDelayTimer) { clearTimeout(_flagDelayTimer); _flagDelayTimer=null; }
+  $('begin-setup-modal').style.display='none';
+};
+
+window.startBeginSetupCamera = async function() {
+  if (!$('setup-consent-check').checked) { $('setup-consent-error').textContent='Please check the consent box first.'; $('setup-consent-error').style.display='block'; return; }
+  $('setup-consent-error').style.display='none'; $('setup-step-consent').style.display='none'; $('setup-step-camera').style.display='block';
+  $('setup-snap-status').textContent='Starting camera…'; $('setup-snap-thumbs').innerHTML=''; $('setup-snap-bar').style.width='0%';
+  try {
+    _sessionStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
+    $('setup-video').srcObject=_sessionStream; loadFaceApi();
+    let referenceImage=null;
+    try { const slotDoc=await getDoc(doc(db,'examSlots',_sessionSlotId)); if(slotDoc.exists()) referenceImage=slotDoc.data().learnerSelfie||null; } catch{}
+    await takeBeginSetupSnapshots(referenceImage);
+  } catch(e) { $('setup-snap-status').textContent='Camera access denied. Please allow camera and try again.'; console.error('setup camera:',e); }
+};
+
+async function takeBeginSetupSnapshots(referenceImage) {
+  const video=$('setup-video'), canvas=document.createElement('canvas'), ctx=canvas.getContext('2d');
+  const thumbs=$('setup-snap-thumbs'), bar=$('setup-snap-bar'); _sessionSnaps=[];
+  let refDescriptor=null;
+  if (_faceApiLoaded&&referenceImage) {
+    try { const refImg=await faceapi.fetchImage(referenceImage); const refDet=await faceapi.detectSingleFace(refImg,new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(true).withFaceDescriptor(); if(refDet) refDescriptor=refDet.descriptor; } catch(e){console.warn('ref face:',e);}
+  }
+  for (let i=0;i<5;i++) {
+    $('setup-snap-status').textContent='Taking snapshot '+(i+1)+' of 5…';
+    await new Promise(r=>setTimeout(r,3000));
+    canvas.width=video.videoWidth||320; canvas.height=video.videoHeight||240; ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    const snapBase64=canvas.toDataURL('image/jpeg',0.6);
+    let matchScore=null;
+    if (_faceApiLoaded&&refDescriptor) {
+      try { const snapImg=await faceapi.fetchImage(snapBase64); const snapDet=await faceapi.detectSingleFace(snapImg,new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(true).withFaceDescriptor(); if(snapDet){const dist=faceapi.euclideanDistance(refDescriptor,snapDet.descriptor);matchScore=Math.round((1-Math.min(dist,1))*100);} } catch{}
+    }
+    _sessionSnaps.push({image:snapBase64,takenAt:new Date().toISOString(),matchScore});
+    bar.style.width=((i+1)/5*100)+'%';
+    const scoreColor=matchScore==null?'var(--border)':matchScore>=70?'#34d399':matchScore>=50?'#f59e0b':'#f87171';
+    const thumb=document.createElement('div'); thumb.style.cssText='text-align:center;';
+    thumb.innerHTML='<img src="'+snapBase64+'" style="width:60px;height:45px;object-fit:cover;border-radius:6px;border:2px solid '+scoreColor+';">'+'<div style="font-size:10px;font-weight:700;color:'+scoreColor+';">'+(matchScore!=null?matchScore+'%':'—')+'</div>';
+    thumbs.appendChild(thumb);
+  }
+  if (_sessionStream) { _sessionStream.getTracks().forEach(t=>t.stop()); _sessionStream=null; }
+  $('setup-video').style.display='none'; $('setup-snap-status').textContent='Snapshots complete. Sending to proctor…';
+  try {
+    await setDoc(doc(db,'examSlots',_sessionSlotId),{snapshots:_sessionSnaps,status:'awaitingAdmit',snapshotsTakenAt:new Date().toISOString()},{merge:true});
+  } catch(e){console.error('snapshot save:',e);}
+  try {
+    const uid=await lookupUid();
+    if (uid) { const resRef=doc(db,'examResults',uid); const resSnap=await getDoc(resRef); const cur=resSnap.exists()?((resSnap.data()[_sessionExamId]||{}).attemptCount||0):0; await setDoc(resRef,{[_sessionExamId]:{attemptCount:cur+1,lastAttemptAt:serverTimestamp()}},{merge:true}); }
+  } catch{}
+  $('setup-step-camera').style.display='none'; $('setup-step-waiting').style.display='block';
+  const strip=$('setup-thumb-strip'); strip.innerHTML=thumbs.innerHTML;
+  listenForProctorDecision(_sessionSlotId);
+}
+
+// PATCH 3: listenForProctorDecision with flag delay timer
+let _flagDelayTimer=null;
+
+function listenForProctorDecision(slotId) {
+  if (_admitListener) { _admitListener(); _admitListener=null; }
+  if (_flagDelayTimer) { clearTimeout(_flagDelayTimer); _flagDelayTimer=null; }
+
+  // Hide flag wrap initially
+  const flagWrap=$('setup-flag-wrap');
+  if (flagWrap) flagWrap.style.display='none';
+
+  // Reveal flag checkbox after FLAG_WAIT_MS if still waiting
+  _flagDelayTimer=setTimeout(()=>{
+    const waitStep=$('setup-step-waiting');
+    if (!waitStep||waitStep.style.display==='none') return;
+    const wrap=$('setup-flag-wrap'); if (!wrap) return;
+    getDoc(doc(db,'examSlots',slotId)).then(snap=>{
+      if (!snap.exists()) return;
+      const d=snap.data();
+      if (d.admitted===true||d.denied===true) return;
+      if (d.flagged===true) {
+        wrap.innerHTML='<div class="flag-raised-box">🚩 Delay flagged — awaiting admin action</div>';
+        wrap.style.display='block'; return;
+      }
+      wrap.innerHTML=`<div class="flag-delay-box">
+        <div class="flag-delay-label">⚠️ Proctor has not responded (5+ min delay)</div>
+        <label class="flag-delay-check">
+          <input type="checkbox" id="setup-flag-check" onchange="raiseSetupDelayFlag('${slotId}', this.checked)">
+          I want to flag this delay for admin attention
+        </label>
+      </div>`;
+      wrap.style.display='block';
+    }).catch(()=>{});
+  }, FLAG_WAIT_MS);
+
+  _admitListener=onSnapshot(doc(db,'examSlots',slotId),snap=>{
+    if (!snap.exists()) return;
+    const data=snap.data();
+    if (data.admitted===true&&data.status==='inProgress') {
+      if (_admitListener){_admitListener();_admitListener=null;}
+      if (_flagDelayTimer){clearTimeout(_flagDelayTimer);_flagDelayTimer=null;}
+      $('setup-step-waiting').style.display='none'; $('setup-step-admitted').style.display='block';
+      $('setup-begin-exam-btn').onclick=()=>{
+        closeBeginSetup();
+        const examData=(window._currentExams||[]).find(e=>e.id===_sessionExamId);
+        if (examData&&examData.url) window.open(examData.url,'_blank');
+        loadStudentExams();
+      };
+      toast('Admitted by proctor! You may begin your exam.','success');
+    } else if (data.denied===true) {
+      if (_admitListener){_admitListener();_admitListener=null;}
+      if (_flagDelayTimer){clearTimeout(_flagDelayTimer);_flagDelayTimer=null;}
+      $('setup-step-waiting').style.display='none'; $('setup-step-denied').style.display='block';
+      toast('Additional verification required. Please reschedule.','error');
+      loadStudentExams();
+    }
+  });
+}
+
+window.beginActualExam = function(examId,slotId) {
+  const examData=(window._currentExams||[]).find(e=>e.id===examId);
+  if (examData&&examData.url) window.open(examData.url,'_blank');
+};
+
+window.beginExamSession=window.openBeginSetup;
+
+window.closeSessionModal=function(){
+  if(_sessionStream){_sessionStream.getTracks().forEach(t=>t.stop());_sessionStream=null;}
+  if(_admitListener){_admitListener();_admitListener=null;}
+  $('session-modal').style.display='none';
+};
+
+// ══ FLAG DELAY (exam card — existing function) ══
+window.raiseDelayFlag = async function(slotId, checked) {
+  if (!checked) return;
+  const checkbox=document.getElementById('flag-check-'+slotId);
+  if (checkbox) checkbox.disabled=true;
+  try {
+    await setDoc(doc(db,'examSlots',slotId),{flagged:true,flaggedAt:serverTimestamp(),flaggedBy:lookupEmail()},{merge:true});
+    for (const adminEmail of ADMINS) {
+      await addDoc(collection(db,'notifications',adminEmail,'items'),{message:'FLAGGED: Learner '+(me.displayName||lookupEmail())+' has flagged a proctor delay for their exam slot.',type:'proctor_delay_flag',slotId:slotId,read:false,createdAt:serverTimestamp()});
+    }
+    toast('Delay flagged. Admin has been notified.','success');
+    await loadStudentExams();
+  } catch(e) { console.error('raiseDelayFlag:',e); toast('Error raising flag.','error'); if(checkbox) checkbox.disabled=false; }
+};
+
+// PATCH 5: raiseSetupDelayFlag — modal-specific wrapper
+window.raiseSetupDelayFlag = async function(slotId, checked) {
+  if (!checked) return;
+  const cb=$('setup-flag-check'); if(cb) cb.disabled=true;
+  try {
+    await setDoc(doc(db,'examSlots',slotId),{flagged:true,flaggedAt:serverTimestamp(),flaggedBy:lookupEmail()},{merge:true});
+    for (const adminEmail of ADMINS) {
+      await addDoc(collection(db,'notifications',adminEmail,'items'),{message:'FLAGGED: Learner '+(me.displayName||lookupEmail())+' has flagged a proctor delay from within their exam setup screen.',type:'proctor_delay_flag',slotId:slotId,read:false,createdAt:serverTimestamp()});
+    }
+    const wrap=$('setup-flag-wrap');
+    if (wrap) wrap.innerHTML='<div class="flag-raised-box">🚩 Delay flagged — admin has been notified</div>';
+    toast('Delay flagged. Admin has been notified.','success');
+    await loadStudentExams();
+  } catch(e) { console.error('raiseSetupDelayFlag:',e); toast('Error raising flag.','error'); if(cb) cb.disabled=false; }
+};
+
+// ══ NOTIFICATIONS ══
+let _notifUnsubscribe=null;
+
+function startNotifListener() {
+  if (!lookupEmail()) return;
+  try {
+    const q=query(collection(db,'notifications',lookupEmail(),'items'),where('read','==',false));
+    _notifUnsubscribe=onSnapshot(q,snap=>{
+      const count=snap.size, badge=$('notif-badge'), bell=$('notif-bell');
+      if (badge&&bell) { badge.textContent=count; badge.style.display=count>0?'flex':'none'; bell.style.display='flex'; bell.style.alignItems='center'; }
+      renderNotifications(snap);
+    });
+  } catch(e){console.warn('notif listener:',e);}
+}
+
+function renderNotifications(snap) {
+  const list=$('notif-list'); if (!list) return;
+  if (snap.empty) { list.innerHTML='<div class="notif-empty">No new notifications.</div>'; return; }
+  list.innerHTML='';
+  snap.forEach(d=>{
+    const data=d.data(), item=document.createElement('div'); item.className='notif-item unread';
+    item.innerHTML='<div>'+(data.message||'')+'</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">'+(data.createdAt?.toDate?data.createdAt.toDate().toLocaleString():'Just now')+'</div>';
+    item.onclick=()=>markNotifRead(d.id); list.appendChild(item);
+  });
+}
+
+async function markNotifRead(notifId) {
+  try { await setDoc(doc(db,'notifications',lookupEmail(),'items',notifId),{read:true},{merge:true}); } catch{}
+}
+
+window.toggleNotifPanel = function() {
+  const panel=$('notif-panel'); if(panel) panel.style.display=panel.style.display==='block'?'none':'block';
+};
+
+document.addEventListener('click',e=>{
+  const bell=$('notif-bell'); if(bell&&!bell.contains(e.target)){const panel=$('notif-panel');if(panel) panel.style.display='none';}
+});
+
+// ══ RESCHEDULE EXAM SLOT ══
+let _reschedSlotId=null;
+
+window.openRescheduleModal = function(slotId,examTitle,reschedLeft) {
+  _reschedSlotId=slotId;
+  $('reschedule-subtitle').textContent=examTitle+' — '+reschedLeft+' reschedule'+(reschedLeft===1?'':'s')+' remaining after this.';
+  $('resched-error').style.display='none'; $('resched-date').value=''; $('resched-time').value='';
+  $('resched-submit-btn').disabled=false; $('resched-submit-btn').textContent='Confirm Reschedule';
+  const minDate=new Date(Date.now()+24*60*60*1000); $('resched-date').min=minDate.toISOString().split('T')[0];
+  $('reschedule-modal').style.display='block';
+};
+
+window.closeRescheduleModal = function() { $('reschedule-modal').style.display='none'; _reschedSlotId=null; };
+
+window.submitReschedule = async function() {
+  const date=$('resched-date').value, time=$('resched-time').value;
+  if (!date){showReschedError('Please select a new date.');return;}
+  if (!time){showReschedError('Please select a new time.');return;}
+  const chosen=new Date(date+'T'+time+':00'), minAllowed=new Date(Date.now()+24*60*60*1000);
+  if (chosen<minAllowed){showReschedError('New date/time must be at least 24 hours from now.');return;}
+  const btn=$('resched-submit-btn'); btn.disabled=true; btn.textContent='Rescheduling…';
+  try {
+    const slotSnap=await getDoc(doc(db,'examSlots',_reschedSlotId));
+    if (!slotSnap.exists()){showReschedError('Slot not found.');btn.disabled=false;btn.textContent='Confirm Reschedule';return;}
+    const oldSlot=slotSnap.data(), currentCount=oldSlot.rescheduleCount||0;
+    if (currentCount>=2){showReschedError('Maximum reschedules reached.');btn.disabled=false;btn.textContent='Confirm Reschedule';return;}
+    const newCount=currentCount+1, tz=_activeTz||Intl.DateTimeFormat().resolvedOptions().timeZone;
+    await addDoc(collection(db,'rescheduleHistory'),{originalSlotId:_reschedSlotId,examId:oldSlot.examId||null,learnerEmail:oldSlot.learnerEmail||lookupEmail(),learnerName:oldSlot.learnerName||lookupEmail(),assignedProctor:oldSlot.assignedProctor||null,originalDate:oldSlot.requestedDate||null,originalTime:oldSlot.requestedTime||null,newDate:date,newTime:time,rescheduleCount:newCount,rescheduledAt:serverTimestamp(),rescheduledBy:lookupEmail()});
+    await deleteDoc(doc(db,'examSlots',_reschedSlotId));
+    const newSlotRef=await addDoc(collection(db,'examSlots'),{examId:oldSlot.examId||null,learnerEmail:oldSlot.learnerEmail||lookupEmail(),learnerName:oldSlot.learnerName||(me.displayName||lookupEmail()),learnerSelfie:oldSlot.learnerSelfie||null,learnerPhotoConsent:oldSlot.learnerPhotoConsent||false,requestedDate:date,requestedTime:time,requestedTimezone:tz,utcDateTime:chosen.toISOString(),status:'bookedByLearner',bookedAt:serverTimestamp(),rescheduleCount:newCount,rescheduledAt:serverTimestamp(),assignedProctor:oldSlot.assignedProctor||null,confirmedBy:null,confirmedAt:null,admitted:false,denied:false,flagged:false,snapshots:[]});
+    if (oldSlot.assignedProctor) { await addDoc(collection(db,'notifications',oldSlot.assignedProctor,'items'),{message:'Learner '+(oldSlot.learnerName||oldSlot.learnerEmail||lookupEmail())+' has rescheduled their exam to '+date+' at '+time+'. New slot created. ('+newCount+'/2 reschedules used)',type:'slot_rescheduled',slotId:newSlotRef.id,read:false,createdAt:serverTimestamp()}); }
+    await addDoc(collection(db,'notifications',lookupEmail(),'items'),{message:'Your exam has been rescheduled to '+date+' at '+time+'. Awaiting proctor confirmation. ('+newCount+'/2 reschedules used)',type:'slot_rescheduled',read:false,createdAt:serverTimestamp()});
+    closeRescheduleModal(); toast('Exam rescheduled! Awaiting proctor confirmation.','success'); await loadStudentExams();
+  } catch(e) { console.error('submitReschedule:',e); showReschedError('Error rescheduling. Please try again.'); btn.disabled=false; btn.textContent='Confirm Reschedule'; }
+};
+
+function showReschedError(msg){const el=$('resched-error');el.textContent=msg;el.style.display='block';}
+
+// ══ SET PERSON ROLE MODAL ══
+let _setRoleUsers=[], _setRoleSelected=null, _setRoleValue=null;
+
+window.openSetRoleModal = async function() {
+  $('set-role-modal').style.display='block'; $('set-role-loading').style.display='block';
+  $('set-role-list').style.display='none'; $('set-role-empty').style.display='none';
+  $('set-role-selector').style.display='none'; $('set-role-search').value='';
+  _setRoleSelected=null; _setRoleValue=null;
+  try {
+    const emailSet=new Map();
+    try { const uSnap=await getDocs(collection(db,'users')); uSnap.forEach(d=>emailSet.set(d.id,{email:d.id,name:d.data().name||d.id,role:d.data().role||'student'})); } catch{}
+    const cSnap=await getDocs(collection(db,'courses'));
+    for (const cd of cSnap.docs) { const nSnap=await getDocs(collection(db,'courses',cd.id,'nominations')); nSnap.forEach(n=>{if(!emailSet.has(n.id)) emailSet.set(n.id,{email:n.id,name:n.id,role:n.data().role||'student'});}); }
+    const eSnap=await getDocs(collection(db,'exams'));
+    for (const ed of eSnap.docs) { const nSnap=await getDocs(collection(db,'exams',ed.id,'nominations')); nSnap.forEach(n=>{if(!emailSet.has(n.id)) emailSet.set(n.id,{email:n.id,name:n.id,role:'student'});}); }
+    _setRoleUsers=Array.from(emailSet.values());
+    $('set-role-loading').style.display='none';
+    if (!_setRoleUsers.length){$('set-role-empty').style.display='block';return;}
+    renderSetRoleList(_setRoleUsers);
+  } catch(e){console.error('openSetRoleModal:',e);$('set-role-loading').style.display='none';$('set-role-empty').style.display='block';$('set-role-empty').textContent='Error loading users.';}
+};
+
+function renderSetRoleList(users) {
+  const list=$('set-role-list'); list.innerHTML=''; list.style.display=users.length?'block':'none';
+  $('set-role-empty').style.display=users.length?'none':'block';
+  users.forEach(u=>{
+    const roleColors={admin:'#f59e0b',reviewer:'#a78bfa',proctor:'#34d399',student:'#60a5fa'};
+    const roleColor=roleColors[u.role]||'var(--muted)', initials=(u.name||u.email).charAt(0).toUpperCase();
+    const row=document.createElement('div'); row.className='set-role-user-row'+(_setRoleSelected===u.email?' selected':'');
+    row.innerHTML=`<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0;">${initials}</div><div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(u.name||u.email)}</div><div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(u.email)}</div></div><span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:50px;background:${roleColor}22;color:${roleColor};border:1px solid ${roleColor}44;">${esc(u.role||'student')}</span>`;
+    row.onclick=()=>selectSetRoleUser(u); list.appendChild(row);
+  });
+}
+
+window.filterSetRoleList=function(){const q=$('set-role-search').value.toLowerCase();renderSetRoleList(_setRoleUsers.filter(u=>(u.name||'').toLowerCase().includes(q)||u.email.toLowerCase().includes(q)));};
+
+function selectSetRoleUser(u) {
+  _setRoleSelected=u.email; _setRoleValue=null;
+  renderSetRoleList($('set-role-search').value?_setRoleUsers.filter(x=>(x.name||'').toLowerCase().includes($('set-role-search').value.toLowerCase())||x.email.toLowerCase().includes($('set-role-search').value.toLowerCase())):_setRoleUsers);
+  $('set-role-selected-email').textContent=u.email; $('set-role-selector').style.display='block';
+  $('set-role-submit-btn').disabled=true; $('set-role-submit-btn').style.opacity='.5'; $('set-role-error').style.display='none';
+  ['student','reviewer','proctor','admin'].forEach(r=>{$('role-btn-'+r).className='role-pick-btn'+(r===u.role?' selected':'');});
+  if (u.role){_setRoleValue=u.role;enableSetRoleSubmit();}
+}
+
+window.setRoleSelect=function(role){_setRoleValue=role;['student','reviewer','proctor','admin'].forEach(r=>{const selClass=r==='reviewer'?'selected-reviewer':r==='proctor'?'selected-proctor':r==='admin'?'selected-admin':'selected';$('role-btn-'+r).className='role-pick-btn'+(r===role?' '+selClass:'');});enableSetRoleSubmit();};
+function enableSetRoleSubmit(){if(_setRoleSelected&&_setRoleValue){$('set-role-submit-btn').disabled=false;$('set-role-submit-btn').style.opacity='1';}}
+window.closeSetRoleModal=function(){$('set-role-modal').style.display='none';_setRoleSelected=null;_setRoleValue=null;};
+
+window.submitSetRole = async function() {
+  if (!_setRoleSelected||!_setRoleValue) return;
+  const btn=$('set-role-submit-btn'); btn.disabled=true; btn.textContent='Saving...';
+  try {
+    await setDoc(doc(db,'users',_setRoleSelected),{role:_setRoleValue,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true});
+    const idx=_setRoleUsers.findIndex(u=>u.email===_setRoleSelected); if(idx>=0) _setRoleUsers[idx].role=_setRoleValue;
+    toast(_setRoleSelected+' role set to '+_setRoleValue,'success'); closeSetRoleModal();
+  } catch(e){console.error('submitSetRole:',e);$('set-role-error').textContent='Error saving. Please try again.';$('set-role-error').style.display='block';btn.disabled=false;btn.textContent='Save Role';btn.style.opacity='1';}
+};
+
+// ══ ASSIGN PROCTOR ══
+window.openAssignProctorModal = async function() {
+  $('assign-proctor-modal').style.display='block'; $('ap-error').style.display='none';
+  $('ap-nominee-wrap').style.display='none'; $('ap-proctor-wrap').style.display='none'; $('ap-current-wrap').style.display='none';
+  $('ap-exam-select').innerHTML='<option value="">Loading exams...</option>'; $('ap-submit-btn').disabled=false; $('ap-submit-btn').textContent='Assign Proctor';
+  try {
+    const snap=await getDocs(collection(db,'exams'));
+    const exs=[]; snap.forEach(d=>{if(d.data().status==='live') exs.push({id:d.id,...d.data()});});
+    const sel=$('ap-exam-select'); sel.innerHTML='<option value="">— Select an exam —</option>';
+    exs.forEach(e=>{const opt=document.createElement('option');opt.value=e.id;opt.textContent=e.title||e.id;sel.appendChild(opt);});
+    const uSnap=await getDocs(collection(db,'users'));
+    const proctorSel=$('ap-proctor-select'); proctorSel.innerHTML='<option value="">— Select a proctor —</option>';
+    uSnap.forEach(d=>{if(d.data().role==='proctor'){const opt=document.createElement('option');opt.value=d.id;opt.textContent=(d.data().name||d.id)+' ('+d.id+')';proctorSel.appendChild(opt);}});
+  } catch(e){console.error('openAssignProctorModal:',e);}
+};
+
+window.loadApNominees = async function() {
+  const examId=$('ap-exam-select').value; $('ap-nominee-wrap').style.display='none'; $('ap-proctor-wrap').style.display='none'; $('ap-current-wrap').style.display='none';
+  if (!examId) return;
+  try {
+    const snap=await getDocs(collection(db,'exams',examId,'nominations'));
+    const sel=$('ap-nominee-select'); sel.innerHTML='<option value="">— Select a nominee —</option>';
+    snap.forEach(d=>{if(d.data().nominated!==false||d.data().examEligible===true){const opt=document.createElement('option');opt.value=d.id;opt.textContent=d.id;opt.dataset.currentProctor=d.data().assignedProctor||'';sel.appendChild(opt);}});
+    $('ap-nominee-wrap').style.display='block';
+  } catch(e){console.error('loadApNominees:',e);}
+};
+
+window.loadApCurrentProctor = function() {
+  const sel=$('ap-nominee-select'), opt=sel.options[sel.selectedIndex];
+  if (!sel.value){$('ap-proctor-wrap').style.display='none';$('ap-current-wrap').style.display='none';return;}
+  const current=opt&&opt.dataset?opt.dataset.currentProctor:'';
+  $('ap-current-proctor').textContent=current||'None assigned yet'; $('ap-current-wrap').style.display='block'; $('ap-proctor-wrap').style.display='block';
+  if(current) $('ap-proctor-select').value=current;
+};
+
+window.closeAssignProctorModal=function(){$('assign-proctor-modal').style.display='none';};
+
+window.submitAssignProctor = async function() {
+  const examId=$('ap-exam-select').value, nominee=$('ap-nominee-select').value, proctorEmail=$('ap-proctor-select').value;
+  const examTitle=$('ap-exam-select').options[$('ap-exam-select').selectedIndex]?$('ap-exam-select').options[$('ap-exam-select').selectedIndex].textContent:examId;
+  if (!examId){showApError('Please select an exam.');return;}
+  if (!nominee){showApError('Please select a nominee.');return;}
+  if (!proctorEmail){showApError('Please select a proctor.');return;}
+  const btn=$('ap-submit-btn'); btn.disabled=true; btn.textContent='Assigning...';
+  try {
+    await setDoc(doc(db,'exams',examId,'nominations',nominee),{assignedProctor:proctorEmail,assignedProctorBy:me.email,assignedProctorAt:serverTimestamp()},{merge:true});
+    await setDoc(doc(db,'users',proctorEmail),{assignedCandidate:nominee,assignedExamId:examId,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true});
+    try { const slotSnap=await getDocs(query(collection(db,'examSlots'),where('learnerEmail','==',nominee),where('examId','==',examId))); for(const sd of slotSnap.docs) await setDoc(doc(db,'examSlots',sd.id),{assignedProctor:proctorEmail},{merge:true}); } catch{}
+    await addDoc(collection(db,'notifications',proctorEmail,'items'),{message:'You have been assigned as proctor for '+nominee+' on exam "'+examTitle+'".',type:'proctor_assigned',read:false,createdAt:serverTimestamp()});
+    closeAssignProctorModal(); toast('Proctor assigned successfully!','success');
+  } catch(e){console.error('submitAssignProctor:',e);showApError('Error assigning. Please try again.');btn.disabled=false;btn.textContent='Assign Proctor';}
+};
+
+function showApError(msg){const el=$('ap-error');el.textContent=msg;el.style.display='block';}
+</script>
 </body>
 </html>
