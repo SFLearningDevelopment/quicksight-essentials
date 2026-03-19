@@ -693,7 +693,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 </div>
 
 <script type="module">
-console.log('%c[sf-certs-hub] ✅ Code version: v202603191001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-certs-hub] ✅ Code version: v202603191002 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
@@ -1933,7 +1933,12 @@ async function loadBookedSlots() {
       ? query(collection(db,'examSlots'),where('assignedProctor','==',_previewProctorEmail))
       : query(collection(db,'examSlots'),where('status','==','bookedByLearner'));
     const snap=await getDocs(bookedQuery);
-    const slots=[]; snap.forEach(d=>slots.push({id:d.id,...d.data()}));
+    let slots=[]; snap.forEach(d=>slots.push({id:d.id,...d.data()}));
+    // Admin view: hide slots where candidate already notified admin (handled via
+    // Proctor Reassignment Requests section). Proctor view: show all their slots.
+    if (!_previewProctorEmail) {
+      slots = slots.filter(s => !s.reassignRequested);
+    }
     if (!slots.length) { container.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px;font-size:14px;">No pending slot requests.</div>'; return; }
     container.innerHTML='';
     slots.sort((a,b)=>(a.bookedAt?.seconds||0)-(b.bookedAt?.seconds||0));
