@@ -881,7 +881,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202603191001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202603191002 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -1225,7 +1225,19 @@ function buildStudentExamCard(exam,myResults,myProgress) {
     const _msRemaining = _notifyThresholdMs - _msElapsed;
     const _alreadyNotified = slot.reassignRequested === true;
     let _notifyBlock = '';
-    if (_alreadyNotified) {
+    // Check if the booked slot date/time is now in the past
+    const _slotDateTimeMs = (slot.requestedDate && slot.requestedTime)
+      ? new Date(slot.requestedDate + 'T' + slot.requestedTime + ':00').getTime()
+      : null;
+    const _slotIsPast = _slotDateTimeMs ? Date.now() > _slotDateTimeMs : false;
+
+    if (_alreadyNotified && _slotIsPast) {
+      // Slot time has passed and admin was notified — show reschedule message
+      _notifyBlock = `<div style="margin-top:10px;font-size:13px;color:#fbbf24;padding:10px 14px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;line-height:1.6;">
+        &#9888;&#65039; Your exam slot on <strong>${slot.requestedDate||''} ${slot.requestedTime||''}</strong> has passed. Admin has been notified of the delay. Please reschedule your exam for the newly assigned proctor.
+      </div>`;
+    } else if (_alreadyNotified) {
+      // Admin notified but slot is still in the future
       _notifyBlock = `<div style="margin-top:10px;font-size:12px;color:#34d399;padding:8px 12px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:8px;">&#10003; Admin has been notified — proctor reassignment pending</div>`;
     } else if (_msRemaining > 0) {
       // Countdown: notify button not yet available
@@ -1256,7 +1268,12 @@ function buildStudentExamCard(exam,myResults,myProgress) {
       // 15 min passed — show button immediately
       _notifyBlock = `<button class="card-btn btn-enter" style="margin-top:8px;width:100%;background:#7c3aed;font-size:12px;padding:8px 12px;" onclick="notifyAdminReassignment('${slot.id}','${esc(exam.id)}','${esc(exam.title)}','${esc(slot.assignedProctor||'')}','${esc(slot.requestedDate||'')}','${esc(slot.requestedTime||'')}')">&#128276; Notify Admin of delay in confirmation</button>`;
     }
-    slotStatusHtml=`<div class="slot-status awaiting">&#9203; Awaiting proctor confirmation &middot; ${slot.requestedDate||''} ${slot.requestedTime||''}${reschedTag}</div>${_notifyBlock}`;
+    // When slot is past and admin notified — replace awaiting message entirely
+    if (_alreadyNotified && _slotIsPast) {
+      slotStatusHtml = _notifyBlock;
+    } else {
+      slotStatusHtml=`<div class="slot-status awaiting">&#9203; Awaiting proctor confirmation &middot; ${slot.requestedDate||''} ${slot.requestedTime||''}${reschedTag}</div>${_notifyBlock}`;
+    }
   } else if (slotStatus==='confirmed') {
     slotStatusHtml=`<div class="slot-status confirmed">&#10003; Slot confirmed &middot; ${slot.requestedDate||''} ${slot.requestedTime||''}</div>`;
     if (slot.requestedDate&&slot.requestedTime) {
@@ -1317,10 +1334,19 @@ function buildStudentExamCard(exam,myResults,myProgress) {
   } else if (slotStatus==='awaitingAdmit') {
     footerHtml=`<button class="card-btn btn-locked" disabled>&#9203; Awaiting Confirmation</button>`;
   } else if (slotStatus==='bookedByLearner') {
-    footerHtml=`<div style="display:flex;gap:10px;">
-      <button class="card-btn btn-locked" disabled style="flex:1;">⏳ Awaiting Confirmation</button>
-      <button class="card-btn btn-enter" style="flex:1;background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}')">📅 Reschedule</button>
-    </div>`;
+    // Check if slot is past and admin already notified
+    const _fSlotMs = (slot.requestedDate && slot.requestedTime)
+      ? new Date(slot.requestedDate + 'T' + slot.requestedTime + ':00').getTime() : null;
+    const _fSlotPast = _fSlotMs ? Date.now() > _fSlotMs : false;
+    if (slot.reassignRequested && _fSlotPast) {
+      // Slot time passed + admin notified — prompt reschedule with existing modal
+      footerHtml=`<button class="card-btn btn-enter" style="width:100%;background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}')">&#128198; Reschedule Your Exam Now</button>`;
+    } else {
+      footerHtml=`<div style="display:flex;gap:10px;">
+        <button class="card-btn btn-locked" disabled style="flex:1;">⏳ Awaiting Confirmation</button>
+        <button class="card-btn btn-enter" style="flex:1;background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}')">📅 Reschedule</button>
+      </div>`;
+    }
   } else if (canTake) {
     footerHtml=`<button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}')">&#128198; Schedule Exam</button>`;
   } else {
