@@ -534,6 +534,11 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
           <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">Learners requesting to reschedule after a proctor denial. Approve to create a new confirmed slot; reject to decline.</div>
           <div id="resched-requests-list"><div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">Loading…</div></div>
         </div>
+        <div style="margin-top:40px;">
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;">🔄 Proctor Reassignment Requests</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">Learners waiting for proctor slot confirmation. Reassign a proctor to unblock them.</div>
+          <div id="reassign-requests-list"><div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">Loading…</div></div>
+        </div>
       </div>
     </div>
 
@@ -688,7 +693,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 </div>
 
 <script type="module">
-console.log('%c[sf-certs-hub] ✅ Code version: v202603181605 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-certs-hub] ✅ Code version: v202603191001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
@@ -1610,6 +1615,7 @@ let editingExamId = null;
 async function initAdmin() {
   await loadAdminExams();
   await loadRescheduleRequests();
+  await loadReassignmentRequests();
   $('add-exam-btn').addEventListener('click', () => openExamForm());
   $('cancel-exam-btn').addEventListener('click', () => $('exam-form-wrap').classList.remove('open'));
   $('save-exam-btn').addEventListener('click', saveExam);
@@ -1633,7 +1639,7 @@ window.switchAdminTab = tab => {
     if (btn)  btn.className  = 'admin-tab' + (tab===t ? ' active' : '');
     if (pane) pane.className = 'admin-tab-content' + (tab===t ? ' active' : '');
   });
-  if (tab === 'exams')       { loadAdminExams(); loadRescheduleRequests(); }
+  if (tab === 'exams')       { loadAdminExams(); loadRescheduleRequests(); loadReassignmentRequests(); }
   if (tab === 'monitor')     { loadBookedSlots(); startFlagListener(); }
   if (tab === 'reports')     loadReports();
   if (tab === 'nominations') populateNomExamSelect();
@@ -2241,6 +2247,172 @@ window.rejectRescheduleRequest = async function(reqId) {
     if (card) card.remove();
     toast('Reschedule request rejected. Learner notified.','error');
   } catch(e) { console.error('rejectRescheduleRequest:',e); toast('Error rejecting request.','error'); }
+};
+
+/* ══════════════════════════════════════
+   PROCTOR REASSIGNMENT REQUESTS
+═══════════════════════════════════════ */
+async function loadReassignmentRequests() {
+  const container = $('reassign-requests-list');
+  if (!container) return;
+  container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">Loading…</div>';
+  try {
+    const snap = await getDocs(query(collection(db,'proctorReassignmentRequests'), where('status','==','pending')));
+    if (snap.empty) {
+      container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">No pending reassignment requests.</div>';
+      return;
+    }
+    // Load all proctors for the reassign dropdown
+    const proctors = [];
+    try {
+      const uSnap = await getDocs(collection(db,'users'));
+      uSnap.forEach(d => { if (d.data().role === 'proctor') proctors.push({email: d.id, name: d.data().name||d.data().displayName||d.id}); });
+    } catch(e) { console.warn('proctors fetch:', e); }
+
+    container.innerHTML = '';
+    snap.forEach(d => {
+      const req = {id: d.id, ...d.data()};
+      const availableProctors = proctors.filter(p => p.email !== req.currentProctor);
+      const proctorOptions = availableProctors.map(p =>
+        `<option value="${esc(p.email)}">${esc(p.name)} (${esc(p.email)})</option>`
+      ).join('');
+
+      const card = document.createElement('div');
+      card.id = 'reassign-req-' + req.id;
+      card.style.cssText = 'background:var(--card);border:1px solid rgba(124,58,237,.25);border-radius:12px;padding:20px;margin-bottom:16px;';
+      card.innerHTML = `
+        <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:220px;">
+            <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;">${esc(req.learnerName||req.learnerEmail)}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6;">
+              ${esc(req.learnerEmail)}<br>
+              Exam: <strong style="color:var(--text);">${esc(req.examTitle||req.examId||'—')}</strong><br>
+              Slot: <strong style="color:#fbbf24;">${esc(req.requestedDate||'—')} ${esc(req.requestedTime||'')}</strong><br>
+              Current proctor: <span style="color:#f87171;">${esc(req.currentProctor||'None assigned')}</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:260px;">
+            ${availableProctors.length > 0 ? `
+              <select id="reassign-proctor-${req.id}" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;width:100%;outline:none;">
+                <option value="">— Select new proctor —</option>
+                ${proctorOptions}
+              </select>
+              <button class="save-btn" style="font-size:13px;padding:9px 16px;" onclick="submitProctorReassignment('${req.id}','${esc(req.slotId||'')}','${esc(req.examId||'')}','${esc(req.learnerEmail||'')}','${esc(req.learnerName||'')}','${esc(req.currentProctor||'')}','${esc(req.requestedDate||'')}','${esc(req.requestedTime||'')}','${esc(req.examTitle||'')}')">
+                🔄 Reassign Proctor
+              </button>
+            ` : `<div style="font-size:13px;color:#f87171;padding:10px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:8px;">No other proctors available. Add a proctor via Set Person Role.</div>`}
+          </div>
+        </div>`;
+      container.appendChild(card);
+    });
+  } catch(e) {
+    console.error('loadReassignmentRequests:', e);
+    container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">Error loading requests.</div>';
+  }
+}
+
+window.submitProctorReassignment = async function(reqId, slotId, examId, learnerEmail, learnerName, oldProctor, requestedDate, requestedTime, examTitle) {
+  const newProctor = $('reassign-proctor-'+reqId)?.value;
+  if (!newProctor) { toast('Please select a proctor.','error'); return; }
+  if (!confirm(`Reassign proctor for ${learnerName||learnerEmail}'s slot to ${newProctor}?`)) return;
+
+  const btn = document.querySelector(`#reassign-req-${reqId} .save-btn`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Reassigning…'; }
+
+  try {
+    // 1. Update examSlots — changes assignedProctor so old proctor's dashboard auto-clears
+    if (slotId) {
+      await setDoc(doc(db,'examSlots',slotId), {
+        assignedProctor: newProctor,
+        reassignedBy: meEmail,
+        reassignedAt: serverTimestamp(),
+        reassignRequested: false
+      }, {merge:true});
+    }
+
+    // 2. Update exam nomination with new proctor
+    if (examId && learnerEmail) {
+      await setDoc(doc(db,'exams',examId,'nominations',learnerEmail), {
+        assignedProctor: newProctor,
+        assignedProctorBy: meEmail,
+        assignedProctorAt: serverTimestamp()
+      }, {merge:true});
+    }
+
+    // 3. Update new proctor's users doc
+    await setDoc(doc(db,'users',newProctor), {
+      assignedCandidate: learnerEmail,
+      assignedExamId: examId,
+      updatedAt: serverTimestamp(),
+      updatedBy: meEmail
+    }, {merge:true});
+
+    // 4. Clear old proctor's users doc (only if they were assigned this candidate)
+    if (oldProctor) {
+      try {
+        const oldSnap = await getDoc(doc(db,'users',oldProctor));
+        if (oldSnap.exists() && oldSnap.data().assignedCandidate === learnerEmail) {
+          await setDoc(doc(db,'users',oldProctor), {
+            assignedCandidate: null,
+            assignedExamId: null,
+            updatedAt: serverTimestamp(),
+            updatedBy: meEmail
+          }, {merge:true});
+        }
+      } catch(e) { console.warn('old proctor clear:', e); }
+    }
+
+    // 5. Mark reassignment request as resolved
+    await setDoc(doc(db,'proctorReassignmentRequests',reqId), {
+      status: 'resolved',
+      resolvedBy: meEmail,
+      resolvedAt: serverTimestamp(),
+      newProctor
+    }, {merge:true});
+
+    // 6. Notify candidate — slot still valid, new proctor assigned
+    if (learnerEmail) {
+      await addDoc(collection(db,'notifications',learnerEmail,'items'), {
+        message: `Your exam slot on ${requestedDate} at ${requestedTime} is confirmed. A new proctor (${newProctor}) has been assigned to you.`,
+        type: 'proctor_reassigned', read: false, createdAt: serverTimestamp()
+      });
+    }
+
+    // 7. Notify old proctor — removed from this slot
+    if (oldProctor) {
+      await addDoc(collection(db,'notifications',oldProctor,'items'), {
+        message: `You have been removed as proctor for ${learnerName||learnerEmail}'s exam slot on ${requestedDate} at ${requestedTime}.`,
+        type: 'proctor_removed', read: false, createdAt: serverTimestamp()
+      });
+    }
+
+    // 8. Notify new proctor — assigned
+    await addDoc(collection(db,'notifications',newProctor,'items'), {
+      message: `You have been assigned as proctor for ${learnerName||learnerEmail} on "${examTitle||examId}" scheduled for ${requestedDate} at ${requestedTime}.`,
+      type: 'proctor_assigned', read: false, createdAt: serverTimestamp()
+    });
+
+    await auditEntry('reassignProctor', {
+      targetEmail: learnerEmail, examId: examId||undefined,
+      metadata: `Proctor reassigned from ${oldProctor||'none'} to ${newProctor} by ${meEmail}`
+    });
+
+    // Remove card from UI
+    const card = document.getElementById('reassign-req-'+reqId);
+    if (card) card.remove();
+    // Show empty state if no more cards
+    const remaining = $('reassign-requests-list')?.querySelectorAll('[id^="reassign-req-"]');
+    if (!remaining || remaining.length === 0) {
+      const container = $('reassign-requests-list');
+      if (container) container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">No pending reassignment requests.</div>';
+    }
+
+    toast(`Proctor reassigned to ${newProctor}. All parties notified.`, 'success');
+  } catch(e) {
+    console.error('submitProctorReassignment:', e);
+    toast('Error reassigning proctor. Please try again.', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '🔄 Reassign Proctor'; }
+  }
 };
 
 window.adminOverrideAdmit = async function(slotId, learnerEmail) {
