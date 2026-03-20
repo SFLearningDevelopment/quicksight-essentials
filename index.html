@@ -778,15 +778,28 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
       <div id="set-role-list" style="max-height:300px;overflow-y:auto;margin-bottom:20px;"></div>
       <div id="set-role-loading" style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">Loading users&hellip;</div>
       <div id="set-role-empty" style="display:none;text-align:center;color:var(--muted);padding:20px;font-size:13px;">No users found.</div>
+      <!-- Confirmation step -->
+      <div id="set-role-confirm" style="display:none;border-top:1px solid var(--border);padding-top:16px;">
+        <div style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:16px;margin-bottom:16px;">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Modify role for:</div>
+          <div style="font-size:15px;font-weight:800;color:var(--accent);" id="set-role-confirm-name"></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="set-role-confirm-email"></div>
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px;">Do you want to modify this person's role?</div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="confirmSetRole(true)" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer;">Yes, modify role</button>
+          <button onclick="confirmSetRole(false)" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);font-size:13px;cursor:pointer;">Cancel</button>
+        </div>
+      </div>
+      <!-- Role selector step (shown after confirmation) -->
       <div id="set-role-selector" style="display:none;border-top:1px solid var(--border);padding-top:16px;">
         <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">
-          Assign role for: <span id="set-role-selected-email" style="color:var(--accent);"></span>
+          New role for: <span id="set-role-selected-email" style="color:var(--accent);"></span>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
           <button onclick="setRoleSelect('student')"  id="role-btn-student"  class="role-pick-btn">Student</button>
           <button onclick="setRoleSelect('reviewer')" id="role-btn-reviewer" class="role-pick-btn">Reviewer</button>
           <button onclick="setRoleSelect('proctor')"  id="role-btn-proctor"  class="role-pick-btn">Proctor</button>
-          <button onclick="setRoleSelect('admin')"    id="role-btn-admin"    class="role-pick-btn">Admin</button>
         </div>
         <div id="set-role-error" style="display:none;font-size:12px;color:#f87171;margin-bottom:10px;"></div>
         <button onclick="submitSetRole()" id="set-role-submit-btn" style="width:100%;padding:11px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;opacity:.5;" disabled>Save Role</button>
@@ -896,7 +909,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202603201001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202603201002 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -2218,10 +2231,21 @@ window.openSetRoleModal = async function() {
   $('set-role-list').style.display='none'; $('set-role-empty').style.display='none';
   $('set-role-selector').style.display='none'; $('set-role-search').value='';
   $('add-user-email').value=''; $('add-user-role').value='student'; $('add-user-error').style.display='none';
+  $('set-role-confirm').style.display='none'; $('set-role-selector').style.display='none';
   _setRoleSelected=null; _setRoleValue=null;
   try {
     const emailSet=new Map();
-    try { const uSnap=await getDocs(collection(db,'users')); uSnap.forEach(d=>emailSet.set(d.id,{email:d.id,name:d.data().name||d.id,role:d.data().role||'student'})); } catch{}
+    try {
+      const uSnap=await getDocs(collection(db,'users'));
+      uSnap.forEach(d=>{
+        const ud=d.data();
+        // Prefer the email field inside the doc (handles UID-keyed legacy docs)
+        const emailKey = ud.email && ud.email.includes('@') ? ud.email.toLowerCase() : d.id;
+        if (!emailSet.has(emailKey)) {
+          emailSet.set(emailKey,{email:emailKey, docId:d.id, name:ud.name||ud.displayName||emailKey, role:ud.role||'student'});
+        }
+      });
+    } catch{}
     const cSnap=await getDocs(collection(db,'courses'));
     for (const cd of cSnap.docs) { const nSnap=await getDocs(collection(db,'courses',cd.id,'nominations')); nSnap.forEach(n=>{if(!emailSet.has(n.id)) emailSet.set(n.id,{email:n.id,name:n.id,role:n.data().role||'student'});}); }
     const eSnap=await getDocs(collection(db,'exams'));
@@ -2249,14 +2273,43 @@ window.filterSetRoleList=function(){const q=$('set-role-search').value.toLowerCa
 
 function selectSetRoleUser(u) {
   _setRoleSelected=u.email; _setRoleValue=null;
-  renderSetRoleList($('set-role-search').value?_setRoleUsers.filter(x=>(x.name||'').toLowerCase().includes($('set-role-search').value.toLowerCase())||x.email.toLowerCase().includes($('set-role-search').value.toLowerCase())):_setRoleUsers);
-  $('set-role-selected-email').textContent=u.email; $('set-role-selector').style.display='block';
-  $('set-role-submit-btn').disabled=true; $('set-role-submit-btn').style.opacity='.5'; $('set-role-error').style.display='none';
-  ['student','reviewer','proctor','admin'].forEach(r=>{$('role-btn-'+r).className='role-pick-btn'+(r===u.role?' selected':'');});
-  if (u.role){_setRoleValue=u.role;enableSetRoleSubmit();}
+  // Re-render list to show selection highlight
+  renderSetRoleList($('set-role-search').value
+    ? _setRoleUsers.filter(x=>(x.name||'').toLowerCase().includes($('set-role-search').value.toLowerCase())||x.email.toLowerCase().includes($('set-role-search').value.toLowerCase()))
+    : _setRoleUsers);
+  // Show confirmation panel first — not the role selector directly
+  $('set-role-confirm').style.display='block';
+  $('set-role-selector').style.display='none';
+  $('set-role-error').style.display='none';
+  const displayName = u.name && u.name !== u.email ? u.name : u.email;
+  $('set-role-confirm-name').textContent = displayName;
+  $('set-role-confirm-email').textContent = u.email !== displayName ? u.email : '';
 }
 
-window.setRoleSelect=function(role){_setRoleValue=role;['student','reviewer','proctor','admin'].forEach(r=>{const selClass=r==='reviewer'?'selected-reviewer':r==='proctor'?'selected-proctor':r==='admin'?'selected-admin':'selected';$('role-btn-'+r).className='role-pick-btn'+(r===role?' '+selClass:'');});enableSetRoleSubmit();};
+window.confirmSetRole = function(yes) {
+  if (!yes) {
+    // Cancel — hide both panels, deselect
+    $('set-role-confirm').style.display='none';
+    $('set-role-selector').style.display='none';
+    _setRoleSelected=null; _setRoleValue=null;
+    renderSetRoleList($('set-role-search').value
+      ? _setRoleUsers.filter(x=>(x.name||'').toLowerCase().includes($('set-role-search').value.toLowerCase())||x.email.toLowerCase().includes($('set-role-search').value.toLowerCase()))
+      : _setRoleUsers);
+    return;
+  }
+  // Confirmed — hide confirm panel, show role selector
+  $('set-role-confirm').style.display='none';
+  $('set-role-selector').style.display='block';
+  $('set-role-selected-email').textContent=_setRoleSelected;
+  $('set-role-submit-btn').disabled=true; $('set-role-submit-btn').style.opacity='.5';
+  $('set-role-error').style.display='none';
+  // Pre-highlight current role (excluding admin)
+  const u=_setRoleUsers.find(x=>x.email===_setRoleSelected);
+  ['student','reviewer','proctor'].forEach(r=>{$('role-btn-'+r).className='role-pick-btn'+(u&&r===u.role?' selected':'');});
+  if (u&&u.role&&u.role!=='admin'){_setRoleValue=u.role;enableSetRoleSubmit();}
+};
+
+window.setRoleSelect=function(role){_setRoleValue=role;['student','reviewer','proctor'].forEach(r=>{const selClass=r==='reviewer'?'selected-reviewer':r==='proctor'?'selected-proctor':'selected';$('role-btn-'+r).className='role-pick-btn'+(r===role?' '+selClass:'');});enableSetRoleSubmit();};
 function enableSetRoleSubmit(){if(_setRoleSelected&&_setRoleValue){$('set-role-submit-btn').disabled=false;$('set-role-submit-btn').style.opacity='1';}}
 window.addUserToHub = async function() {
   const emailInput = $('add-user-email');
@@ -2309,13 +2362,20 @@ window.addUserToHub = async function() {
   if (addBtn) { addBtn.disabled = false; addBtn.textContent = '+ Add'; }
 };
 
-window.closeSetRoleModal=function(){$('set-role-modal').style.display='none';_setRoleSelected=null;_setRoleValue=null;};
+window.closeSetRoleModal=function(){$('set-role-modal').style.display='none';$('set-role-confirm').style.display='none';$('set-role-selector').style.display='none';_setRoleSelected=null;_setRoleValue=null;};
 
 window.submitSetRole = async function() {
   if (!_setRoleSelected||!_setRoleValue) return;
   const btn=$('set-role-submit-btn'); btn.disabled=true; btn.textContent='Saving...';
   try {
+    // Write to email-keyed doc (standard). For legacy UID-keyed docs, also write
+    // to the email-keyed path so future lookups find it correctly.
     await setDoc(doc(db,'users',_setRoleSelected),{role:_setRoleValue,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true});
+    // If this user has a legacy UID-keyed doc, update that too so both paths work
+    const legacyUser=_setRoleUsers.find(u=>u.email===_setRoleSelected);
+    if(legacyUser&&legacyUser.docId&&legacyUser.docId!==_setRoleSelected){
+      try { await setDoc(doc(db,'users',legacyUser.docId),{role:_setRoleValue,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true}); } catch{}
+    }
     const idx=_setRoleUsers.findIndex(u=>u.email===_setRoleSelected); if(idx>=0) _setRoleUsers[idx].role=_setRoleValue;
     toast(_setRoleSelected+' role set to '+_setRoleValue,'success'); closeSetRoleModal();
   } catch(e){console.error('submitSetRole:',e);$('set-role-error').textContent='Error saving. Please try again.';$('set-role-error').style.display='block';btn.disabled=false;btn.textContent='Save Role';btn.style.opacity='1';}
