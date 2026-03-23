@@ -922,7 +922,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202603201007 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202603231002 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -1868,6 +1868,7 @@ function showSchedError(msg) { const el=$('sched-error'); el.textContent=msg; el
 
 // ══ BEGIN SETUP ══
 let _sessionExamId=null, _sessionSlotId=null, _sessionStream=null, _sessionSnaps=[], _admitListener=null;
+let _examInProgress=false, _hubBeforeUnloadHandler=null, _examStorageListener=null;
 
 window.openBeginSetup = function(examId,slotId) {
   _sessionExamId=examId; _sessionSlotId=slotId; _sessionSnaps=[];
@@ -1996,7 +1997,12 @@ function listenForProctorDecision(slotId) {
       $('setup-begin-exam-btn').onclick=()=>{
         closeBeginSetup();
         const examData=(window._currentExams||[]).find(e=>e.id===_sessionExamId);
-        if (examData&&examData.url) window.open(examData.url,'_blank');
+        if (examData&&examData.url) {
+          const sep = examData.url.includes('?') ? '&' : '?';
+          window.open(examData.url + sep + 'slotId=' + encodeURIComponent(_sessionSlotId||''), '_blank');
+        }
+        // ── Lock hub tab while exam is in progress ──
+        _activateExamHubLock(_sessionSlotId, _sessionExamId);
         loadStudentExams();
       };
       toast('Admitted by proctor! You may begin your exam.','success');
@@ -2012,7 +2018,11 @@ function listenForProctorDecision(slotId) {
 
 window.beginActualExam = function(examId,slotId) {
   const examData=(window._currentExams||[]).find(e=>e.id===examId);
-  if (examData&&examData.url) window.open(examData.url,'_blank');
+  if (examData&&examData.url) {
+    const sep = examData.url.includes('?') ? '&' : '?';
+    window.open(examData.url + sep + 'slotId=' + encodeURIComponent(slotId||''), '_blank');
+  }
+  _activateExamHubLock(slotId, examId);
 };
 
 window.beginExamSession=window.openBeginSetup;
@@ -2022,6 +2032,74 @@ window.closeSessionModal=function(){
   if(_admitListener){_admitListener();_admitListener=null;}
   $('session-modal').style.display='none';
 };
+
+// ── HUB EXAM LOCK ──
+// Activated when candidate opens exam tab. Warns on close.
+// Cleared when exam page signals completion via localStorage.
+function _activateExamHubLock(slotId, examId) {
+  if (_examInProgress) return;
+  _examInProgress = true;
+
+  _hubBeforeUnloadHandler = function(e) {
+    if (!_examInProgress) return;
+    const msg = 'Your exam is currently in progress. Closing this tab may affect your exam record.';
+    e.preventDefault();
+    e.returnValue = msg;
+    // Log hub exit attempt to auditLog
+    addDoc(collection(db, 'auditLog'), {
+      action:      'hub_exit_attempt',
+      actorEmail:  meEmail,
+      actorRole:   myRole,
+      targetEmail: meEmail,
+      slotId:      slotId || null,
+      examId:      examId || null,
+      metadata:    'Candidate attempted to close hub tab while exam was in progress',
+      timestamp:   serverTimestamp()
+    }).catch(()=>{});
+    return msg;
+  };
+  window.addEventListener('beforeunload', _hubBeforeUnloadHandler);
+
+  // Listen for exam completion signal from exam tab via localStorage
+  _examStorageListener = function(e) {
+    if (e.key !== 'sf_exam_done') return;
+    try {
+      const data = JSON.parse(e.newValue || '{}');
+      if (data.slotId === slotId || data.examId === examId || !data.slotId) {
+        _clearExamHubLock();
+        addDoc(collection(db, 'auditLog'), {
+          action:      'exam_completed_signal',
+          actorEmail:  meEmail,
+          actorRole:   myRole,
+          targetEmail: meEmail,
+          slotId:      slotId || null,
+          examId:      examId || null,
+          metadata:    'Exam tab signalled completion: ' + (data.status || 'completed'),
+          timestamp:   serverTimestamp()
+        }).catch(()=>{});
+        toast('Exam submitted. Your results have been recorded.', 'success');
+        loadStudentExams();
+      }
+    } catch(err) { console.warn('[index] sf_exam_done parse error:', err); }
+  };
+  window.addEventListener('storage', _examStorageListener);
+  console.log('[index] Hub exam lock activated for slotId:', slotId);
+}
+
+function _clearExamHubLock() {
+  if (!_examInProgress) return;
+  _examInProgress = false;
+  if (_hubBeforeUnloadHandler) {
+    window.removeEventListener('beforeunload', _hubBeforeUnloadHandler);
+    _hubBeforeUnloadHandler = null;
+  }
+  if (_examStorageListener) {
+    window.removeEventListener('storage', _examStorageListener);
+    _examStorageListener = null;
+  }
+  try { localStorage.removeItem('sf_exam_done'); } catch{}
+  console.log('[index] Hub exam lock cleared');
+}
 
 // ══ NOTIFY ADMIN — PROCTOR REASSIGNMENT REQUEST ══
 window.notifyAdminReassignment = async function(slotId, examId, examTitle, currentProctor, requestedDate, requestedTime) {
