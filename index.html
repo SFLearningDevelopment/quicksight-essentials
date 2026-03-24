@@ -921,7 +921,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202603231003 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202603241002 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -1409,7 +1409,8 @@ function buildStudentExamCard(exam,myResults,myProgress) {
       </div>`;
     }
   } else if (canTake) {
-    footerHtml=`<button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}')">&#128198; Schedule Exam</button>`;
+    const _existingSelfie = attemptCount > 0 ? (slot?.learnerSelfie || '') : '';
+    footerHtml=`<button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}','${esc(_existingSelfie)}')">&#128198; Schedule Exam</button>`;
   } else {
     footerHtml=`<button class="card-btn btn-locked" disabled>${attemptsLeft===0?'No Attempts Left':'🔒 Complete Course First'}</button>`;
   }
@@ -2018,10 +2019,14 @@ function listenForProctorDecision(slotId) {
         const examData=(window._currentExams||[]).find(e=>e.id===_sessionExamId);
         if (examData&&examData.url) {
           const sep = examData.url.includes('?') ? '&' : '?';
-          window.open(examData.url + sep + 'slotId=' + encodeURIComponent(_sessionSlotId||''), '_blank');
+          const _examParams = sep + 'slotId='   + encodeURIComponent(_sessionSlotId||'')
+                                 + '&examId='   + encodeURIComponent(examData.id||'')
+                                 + '&courseId=' + encodeURIComponent(examData.linkedCourseId||'')
+                                 + '&duration=' + encodeURIComponent(examData.duration||45);
+          window.open(examData.url + _examParams, '_blank');
         }
         // ── Lock hub tab while exam is in progress ──
-        _activateExamHubLock(_sessionSlotId, _sessionExamId);
+        _activateExamHubLock(_sessionSlotId, _sessionExamId, examData);
         loadStudentExams();
       };
       toast('Admitted by proctor! You may begin your exam.','success');
@@ -2039,9 +2044,13 @@ window.beginActualExam = function(examId,slotId) {
   const examData=(window._currentExams||[]).find(e=>e.id===examId);
   if (examData&&examData.url) {
     const sep = examData.url.includes('?') ? '&' : '?';
-    window.open(examData.url + sep + 'slotId=' + encodeURIComponent(slotId||''), '_blank');
+    const _examParams = sep + 'slotId='   + encodeURIComponent(slotId||'')
+                           + '&examId='   + encodeURIComponent(examData.id||'')
+                           + '&courseId=' + encodeURIComponent(examData.linkedCourseId||'')
+                           + '&duration=' + encodeURIComponent(examData.duration||45);
+    window.open(examData.url + _examParams, '_blank');
   }
-  _activateExamHubLock(slotId, examId);
+  _activateExamHubLock(slotId, examId, examData);
 };
 
 window.beginExamSession=window.openBeginSetup;
@@ -2055,7 +2064,7 @@ window.closeSessionModal=function(){
 // ── HUB EXAM LOCK ──
 // Activated when candidate opens exam tab. Warns on close.
 // Cleared when exam page signals completion via localStorage.
-function _activateExamHubLock(slotId, examId) {
+function _activateExamHubLock(slotId, examId, examData) {
   if (_examInProgress) return;
   _examInProgress = true;
 
@@ -2064,7 +2073,6 @@ function _activateExamHubLock(slotId, examId) {
     const msg = 'Your exam is currently in progress. Closing this tab may affect your exam record.';
     e.preventDefault();
     e.returnValue = msg;
-    // Log hub exit attempt to auditLog
     addDoc(collection(db, 'auditLog'), {
       action:      'hub_exit_attempt',
       actorEmail:  meEmail,
@@ -2080,25 +2088,84 @@ function _activateExamHubLock(slotId, examId) {
   window.addEventListener('beforeunload', _hubBeforeUnloadHandler);
 
   // Listen for exam completion signal from exam tab via localStorage
-  _examStorageListener = function(e) {
+  _examStorageListener = async function(e) {
     if (e.key !== 'sf_exam_done') return;
     try {
       const data = JSON.parse(e.newValue || '{}');
-      if (data.slotId === slotId || data.examId === examId || !data.slotId) {
-        _clearExamHubLock();
-        addDoc(collection(db, 'auditLog'), {
-          action:      'exam_completed_signal',
-          actorEmail:  meEmail,
-          actorRole:   myRole,
-          targetEmail: meEmail,
-          slotId:      slotId || null,
-          examId:      examId || null,
-          metadata:    'Exam tab signalled completion: ' + (data.status || 'completed'),
-          timestamp:   serverTimestamp()
-        }).catch(()=>{});
-        toast('Exam submitted. Your results have been recorded.', 'success');
-        loadStudentExams();
+      if (data.slotId !== slotId && data.examId !== examId && data.slotId) return;
+      _clearExamHubLock();
+
+      const uid   = data.candidateUid  || me?.uid;
+      const email = data.candidateEmail || meEmail;
+      const name  = data.candidateName  || me?.displayName || meEmail;
+      const courseId     = data.courseId     || examData?.linkedCourseId || null;
+      const resolvedExamId = data.examId    || examId || null;
+      const score        = data.score        ?? null;
+      const passed       = data.passed       ?? false;
+      const timeTaken    = data.timeTaken    ?? null;
+      const timedOut     = data.timedOut     === true;
+      const tabSwitchCount = data.tabSwitchCount ?? 0;
+      const sessionDocId = data.sessionDocId || null;
+      const completionStatus = timedOut ? 'abandoned' : 'completed';
+      const completionType   = timedOut ? 'timeout'   : 'submitted';
+
+      // ── Write 3: examSessions final update ──
+      try {
+        if (sessionDocId) {
+          await setDoc(doc(db,'examSessions',sessionDocId), {
+            candidateUid: uid, candidateEmail: email, candidateName: name,
+            examId: resolvedExamId, slotId: slotId||null,
+            score, passed, timeTaken, tabSwitchCount,
+            completedAt: serverTimestamp(),
+            status: passed ? 'passed' : (timedOut ? 'abandoned' : 'failed'),
+            completionType
+          }, {merge:true});
+        } else {
+          await addDoc(collection(db,'examSessions'), {
+            candidateUid: uid, candidateEmail: email, candidateName: name,
+            examId: resolvedExamId, slotId: slotId||null,
+            score, passed, timeTaken, tabSwitchCount,
+            startedAt: serverTimestamp(), completedAt: serverTimestamp(),
+            status: passed ? 'passed' : (timedOut ? 'abandoned' : 'failed'),
+            completionType, flags:[]
+          });
+        }
+      } catch(e) { console.warn('[index] Write 3 failed:', e.message); }
+
+      // ── Write 4: progress/{uid} — course unlock if passed ──
+      if (passed && courseId && uid) {
+        try {
+          await setDoc(doc(db,'progress',uid), {
+            [`course_${courseId}`]: true,
+            updatedAt: serverTimestamp()
+          }, {merge:true});
+        } catch(e) { console.warn('[index] Write 4 failed:', e.message); }
       }
+
+      // ── Write 5: examSlots status — completed or abandoned ──
+      if (slotId) {
+        try {
+          await setDoc(doc(db,'examSlots',slotId), {
+            status: completionStatus,
+            completionType,
+            completedAt: serverTimestamp(),
+            finalScore:  score,
+            finalPassed: passed
+          }, {merge:true});
+        } catch(e) { console.warn('[index] Write 5 failed:', e.message); }
+      }
+
+      // ── Audit log ──
+      addDoc(collection(db,'auditLog'), {
+        action:      'exam_completed_signal',
+        actorEmail:  meEmail, actorRole: myRole, targetEmail: meEmail,
+        slotId:      slotId||null, examId: resolvedExamId||null,
+        metadata:    'Exam completed — status: ' + completionStatus + ', score: ' + score + '%, timedOut: ' + timedOut,
+        timestamp:   serverTimestamp()
+      }).catch(()=>{});
+
+      toast(timedOut ? 'Exam time expired. Your attempt has been recorded.' : 'Exam submitted. Your results have been recorded.', timedOut ? 'error' : 'success');
+      loadStudentExams();
     } catch(err) { console.warn('[index] sf_exam_done parse error:', err); }
   };
   window.addEventListener('storage', _examStorageListener);
