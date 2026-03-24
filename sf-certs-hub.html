@@ -693,7 +693,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 </div>
 
 <script type="module">
-console.log('%c[sf-certs-hub] ✅ Code version: v202603201001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-certs-hub] ✅ Code version: v202603241001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
@@ -1332,7 +1332,16 @@ async function loadProctorAssignedSlots() {
       }
     } catch(e) { console.warn('proctor candidate lookup:', e); }
 
-    const activeSlots = slots.filter(s => !(s.status === 'inProgress' && s.denied === true));
+    const activeSlots = slots.filter(s => {
+      // Only show slots the proctor still needs to act on or monitor.
+      // Exclude terminal statuses: completed, abandoned, rejected, and denied inProgress.
+      if (s.status === 'completed' || s.status === 'abandoned' || s.status === 'rejected') return false;
+      if (s.status === 'inProgress' && s.denied === true) return false;
+      // Also exclude slots where this proctor was reassigned away (assignedProctor no longer matches)
+      const proctorEmail = _previewProctorEmail || meEmail;
+      if (s.assignedProctor && s.assignedProctor !== proctorEmail) return false;
+      return true;
+    });
     if (!activeSlots.length) {
       container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;font-size:14px;">No slots assigned to you yet.<br><span style="font-size:12px;">Ask your L&D administrator to assign you to a learner.</span></div>';
       return;
@@ -1383,7 +1392,8 @@ function buildProctorSlotCard(slot) {
     confirmed:       {label:'Confirmed', color:'#34d399', bg:'rgba(16,185,129,.1)'},
     awaitingAdmit:   {label:'Snapshots Ready — Admit/Deny', color:'#60a5fa', bg:'rgba(59,130,246,.1)'},
     inProgress:      {label:'Exam In Progress', color:'#a78bfa', bg:'rgba(139,92,246,.1)'},
-    completed:       {label:'Completed', color:'var(--muted)', bg:'var(--surface)'},
+    completed:       {label:'✅ Completed', color:'#34d399', bg:'rgba(16,185,129,.08)'},
+    abandoned:       {label:'⚠️ Timed Out / Abandoned', color:'#f59e0b', bg:'rgba(245,158,11,.08)'},
     rejected:        {label:'Rejected', color:'#f87171', bg:'rgba(239,68,68,.1)'},
   };
   const st = statusMap[slot.status] || {label:slot.status||'Unknown', color:'var(--muted)', bg:'var(--surface)'};
