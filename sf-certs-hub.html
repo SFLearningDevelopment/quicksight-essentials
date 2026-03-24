@@ -693,7 +693,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 </div>
 
 <script type="module">
-console.log('%c[sf-certs-hub] ✅ Code version: v202603241001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-certs-hub] ✅ Code version: v202603241003 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
@@ -1333,11 +1333,14 @@ async function loadProctorAssignedSlots() {
     } catch(e) { console.warn('proctor candidate lookup:', e); }
 
     const activeSlots = slots.filter(s => {
-      // Only show slots the proctor still needs to act on or monitor.
-      // Exclude terminal statuses: completed, abandoned, rejected, and denied inProgress.
-      if (s.status === 'completed' || s.status === 'abandoned' || s.status === 'rejected') return false;
-      if (s.status === 'inProgress' && s.denied === true) return false;
-      // Also exclude slots where this proctor was reassigned away (assignedProctor no longer matches)
+      // Proctor My Assigned Slots shows only the two states where proctor action is needed:
+      // 1. bookedByLearner — candidate booked, proctor must confirm
+      // 2. awaitingAdmit   — candidate sent snapshots, proctor must admit/deny
+      // confirmed, inProgress, completed, abandoned, rejected are all excluded —
+      // confirmed needs no action (candidate hasn't started setup yet),
+      // inProgress is monitored via the Live Session tab.
+      if (s.status !== 'bookedByLearner' && s.status !== 'awaitingAdmit') return false;
+      // Also exclude slots where this proctor was reassigned away
       const proctorEmail = _previewProctorEmail || meEmail;
       if (s.assignedProctor && s.assignedProctor !== proctorEmail) return false;
       return true;
@@ -1355,7 +1358,7 @@ async function loadProctorAssignedSlots() {
     window._proctorSlotListeners = [];
     for (const slot of activeSlots) {
       container.appendChild(buildProctorSlotCard(slot));
-      if (slot.status === 'confirmed' || slot.status === 'bookedByLearner' || slot.status === 'awaitingAdmit') {
+      if (slot.status === 'bookedByLearner' || slot.status === 'awaitingAdmit') {
         const unsub = onSnapshot(doc(db, 'examSlots', slot.id), slotSnap => {
           if (!slotSnap.exists()) return;
           const updated = {id: slotSnap.id, ...slotSnap.data()};
@@ -1565,9 +1568,38 @@ async function loadProctorSession() {
     return;
   }
   $('proctor-candidate-label').textContent = `Monitoring: ${assigned}`;
+
+  // Query examSessions for this candidate marked active
   const snap = await getDocs(query(collection(db, 'examSessions'), where('candidateEmail', '==', assigned), where('status', '==', 'active')));
+  const rawSessions = [];
+  snap.forEach(d => rawSessions.push({id: d.id, ...d.data()}));
+
+  // Cross-reference with examSlots — only keep sessions whose slot is genuinely inProgress.
+  // Sessions whose slot is completed/abandoned/missing are stale (old architecture or missed write).
+  // Also discard sessions older than 3 hours as a safety net.
+  const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
   const sessions = [];
-  snap.forEach(d => sessions.push({id: d.id, ...d.data()}));
+  for (const s of rawSessions) {
+    // Recency guard
+    const startTs = s.startedAt ? (s.startedAt.toDate ? s.startedAt.toDate() : new Date(s.startedAt)) : null;
+    if (startTs && (Date.now() - startTs.getTime()) > THREE_HOURS_MS) continue;
+    // Slot cross-reference
+    if (s.slotId) {
+      try {
+        const slotDoc = await getDoc(doc(db, 'examSlots', s.slotId));
+        if (!slotDoc.exists()) continue;
+        const slotStatus = slotDoc.data().status;
+        if (slotStatus !== 'inProgress') continue; // slot already terminal — skip
+      } catch(e) { console.warn('slot cross-ref:', e); }
+    } else {
+      // No slotId on session — check by learnerEmail
+      try {
+        const slotSnap = await getDocs(query(collection(db,'examSlots'), where('learnerEmail','==',assigned), where('status','==','inProgress')));
+        if (slotSnap.empty) continue; // no active slot for this candidate
+      } catch(e) { console.warn('slot cross-ref (no slotId):', e); }
+    }
+    sessions.push(s);
+  }
   const totalFlags = sessions.reduce((a, s) => a + (s.flags||[]).length, 0);
   const avgProg    = sessions.length ? Math.round(sessions.reduce((a,s) => a+(s.questionProgress||0), 0) / sessions.length) : 0;
   $('stat-active').textContent   = sessions.length > 0 ? 'Active' : 'Waiting';
@@ -2510,7 +2542,28 @@ window.loadProctorSessions = async function() {
   container.innerHTML='<div style="color:var(--muted);font-size:14px;text-align:center;padding:40px 0">Loading sessions…</div>';
   try {
     const snap=await getDocs(query(collection(db,'examSessions'),where('status','==','active')));
-    const sessions=[]; snap.forEach(d=>sessions.push({id:d.id,...d.data()}));
+    const rawSessions=[]; snap.forEach(d=>rawSessions.push({id:d.id,...d.data()}));
+
+    // Cross-reference with examSlots — exclude stale sessions where slot is no longer inProgress.
+    // Also discard sessions older than 3 hours.
+    const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
+    const sessions = [];
+    for (const s of rawSessions) {
+      const startTs = s.startedAt ? (s.startedAt.toDate ? s.startedAt.toDate() : new Date(s.startedAt)) : null;
+      if (startTs && (Date.now() - startTs.getTime()) > THREE_HOURS_MS) continue;
+      if (s.slotId) {
+        try {
+          const slotDoc = await getDoc(doc(db,'examSlots',s.slotId));
+          if (!slotDoc.exists() || slotDoc.data().status !== 'inProgress') continue;
+        } catch(e) { console.warn('admin slot cross-ref:', e); }
+      } else {
+        try {
+          const slotSnap = await getDocs(query(collection(db,'examSlots'), where('learnerEmail','==',s.candidateEmail), where('status','==','inProgress')));
+          if (slotSnap.empty) continue;
+        } catch(e) { console.warn('admin slot cross-ref (no slotId):', e); }
+      }
+      sessions.push(s);
+    }
     const totalFlags=sessions.reduce((a,s)=>a+(s.flags||[]).length,0);
     $('a-stat-active').textContent=sessions.length; $('a-stat-flags').textContent=totalFlags;
     container.innerHTML='';
