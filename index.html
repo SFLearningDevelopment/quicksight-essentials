@@ -605,7 +605,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
   <div class="schedule-wrap">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
       <div>
-        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">📅 Schedule Your Exam</div>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule Your Exam</div>
         <div style="font-size:13px;color:var(--muted);margin-top:4px;">Pick a date and time. A proctor will confirm your slot.</div>
       </div>
       <button onclick="closeScheduleModal()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:4px 8px;">✕</button>
@@ -825,7 +825,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
   <div style="max-width:520px;margin:80px auto;padding:0 20px 80px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
       <div>
-        <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">📅 Request Reschedule</h2>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Request Reschedule</h2>
         <p id="reschedule-subtitle" style="font-size:13px;color:var(--muted);margin-top:4px;"></p>
       </div>
       <button onclick="closeRescheduleModal()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;">&#10005;</button>
@@ -921,7 +921,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202603241002 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202603241003 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -1336,21 +1336,28 @@ function buildStudentExamCard(exam,myResults,myProgress) {
       slotStatusHtml=`<div class="slot-status awaiting">&#9203; Awaiting proctor confirmation &middot; ${slot.requestedDate||''} ${slot.requestedTime||''}${reschedTag}</div>${_notifyBlock}`;
     }
   } else if (slotStatus==='confirmed') {
-    slotStatusHtml=`<div class="slot-status confirmed">&#10003; Slot confirmed &middot; ${slot.requestedDate||''} ${slot.requestedTime||''}</div>`;
-    if (slot.requestedDate&&slot.requestedTime) {
-      const scheduledMs=new Date(slot.requestedDate+'T'+slot.requestedTime+':00').getTime();
-      const minsLate=Math.floor((Date.now()-scheduledMs)/60000);
-      if (slot.admitted===true) {
-        slotStatusHtml+='<div class="flag-actioned-box">&#10003; Actioned by Proctor</div>';
-      } else if (slot.rejectedAt) {
-        slotStatusHtml+='<div class="flag-actioned-box">&#10003; Actioned by Proctor (denied)</div>';
-      } else if (slot.flagged) {
-        slotStatusHtml+='<div class="flag-raised-box">&#128680; Delay flagged &mdash; awaiting admin action</div>';
-      } else if (minsLate>=5) {
-        slotStatusHtml+='<div class="flag-delay-box"><div class="flag-delay-label">&#9888;&#65039; Proctor has not responded ('+minsLate+' min delay)</div><label class="flag-delay-check"><input type="checkbox" id="flag-check-'+slot.id+'" onchange="raiseDelayFlag(\''+slot.id+'\', this.checked)">I want to flag this delay for admin attention</label></div>';
-      } else if (minsLate>=-10) {
-        const minsToStart=Math.max(0,-minsLate);
-        slotStatusHtml+='<div style="font-size:12px;color:var(--muted);margin-top:8px;">&#128338; '+(minsLate<0?'Exam starts in '+minsToStart+' min. Be ready 10 min before.':'Waiting for proctor. Flag option activates after 5 min delay.')+'</div>';
+    // If proctor was reassigned by admin, prompt candidate to reschedule (same-day allowed)
+    if (slot.proctorReassigned === true) {
+      slotStatusHtml=`<div class="slot-status awaiting" style="background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.3);color:#a78bfa;">
+        &#128256; Your proctor has been reassigned. Please reschedule your exam at a convenient time.
+      </div>`;
+    } else {
+      slotStatusHtml=`<div class="slot-status confirmed">&#10003; Slot confirmed &middot; ${slot.requestedDate||''} ${slot.requestedTime||''}</div>`;
+      if (slot.requestedDate&&slot.requestedTime) {
+        const scheduledMs=new Date(slot.requestedDate+'T'+slot.requestedTime+':00').getTime();
+        const minsLate=Math.floor((Date.now()-scheduledMs)/60000);
+        if (slot.admitted===true) {
+          slotStatusHtml+='<div class="flag-actioned-box">&#10003; Actioned by Proctor</div>';
+        } else if (slot.rejectedAt) {
+          slotStatusHtml+='<div class="flag-actioned-box">&#10003; Actioned by Proctor (denied)</div>';
+        } else if (slot.flagged) {
+          slotStatusHtml+='<div class="flag-raised-box">&#128680; Delay flagged &mdash; awaiting admin action</div>';
+        } else if (minsLate>=5) {
+          slotStatusHtml+='<div class="flag-delay-box"><div class="flag-delay-label">&#9888;&#65039; Proctor has not responded ('+minsLate+' min delay)</div><label class="flag-delay-check"><input type="checkbox" id="flag-check-'+slot.id+'" onchange="raiseDelayFlag(\''+slot.id+'\', this.checked)">I want to flag this delay for admin attention</label></div>';
+        } else if (minsLate>=-10) {
+          const minsToStart=Math.max(0,-minsLate);
+          slotStatusHtml+='<div style="font-size:12px;color:var(--muted);margin-top:8px;">&#128338; '+(minsLate<0?'Exam starts in '+minsToStart+' min. Be ready 10 min before.':'Waiting for proctor. Flag option activates after 5 min delay.')+'</div>';
+        }
       }
     }
   } else if (slotStatus==='awaitingAdmit') {
@@ -1359,12 +1366,17 @@ function buildStudentExamCard(exam,myResults,myProgress) {
 
   let footerHtml='';
   if (slotStatus==='confirmed') {
-    const _scheduledMs=slot.requestedDate&&slot.requestedTime?new Date(slot.requestedDate+'T'+slot.requestedTime+':00').getTime():null;
-    const _minsToExam=_scheduledMs?Math.floor((_scheduledMs-Date.now())/60000):999;
-    if (_minsToExam<=10) {
-      footerHtml=`<button class="card-btn btn-enter" onclick="openBeginSetup('${exam.id}','${slot?.id||''}')">&#128247; Begin Setup &rarr;</button>`;
+    if (slot.proctorReassigned === true) {
+      // Proctor reassigned — allow same-day reschedule, no 24hr constraint
+      footerHtml=`<button class="card-btn btn-enter" style="background:#7c3aed;width:100%;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}',true)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Reschedule Your Exam</button>`;
     } else {
-      footerHtml=`<button class="card-btn btn-locked" disabled style="cursor:default;">&#128197; Exam on ${slot.requestedDate||''} ${slot.requestedTime||''} &mdash; Setup available 10 min before</button>`;
+      const _scheduledMs=slot.requestedDate&&slot.requestedTime?new Date(slot.requestedDate+'T'+slot.requestedTime+':00').getTime():null;
+      const _minsToExam=_scheduledMs?Math.floor((_scheduledMs-Date.now())/60000):999;
+      if (_minsToExam<=10) {
+        footerHtml=`<button class="card-btn btn-enter" onclick="openBeginSetup('${exam.id}','${slot?.id||''}')">&#128247; Begin Setup &rarr;</button>`;
+      } else {
+        footerHtml=`<button class="card-btn btn-locked" disabled style="cursor:default;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Exam on ${slot.requestedDate||''} ${slot.requestedTime||''} &mdash; Setup available 10 min before</button>`;
+      }
     }
   } else if (slotStatus==='inProgress'&&slot?.admitted===true) {
     // Derive pass/fail if bestPassed not yet written (evaluation may only write bestScore)
@@ -1378,7 +1390,7 @@ function buildStudentExamCard(exam,myResults,myProgress) {
         <div style="font-size:12px;color:#fbbf24;padding:8px 12px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;margin-bottom:8px;">
           &#128196; Attempt recorded. To try again, please schedule a new exam slot.
         </div>
-        <button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}','${esc(slot?.learnerSelfie||'')}')">&#128198; Schedule New Attempt</button>
+        <button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}','${esc(slot?.learnerSelfie||'')}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule New Attempt</button>
       </div>`;
     } else {
       // No attempts left
@@ -1390,7 +1402,7 @@ function buildStudentExamCard(exam,myResults,myProgress) {
       <div style="font-size:13px;color:#f87171;padding:10px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);margin-bottom:8px;">
         ⚠️ Your proctor denied your session.${reason}
       </div>
-      <button class="card-btn btn-enter" style="background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}')">📅 Request Reschedule</button>
+      <button class="card-btn btn-enter" style="background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Request Reschedule</button>
     </div>`;
   } else if (slotStatus==='awaitingAdmit') {
     footerHtml=`<button class="card-btn btn-locked" disabled>&#9203; Awaiting Confirmation</button>`;
@@ -1401,16 +1413,16 @@ function buildStudentExamCard(exam,myResults,myProgress) {
     const _fSlotPast = _fSlotMs ? Date.now() > _fSlotMs : false;
     if (slot.reassignRequested && _fSlotPast) {
       // Slot time passed + admin notified — prompt reschedule with existing modal
-      footerHtml=`<button class="card-btn btn-enter" style="width:100%;background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}',true)">&#128198; Reschedule Your Exam Now</button>`;
+      footerHtml=`<button class="card-btn btn-enter" style="width:100%;background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}',true)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Reschedule Your Exam Now</button>`;
     } else {
       footerHtml=`<div style="display:flex;gap:10px;">
         <button class="card-btn btn-locked" disabled style="flex:1;">⏳ Awaiting Confirmation</button>
-        <button class="card-btn btn-enter" style="flex:1;background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}')">📅 Reschedule</button>
+        <button class="card-btn btn-enter" style="flex:1;background:#7c3aed;" onclick="openRescheduleRequestModal('${slot.id}','${esc(exam.title)}','${esc(exam.id)}','${esc(slot.assignedProctor||'')}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Reschedule</button>
       </div>`;
     }
   } else if (canTake) {
     const _existingSelfie = attemptCount > 0 ? (slot?.learnerSelfie || '') : '';
-    footerHtml=`<button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}','${esc(_existingSelfie)}')">&#128198; Schedule Exam</button>`;
+    footerHtml=`<button class="card-btn btn-enter" onclick="openScheduleModal('${exam.id}','${esc(exam.title)}','${esc(_existingSelfie)}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule Exam</button>`;
   } else {
     footerHtml=`<button class="card-btn btn-locked" disabled>${attemptsLeft===0?'No Attempts Left':'🔒 Complete Course First'}</button>`;
   }
@@ -1912,7 +1924,9 @@ window.startBeginSetupCamera = async function() {
   $('setup-snap-status').textContent='Starting camera…'; $('setup-snap-thumbs').innerHTML=''; $('setup-snap-bar').style.width='0%';
   try {
     _sessionStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
-    $('setup-video').srcObject=_sessionStream; loadFaceApi();
+    $('setup-video').srcObject=_sessionStream;
+    $('setup-snap-status').textContent='Loading face recognition models…';
+    await loadFaceApi();
     let referenceImage=null;
     try { const slotDoc=await getDoc(doc(db,'examSlots',_sessionSlotId)); if(slotDoc.exists()) referenceImage=slotDoc.data().learnerSelfie||null; } catch{}
     await takeBeginSetupSnapshots(referenceImage);
@@ -2380,6 +2394,10 @@ window.submitRescheduleRequest = async function() {
       requestedDate: date, requestedTime: time, requestedTimezone: tz,
       rescheduleCount: (slotData.rescheduleCount || 0) + 1, status: 'pending', createdAt: serverTimestamp()
     });
+    // Clear proctorReassigned flag now that candidate has acted on it
+    if (slotData.proctorReassigned === true) {
+      await setDoc(doc(db, 'examSlots', _reschedSlotId), { proctorReassigned: false }, { merge: true });
+    }
     for (const adminEmail of ADMINS) {
       await addDoc(collection(db, 'notifications', adminEmail, 'items'), {
         message: myName + ' has requested a reschedule for ' + date + ' at ' + time + '. Review in the Exams tab.',
