@@ -693,7 +693,7 @@ nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-con
 </div>
 
 <script type="module">
-console.log('%c[sf-certs-hub] ✅ Code version: v202603241003 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-certs-hub] ✅ Code version: v202603241004 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
@@ -1369,6 +1369,11 @@ async function loadProctorAssignedSlots() {
           }
           const existing = document.getElementById('p-slot-' + slot.id);
           if (existing) existing.replaceWith(buildProctorSlotCard(updated));
+          // Toast when candidate transitions to awaitingAdmit — action required
+          if (updated.status === 'awaitingAdmit' && slot.status !== 'awaitingAdmit') {
+            const cname = updated.learnerName || updated.learnerEmail || 'Candidate';
+            toast('📸 ' + cname + ' has completed identity setup — please review snapshots and admit or deny.', 'info');
+          }
         });
         window._proctorSlotListeners.push(unsub);
       }
@@ -2423,10 +2428,11 @@ window.submitProctorReassignment = async function(reqId, slotId, examId, learner
     // 1. Update examSlots — changes assignedProctor so old proctor's dashboard auto-clears
     if (slotId) {
       await setDoc(doc(db,'examSlots',slotId), {
-        assignedProctor: newProctor,
-        reassignedBy: meEmail,
-        reassignedAt: serverTimestamp(),
-        reassignRequested: false
+        assignedProctor:    newProctor,
+        reassignedBy:       meEmail,
+        reassignedAt:       serverTimestamp(),
+        reassignRequested:  false,
+        proctorReassigned:  true   // signals learner card to allow same-day reschedule
       }, {merge:true});
     }
 
