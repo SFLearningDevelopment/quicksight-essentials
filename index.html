@@ -921,7 +921,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202603241003 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202604061001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -2619,13 +2619,31 @@ window.submitSetRole = async function() {
   if (!_setRoleSelected||!_setRoleValue) return;
   const btn=$('set-role-submit-btn'); btn.disabled=true; btn.textContent='Saving...';
   try {
-    // Write to email-keyed doc (standard). For legacy UID-keyed docs, also write
-    // to the email-keyed path so future lookups find it correctly.
-    await setDoc(doc(db,'users',_setRoleSelected),{role:_setRoleValue,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true});
-    // If this user has a legacy UID-keyed doc, update that too so both paths work
+    // Build the write payload — always set role
+    const payload = { role: _setRoleValue, updatedAt: serverTimestamp(), updatedBy: me.email };
+
+    // Clear stale fields from previous roles:
+    // If new role is not proctor → null out proctor-specific fields
+    if (_setRoleValue !== 'proctor') {
+      payload.assignedCandidate = null;
+      payload.assignedExamId    = null;
+    }
+    // If new role is not reviewer → null out reviewer-specific field
+    if (_setRoleValue !== 'reviewer') {
+      payload.assignedCourseId = null;
+    }
+    // If new role is not a candidate → null out candidate-specific fields
+    if (_setRoleValue !== 'student') {
+      // assignedProctor is on the candidate's doc — only clear if changing away from student
+      // (proctors and reviewers should not carry a candidate's assignedProctor field)
+      payload.assignedProctor = null;
+    }
+
+    await setDoc(doc(db,'users',_setRoleSelected), payload, {merge:true});
+    // If this user has a legacy UID-keyed doc, update that too
     const legacyUser=_setRoleUsers.find(u=>u.email===_setRoleSelected);
     if(legacyUser&&legacyUser.docId&&legacyUser.docId!==_setRoleSelected){
-      try { await setDoc(doc(db,'users',legacyUser.docId),{role:_setRoleValue,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true}); } catch{}
+      try { await setDoc(doc(db,'users',legacyUser.docId), payload, {merge:true}); } catch{}
     }
     const idx=_setRoleUsers.findIndex(u=>u.email===_setRoleSelected); if(idx>=0) _setRoleUsers[idx].role=_setRoleValue;
     toast(_setRoleSelected+' role set to '+_setRoleValue,'success'); closeSetRoleModal();
@@ -2717,6 +2735,28 @@ window.submitAssignProctor = async function() {
   if (!proctorEmail){showApError('Please select a proctor.');return;}
   const btn=$('ap-submit-btn'); btn.disabled=true; btn.textContent='Assigning...';
   try {
+    // Read current proctor from nomination doc — so we can clear their users doc if reassigning
+    let prevProctor = null;
+    try {
+      const nomSnap = await getDoc(doc(db,'exams',examId,'nominations',nominee));
+      if (nomSnap.exists()) prevProctor = nomSnap.data().assignedProctor || null;
+    } catch(e) { console.warn('submitAssignProctor: could not read prev proctor:', e.message); }
+
+    // If there was a previous proctor and they differ from the new one, clear their users doc
+    if (prevProctor && prevProctor !== proctorEmail) {
+      try {
+        const prevSnap = await getDoc(doc(db,'users',prevProctor));
+        if (prevSnap.exists() && prevSnap.data().assignedCandidate === nominee) {
+          await setDoc(doc(db,'users',prevProctor), {
+            assignedCandidate: null,
+            assignedExamId:    null,
+            updatedAt: serverTimestamp(),
+            updatedBy: me.email
+          }, {merge:true});
+        }
+      } catch(e) { console.warn('submitAssignProctor: could not clear prev proctor:', e.message); }
+    }
+
     await setDoc(doc(db,'exams',examId,'nominations',nominee),{assignedProctor:proctorEmail,assignedProctorBy:me.email,assignedProctorAt:serverTimestamp()},{merge:true});
     await setDoc(doc(db,'users',proctorEmail),{assignedCandidate:nominee,assignedExamId:examId,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true});
     // Also write assignedExamId to the candidate's user doc so their profile
