@@ -347,6 +347,19 @@ function buildReviewForm(course, existingReview) {
       </div>
       ${tagHTML}
     </div>
+    ${course.url ? `
+    <div style="padding:12px 20px 0;border-bottom:1px solid var(--border);padding-bottom:14px;">
+      <a href="${esc(course.url)}" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;
+                color:#a78bfa;text-decoration:none;padding:8px 16px;border-radius:8px;
+                background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);
+                transition:all .2s;" 
+         onmouseover="this.style.background='rgba(124,58,237,.16)'"
+         onmouseout="this.style.background='rgba(124,58,237,.08)'">
+        📖 Open Course Content →
+      </a>
+      <span style="font-size:12px;color:var(--muted);margin-left:12px;">Opens in a new tab — review content alongside this form</span>
+    </div>` : ''}
     <div class="review-card-body">
       ${moduleHTML || '<p style="color:var(--muted);font-size:13px;">No modules found for this course.</p>'}
       <div class="overall-block">
