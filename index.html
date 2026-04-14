@@ -577,7 +577,9 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
             <div id="rev-eval-row" style="display:none;margin-bottom:18px;">
               <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Evaluation</div>
               <div style="display:flex;gap:8px;align-items:center;">
-                <input class="form-input" id="rev-eval-file" placeholder="e.g. prometheus-evaluation.html" style="flex:1;">
+                <div id="rev-eval-input-wrap" style="flex:1;">
+                  <input class="form-input" id="rev-eval-file" placeholder="e.g. prometheus-evaluation.html" style="width:100%;">
+                </div>
                 <div style="font-size:11px;color:var(--muted);min-width:120px;">Path in repo root</div>
               </div>
             </div>
@@ -990,7 +992,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202604141004 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202604141005 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -2922,16 +2924,74 @@ function showApError(msg){const el=$('ap-error');el.textContent=msg;el.style.dis
 // ── Module row management ──
 let revModuleCount = 0;
 
+const REV_REPO_FILES = {
+  'sf-ds-mlops-certification': {
+    modules: [
+      { num:1, title:'DS & MLOps Foundations',              file:'ds-mlops-module-1.html' },
+      { num:2, title:'Feature Engineering in Depth',        file:'ds-mlops-module-2.html' },
+      { num:3, title:'Model Lifecycle & Drift',             file:'ds-mlops-module-3.html' },
+      { num:4, title:'Feature Stores & MLOps Architecture', file:'ds-mlops-module-4.html' },
+      { num:5, title:'System Articulation & Pipeline Ownership', file:'ds-mlops-module-5.html' }
+    ],
+    eval: 'ds-mlops-evaluation.html'
+  },
+  'sf-internal-kubernetes-certification': {
+    modules: [
+      { num:1, title:'Kubernetes Basics', file:'module-1.html' },
+      { num:2, title:'Workloads & Scheduling', file:'module-2.html' },
+      { num:3, title:'Networking', file:'module-3.html' },
+      { num:4, title:'Storage', file:'module-4.html' }
+    ],
+    eval: 'evaluation.html'
+  },
+  'ai-dev-ops': {
+    modules: [
+      { num:1, title:'AIOps & DevOps Foundations', file:'module-1.html' },
+      { num:2, title:'Tier 2', file:'module-2.html' },
+      { num:3, title:'Tier 3', file:'module-3.html' }
+    ],
+    eval: 'evaluation.html'
+  },
+  'grafana-essentials': {
+    modules: [
+      { num:1, title:'Grafana Module 1', file:'grafana-module-1.html' },
+      { num:2, title:'Grafana Module 2', file:'grafana-module-2.html' },
+      { num:3, title:'Grafana Module 3', file:'grafana-module-3.html' },
+      { num:4, title:'Grafana Module 4', file:'grafana-module-4.html' }
+    ],
+    eval: 'grafana-evaluation.html'
+  }
+};
+
+function revGetRepoFiles() {
+  const repo = document.getElementById('rev-repo-select').value;
+  return REV_REPO_FILES[repo] || null;
+}
+
 function revAddModuleRow(num, title, file) {
   revModuleCount++;
   const n = revModuleCount;
   const row = document.createElement('div');
   row.id = 'rev-mod-row-' + n;
   row.style.cssText = 'display:flex;gap:8px;align-items:center;';
+
+  const repoFiles = revGetRepoFiles();
+  let fileInput;
+  if (repoFiles) {
+    const opts = repoFiles.modules.map(m =>
+      `<option value="${m.file}" ${file===m.file?'selected':''}>${m.file} — ${m.title}</option>`
+    ).join('');
+    fileInput = `<select class="form-input" id="rev-mod-file-${n}" style="flex:2;">
+      <option value="">— Select file —</option>${opts}
+    </select>`;
+  } else {
+    fileInput = `<input class="form-input" id="rev-mod-file-${n}" value="${file||''}" placeholder="module-1.html" style="flex:2;" title="Path relative to repo root">`;
+  }
+
   row.innerHTML = `
     <input class="form-input" id="rev-mod-num-${n}" value="${num||n}" placeholder="1" style="width:48px;flex-shrink:0;" title="Module number">
-    <input class="form-input" id="rev-mod-title-${n}" value="${title||''}" placeholder="Module title (e.g. Introduction & Architecture)" style="flex:2;">
-    <input class="form-input" id="rev-mod-file-${n}" value="${file||''}" placeholder="module-1.html" style="flex:2;" title="Path relative to repo root">
+    <input class="form-input" id="rev-mod-title-${n}" value="${title||''}" placeholder="Module title" style="flex:2;">
+    ${fileInput}
     <button onclick="revRemoveModuleRow(${n})" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0 4px;flex-shrink:0;" title="Remove">×</button>`;
   document.getElementById('rev-module-rows').appendChild(row);
 }
@@ -2945,6 +3005,20 @@ function revToggleEval() {
   const on = document.getElementById('rev-has-eval').checked;
   document.getElementById('rev-eval-row').style.display = on ? 'block' : 'none';
   document.getElementById('rev-gen-eval-btn').style.display = on ? 'inline-flex' : 'none';
+  if (on) revPopulateEvalField();
+}
+
+function revPopulateEvalField() {
+  const repoFiles = revGetRepoFiles();
+  const container = document.getElementById('rev-eval-input-wrap');
+  if (!container) return;
+  if (repoFiles) {
+    container.innerHTML = `<select class="form-input" id="rev-eval-file" style="flex:1;">
+      <option value="${repoFiles.eval}" selected>${repoFiles.eval}</option>
+    </select>`;
+  } else {
+    container.innerHTML = `<input class="form-input" id="rev-eval-file" placeholder="e.g. evaluation.html" style="flex:1;">`;
+  }
 }
 
 // ── Populate reviewer section when a course is selected ──
