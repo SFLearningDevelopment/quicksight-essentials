@@ -1,3 +1,20 @@
 For favicon
 
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+| Collection | Created when |
+|---|---|
+| `courses/{id}` | Admin creates a new course |
+| `courses/{id}/nominations/{email}` | Admin nominates a user to a course |
+| `exams/{id}` | Admin creates an exam in sf-certs-hub |
+| `exams/{id}/nominations/{email}` | Admin nominates a learner to an exam |
+| `examSlots` | Learner schedules an exam slot |
+| `examSessions` | Learner begins exam setup (Begin Setup flow) |
+| `examResults/{uid}` | Learner completes or times out of an exam |
+| `progress/{uid}` | Learner passes an exam |
+| `notifications/{email}/items` | App fires any notification event |
+| `auditLog` | Admin or proctor performs a privileged action |
+| `rescheduleRequests` | Learner submits a reschedule request |
+| `proctorReassignmentRequests` | Admin reassigns a proctor to a slot |
+| `reviewerSessions/{uid}/{courseSlug}/{moduleId}` | Reviewer begins reviewing a module |
+| `adminConfig/githubPAT` | Manually created once — stores the GitHub PAT |
