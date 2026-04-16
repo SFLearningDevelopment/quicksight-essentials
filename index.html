@@ -991,7 +991,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202604161004 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202604161005 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -3277,7 +3277,23 @@ function revExtractQuestions(html) {
   if (!m) return [];
   try {
     const arr = Function('"use strict"; return (' + m[1] + ')')();
-    return Array.isArray(arr) ? arr : [];
+    if (!Array.isArray(arr)) return [];
+    // Normalise fields: evaluation uses {opts, ans, module} — reviewer expects {o, c, m}
+    return arr.map(q => ({
+      m: (() => {
+        // Extract module number from string like "M1 · Foundations" or numeric m field
+        if (typeof q.m === 'number') return q.m;
+        if (typeof q.module === 'string') {
+          const match = q.module.match(/M(\d+)/);
+          return match ? parseInt(match[1]) : 0;
+        }
+        return 0;
+      })(),
+      q: q.q || q.question || '',
+      o: q.o || q.opts || q.options || [],
+      c: typeof q.c === 'number' ? q.c : (typeof q.ans === 'number' ? q.ans : 0),
+      exp: q.exp || q.explanation || ''
+    }));
   } catch { return []; }
 }
 
@@ -3312,8 +3328,8 @@ function revGenerateModulePage(module, sectionsJs, question, config) {
   const numMods = config.modules.length;
   const prevMod = module.num > 1 ? config.modules.find(m => m.num === module.num - 1) : null;
   const nextMod = module.num < numMods ? config.modules.find(m => m.num === module.num + 1) : null;
-  const prevLink = prevMod ? `<a href="module-${prevMod.num}.html" class="nav-btn secondary">← Module ${prevMod.num}</a>` : '<span></span>';
-  const nextLink = nextMod ? `<a href="module-${nextMod.num}.html" class="nav-btn">Module ${nextMod.num} →</a>` : '<span></span>';
+  const prevLink = prevMod ? `<a href="${prevMod.file}" class="nav-btn secondary">← Module ${prevMod.num}</a>` : '<span></span>';
+  const nextLink = nextMod ? `<a href="${nextMod.file}" class="nav-btn">Module ${nextMod.num} →</a>` : '<span></span>';
 
   const qBlock = question ? revBuildQuestionBlock(question) : '';
 
@@ -3382,7 +3398,7 @@ function revBuildQuestionBlock(q) {
 
 function revGenerateIndexPage(config) {
   const rows = config.modules.map(m => `
-    <a href="module-${m.num}.html" class="module-card">
+    <a href="${m.file}" class="module-card">
       <div class="card-body">
         <div class="card-title">Module ${m.num}: ${m.title}</div>
         <div class="card-file">${m.file}</div>
