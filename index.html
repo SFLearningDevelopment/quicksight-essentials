@@ -991,7 +991,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202604151002 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202604151001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -1007,7 +1007,7 @@ const FB = {
   projectId:"sfcertification-grafana",
   appId:"1:227322696511:web:12e7ced7dd3d45fa06798a"
 };
-const ADMINS = ['jv.ravichandran@sourcefuse.com', 'noushin.khan@sourcefuse.com'];
+const ADMINS       = ['jv.ravichandran@sourcefuse.com'];
 const DOMAIN       = 'sourcefuse.com';
 const FLAG_WAIT_MS = 5 * 60 * 1000;
 
@@ -1682,7 +1682,8 @@ window.addNomination = async function() {
   if (!email||!selCourse) return;
   try {
     const payload={nominated:true,nominatedAt:serverTimestamp(),nominatedBy:me.email,role};
-    if (role==='reviewer') { await setDoc(doc(db,'users',email),{role:'reviewer',assignedCourseId:selCourse,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true}); payload.nominated=true; }
+    // Always update users doc with current role and assignedCourseId regardless of role
+    await setDoc(doc(db,'users',email),{role,assignedCourseId:selCourse,updatedAt:serverTimestamp(),updatedBy:me.email},{merge:true});
     await setDoc(doc(db,'courses',selCourse,'nominations',email),payload,{merge:true});
     $('nom-email-input').value=''; await loadNominations(selCourse); toast('Nomination added!','success');
   } catch { toast('Error adding nomination.','error'); }
