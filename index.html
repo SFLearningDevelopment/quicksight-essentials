@@ -998,7 +998,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202604171007 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202604171008 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -3393,7 +3393,20 @@ async function revPushFileToGitHub(pat, repo, path, content) {
 function revExtractSections(html) {
   const m = html.match(/const SECTIONS\s*=\s*(\[[\s\S]*?\]);\s*\n/);
   if (!m) throw new Error('SECTIONS array not found in source file');
-  return m[1];
+  // Fix encoding issues in extracted content
+  let sections = m[1];
+  const encodingFixes = [
+    ['\u00e2\u20ac\u201c', '\u2014'], // em dash
+    ['\u00e2\u20ac\u201d', '\u2013'], // en dash
+    ['\u00e2\u20ac\u2122', '\u2019'], // right single quote
+    ['\u00e2\u20ac\u02dc', '\u2018'], // left single quote
+    ['\u00e2\u20ac\u0153', '\u201c'], // left double quote
+    ['\u00e2\u20ac', '\u201d'],       // right double quote
+    ['\u00e2\u20ac\u00a2', '\u2022'], // bullet
+    ['\u00e2\u20ac\u00a6', '\u2026'], // ellipsis
+  ];
+  encodingFixes.forEach(([bad, good]) => { sections = sections.split(bad).join(good); });
+  return sections;
 }
 
 function revExtractQuestions(html) {
@@ -4008,8 +4021,9 @@ function renderAll(){
     const badgeTxt=BADGES[s.badge]||s.badge||'';
     const questions=SQ[s.id]||[];
     const qBlock=buildQuestionBlock(s.id,questions);
-    sd.innerHTML='<div class=\"section-header\" onclick=\"toggleSection('+s.id+')\"><span class=\"section-num\">'+s.id+'.</span><span class=\"section-title\">'+s.title+'</span>'+(badgeTxt?'<span style=\"font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;background:#e8f1fb;color:#1a6eb5;font-family:Source Code Pro,monospace;\">'+badgeTxt+'</span>':'')+(secDone?'<span style=\"font-size:12px;margin-left:4px;\">\u2705</span>':'')+'<span class=\"section-toggle\" id=\"toggle-'+s.id+'\">\u25bc</span></div><div class=\"section-body\" id=\"body-'+s.id+'\">'+s.content+qBlock+'</div>';
+    sd.innerHTML='<div class=\"section-header\" onclick=\"toggleSection('+s.id+')\"><span class=\"section-num\">'+s.id+'.</span><span class=\"section-title\">'+s.title+'</span>'+(badgeTxt?'<span style=\"font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;background:#e8f1fb;color:#1a6eb5;font-family:Source Code Pro,monospace;\">'+badgeTxt+'</span>':'')+(secDone?'<span style=\"font-size:12px;margin-left:4px;\">\u2705</span>':'')+'<span class=\"section-toggle\" id=\"toggle-'+s.id+'\">\u25bc</span></div><div class=\"section-body\" id=\"body-'+s.id+'\">'+s.content+'</div>';
     sec.appendChild(sd);
+    if(qBlock){const bodyEl=document.getElementById('body-'+s.id);if(bodyEl)bodyEl.insertAdjacentHTML('beforeend',qBlock);}
   });
   updateModuleCompleteBtn();
 }
