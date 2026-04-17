@@ -998,7 +998,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202604171003 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202604171004 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -3314,7 +3314,8 @@ async function revRunGeneration(files, config, mode) {
 
 // ── GitHub API helpers ──
 async function revFetchFileFromGitHub(pat, repo, path) {
-  const url = `https://api.github.com/repos/SFLearningDevelopment/${repo}/contents/${encodeURIComponent(path)}`;
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+  const url = `https://api.github.com/repos/SFLearningDevelopment/${repo}/contents/${encodedPath}`;
   const res = await fetch(url, { headers: { Authorization: 'token ' + pat, Accept: 'application/vnd.github+json' } });
   if (!res.ok) throw new Error(`GitHub fetch failed: ${res.status} for ${path}`);
   const data = await res.json();
@@ -3322,8 +3323,9 @@ async function revFetchFileFromGitHub(pat, repo, path) {
 }
 
 async function revPushFileToGitHub(pat, repo, path, content) {
-  const url = `https://api.github.com/repos/SFLearningDevelopment/${repo}/contents/${encodeURIComponent(path)}`;
-  // Check if file exists to get SHA
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+  const url = `https://api.github.com/repos/SFLearningDevelopment/${repo}/contents/${encodedPath}`;
+  // Always fetch fresh SHA before pushing
   let sha = null;
   try {
     const res = await fetch(url, { headers: { Authorization: 'token ' + pat, Accept: 'application/vnd.github+json' } });
