@@ -991,7 +991,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202604171001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202604171002 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -1778,7 +1778,7 @@ async function loadReviewerQueue() {
       item.innerHTML=`
         <div class="rq-title">${esc(c.title||'Untitled')}</div>
         <div class="rq-meta">${esc(c.category||'')} &middot; ${esc(c.level||'')}</div>
-        ${c.url?`<a href="${esc(c.url.replace(/\/?$/, '/') + 'reviewer/')}?v=${Date.now()}" target="_blank" style="font-size:13px;color:var(--accent);display:block;margin-bottom:12px;">📋 Open Reviewer Pages →</a>`:''}
+        ${c.url?`<a href="${esc(c.url.replace(/index\.html.*$/, '') + 'reviewer/')}?v=${Date.now()}" target="_blank" style="font-size:13px;color:var(--accent);display:block;margin-bottom:12px;">📋 Open Reviewer Pages →</a>`:''}
         ${progressHtml}
         <textarea class="rq-comment" id="rq-comment-${c.id}" placeholder="Optional comment for admin..." ${!allComplete?'disabled':''}></textarea>
         <div class="rq-actions">
