@@ -998,7 +998,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202604171006 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202604171007 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -1776,26 +1776,25 @@ async function loadReviewerQueue() {
       const allComplete = modules.length > 0 && completedCount === modules.length;
 
       // Build module cards (Kubernetes style)
-      const moduleCards = moduleStatuses.map(m => {
-        const modUrl = reviewerUrl + m.file + '?v=' + Date.now();
-        const completedAtStr = m.completedAt ? new Date(m.completedAt).toLocaleString() : null;
-        return `<a href="${modUrl}" target="_blank" style="text-decoration:none;display:block;">
-          <div style="border-radius:12px;overflow:hidden;border:1px solid ${m.complete ? '#16a34a' : '#e2e8f0'};transition:box-shadow .2s;margin-bottom:12px;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
-            <div style="background:${m.complete ? '#16a34a' : '#2563eb'};padding:14px 18px;display:flex;align-items:center;justify-content:space-between;">
-              <div>
-                <div style="color:#fff;font-weight:700;font-size:14px;">Module ${m.num}</div>
-                <div style="color:rgba(255,255,255,0.85);font-size:12px;margin-top:2px;">${esc(m.title)}</div>
+      const moduleCards = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:16px;">' +
+        moduleStatuses.map(m => {
+          const modUrl = reviewerUrl + m.file + '?v=' + Date.now();
+          const completedAtStr = m.completedAt ? new Date(m.completedAt).toLocaleString() : null;
+          return `<a href="${modUrl}" target="_blank" style="text-decoration:none;">
+            <div style="border-radius:12px;overflow:hidden;border:2px solid ${m.complete ? '#16a34a' : '#e2e8f0'};transition:box-shadow .2s;height:100%;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='none'">
+              <div style="background:${m.complete ? '#16a34a' : '#2563eb'};padding:16px 18px 14px;">
+                <div style="color:#fff;font-weight:700;font-size:15px;">Module ${m.num}</div>
+                <div style="color:rgba(255,255,255,0.85);font-size:12px;margin-top:4px;line-height:1.4;">${esc(m.title)}</div>
               </div>
-              <div style="color:#fff;font-size:20px;">${m.complete ? '✓' : '→'}</div>
-            </div>
-            <div style="background:#fff;padding:12px 18px;">
-              <div style="font-size:12px;color:${m.complete ? '#16a34a' : '#64748b'};font-weight:600;">
-                ${m.complete ? '✓ Reviewed' + (completedAtStr ? ' · ' + completedAtStr : '') : 'Not yet reviewed'}
+              <div style="background:#fff;padding:12px 18px 14px;">
+                <div style="font-size:12px;color:${m.complete ? '#16a34a' : '#64748b'};font-weight:600;margin-bottom:${m.complete && completedAtStr ? '4px' : '0'};">
+                  ${m.complete ? '✓ Reviewed' : '○ Not yet reviewed'}
+                </div>
+                ${m.complete && completedAtStr ? `<div style="font-size:11px;color:#94a3b8;">${completedAtStr}</div>` : ''}
               </div>
             </div>
-          </div>
-        </a>`;
-      }).join('');
+          </a>`;
+        }).join('') + '</div>';
 
       const btnStyle = allComplete ? '' : 'opacity:0.4;cursor:not-allowed;pointer-events:none;';
       const item = document.createElement('div');
@@ -1992,23 +1991,22 @@ async function loadReviewerQueueForPreview(reviewer) {
       } catch(e) { console.warn('preview progress check failed:', e.message); }
     }
 
-    const moduleCards = moduleStatuses.map(m => {
-      const completedAtStr = m.completedAt ? new Date(m.completedAt).toLocaleString() : null;
-      return `<div style="border-radius:12px;overflow:hidden;border:1px solid ${m.complete ? '#16a34a' : '#e2e8f0'};margin-bottom:12px;">
-        <div style="background:${m.complete ? '#16a34a' : '#2563eb'};padding:14px 18px;display:flex;align-items:center;justify-content:space-between;">
-          <div>
-            <div style="color:#fff;font-weight:700;font-size:14px;">Module ${m.num}</div>
-            <div style="color:rgba(255,255,255,0.85);font-size:12px;margin-top:2px;">${esc(m.title)}</div>
+    const moduleCards = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:16px;">' +
+      moduleStatuses.map(m => {
+        const completedAtStr = m.completedAt ? new Date(m.completedAt).toLocaleString() : null;
+        return `<div style="border-radius:12px;overflow:hidden;border:2px solid ${m.complete ? '#16a34a' : '#e2e8f0'};">
+          <div style="background:${m.complete ? '#16a34a' : '#2563eb'};padding:16px 18px 14px;">
+            <div style="color:#fff;font-weight:700;font-size:15px;">Module ${m.num}</div>
+            <div style="color:rgba(255,255,255,0.85);font-size:12px;margin-top:4px;line-height:1.4;">${esc(m.title)}</div>
           </div>
-          <div style="color:#fff;font-size:20px;">${m.complete ? '✓' : '○'}</div>
-        </div>
-        <div style="background:#fff;padding:12px 18px;">
-          <div style="font-size:12px;color:${m.complete ? '#16a34a' : '#64748b'};font-weight:600;">
-            ${m.complete ? '✓ Reviewed' + (completedAtStr ? ' · ' + completedAtStr : '') : 'Not yet reviewed'}
+          <div style="background:#fff;padding:12px 18px 14px;">
+            <div style="font-size:12px;color:${m.complete ? '#16a34a' : '#64748b'};font-weight:600;">
+              ${m.complete ? '✓ Reviewed' : '○ Not yet reviewed'}
+            </div>
+            ${m.complete && completedAtStr ? `<div style="font-size:11px;color:#94a3b8;margin-top:4px;">${completedAtStr}</div>` : ''}
           </div>
-        </div>
-      </div>`;
-    }).join('');
+        </div>`;
+      }).join('') + '</div>';
 
     container.innerHTML='';
     const item=document.createElement('div'); item.className='review-queue-item';
