@@ -998,7 +998,7 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
 </footer>
 
 <script type="module">
-console.log('%c[sf-knowledge-hub / index.html] ✅ v202604171010 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
+console.log('%c[sf-knowledge-hub / index.html] ✅ v202604301001 — loaded from GitHub Pages', 'color:#60a5fa;font-weight:bold;');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
@@ -3557,8 +3557,6 @@ ${revSignedInBar()}
   </div>
 </div>
 ${revSignInScript(slug, moduleId, courseId)}
-${revReviewerScript(sectionsJs, sectionQuestions)}
-${revFirebaseScript(slug, moduleId, courseId)}
 <script>
 const HUB_URL = '${hubUrl}';
 const SECTION_COUNT = ${sectionCount};
@@ -3577,6 +3575,8 @@ function submitModuleComplete() {
   setTimeout(() => { window.location.href = HUB_URL; }, 1200);
 }
 <\/script>
+${revReviewerScript(sectionsJs, sectionQuestions)}
+${revFirebaseScript(slug, moduleId, courseId)}
 </body>
 </html>`;
 }
