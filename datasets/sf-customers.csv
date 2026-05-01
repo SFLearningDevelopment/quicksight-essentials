@@ -1,0 +1,501 @@
+customer_id,customer_name,segment,region,signup_date,lifetime_value
+CUST-00001,Vertex Corp #001,Enterprise,North America,2023-04-03,117210.29
+CUST-00002,Hooli Systems #002,Enterprise,North America,2022-03-03,102357.26
+CUST-00003,Wonka Systems #003,Mid-Market,EMEA,2026-01-06,94187.52
+CUST-00004,Stonebridge Industries #004,Enterprise,EMEA,2022-01-14,317853.59
+CUST-00005,Soylent Industries #005,Mid-Market,North America,2023-11-21,35038.71
+CUST-00006,Pearson Corp #006,Mid-Market,North America,2023-06-26,111169.85
+CUST-00007,Lumina Partners #007,Mid-Market,LATAM,2024-02-15,32510.42
+CUST-00008,Vandelay Solutions #008,SMB,North America,2023-01-29,20018.75
+CUST-00009,Initech Ltd #009,SMB,LATAM,2023-04-22,23516.05
+CUST-00010,Pearson Group #010,Mid-Market,APAC,2022-11-30,63979.54
+CUST-00011,Black Mesa Group #011,SMB,EMEA,2022-05-27,17957.23
+CUST-00012,Soylent Systems #012,SMB,North America,2024-02-17,10630.87
+CUST-00013,Vertex Systems #013,Enterprise,North America,2022-04-25,146211.58
+CUST-00014,Initech Holdings #014,Mid-Market,North America,2025-03-07,118647.7
+CUST-00015,Spacely Ltd #015,SMB,North America,2025-08-09,14711.2
+CUST-00016,LexCorp LLC #016,Enterprise,EMEA,2023-06-23,314032.47
+CUST-00017,Clampett Solutions #017,Mid-Market,North America,2022-10-11,79028.84
+CUST-00018,Stark Inc #018,SMB,North America,2022-11-24,21908.91
+CUST-00019,Clampett Solutions #019,Enterprise,North America,2024-08-16,243433.05
+CUST-00020,Brightspark Inc #020,SMB,North America,2025-01-04,21018.96
+CUST-00021,Summit Holdings #021,Enterprise,North America,2024-07-18,73051.48
+CUST-00022,Lumina Group #022,Government,APAC,2024-11-05,183845.71
+CUST-00023,Vertex Group #023,SMB,EMEA,2023-02-12,8101.33
+CUST-00024,Pinnacle LLC #024,Mid-Market,APAC,2024-12-22,123197.3
+CUST-00025,Atlas Holdings #025,Mid-Market,North America,2024-01-14,118901.96
+CUST-00026,Pendant Ltd #026,Enterprise,APAC,2022-06-11,99751.72
+CUST-00027,Redwood Corp #027,Government,EMEA,2022-09-15,56799.42
+CUST-00028,Kingfisher Systems #028,Enterprise,EMEA,2025-05-27,209096.69
+CUST-00029,Black Mesa Systems #029,SMB,EMEA,2025-12-31,11533.07
+CUST-00030,Zenith Holdings #030,Mid-Market,EMEA,2022-09-05,50773.81
+CUST-00031,Wayne Holdings #031,Enterprise,EMEA,2025-04-20,143350.43
+CUST-00032,Wayne Inc #032,Enterprise,APAC,2023-11-08,94957.78
+CUST-00033,Oscorp Group #033,SMB,North America,2022-09-28,20424.42
+CUST-00034,Solstice Solutions #034,Mid-Market,APAC,2024-04-13,44564.27
+CUST-00035,Hooli Industries #035,Mid-Market,North America,2026-02-02,29850.49
+CUST-00036,Apex Corp #036,Enterprise,EMEA,2022-08-12,152564.65
+CUST-00037,Aperture Systems #037,Mid-Market,North America,2023-07-25,73963.83
+CUST-00038,Wayne Partners #038,SMB,APAC,2022-07-20,5892.71
+CUST-00039,Stonebridge Inc #039,Government,APAC,2023-04-30,62942.4
+CUST-00040,Redwood Partners #040,Enterprise,North America,2022-05-01,125342.43
+CUST-00041,Acme Industries #041,Enterprise,APAC,2024-07-20,164420.75
+CUST-00042,Nimbus Systems #042,SMB,EMEA,2023-01-24,11208.89
+CUST-00043,Umbrella Solutions #043,SMB,North America,2023-10-05,6034.77
+CUST-00044,Helix Partners #044,Mid-Market,APAC,2022-11-19,30142.99
+CUST-00045,Maplewood Corp #045,SMB,North America,2022-05-20,19384.59
+CUST-00046,Oscorp Industries #046,Enterprise,APAC,2023-05-20,259569.77
+CUST-00047,Initech Solutions #047,Enterprise,EMEA,2025-03-03,241381.6
+CUST-00048,LexCorp Ltd #048,SMB,North America,2023-06-28,13348.97
+CUST-00049,Zenith Group #049,Mid-Market,APAC,2022-05-29,25006.07
+CUST-00050,Polaris Solutions #050,Government,North America,2023-03-13,117953.32
+CUST-00051,Cyberdyne Holdings #051,SMB,APAC,2024-01-27,10955.73
+CUST-00052,Pemberley Systems #052,SMB,EMEA,2025-09-01,16225.12
+CUST-00053,Zenith Systems #053,Enterprise,EMEA,2022-10-03,157686.96
+CUST-00054,Hooli Systems #054,Enterprise,North America,2023-03-08,304506.35
+CUST-00055,Black Mesa Group #055,Mid-Market,North America,2022-04-15,33968.23
+CUST-00056,Clampett Group #056,Enterprise,North America,2022-09-25,278424.73
+CUST-00057,LexCorp LLC #057,SMB,EMEA,2024-05-25,16915.59
+CUST-00058,Pied Piper Corp #058,Government,EMEA,2022-11-02,124385.63
+CUST-00059,Sterling Solutions #059,Mid-Market,North America,2022-03-27,57291.9
+CUST-00060,Initech Holdings #060,Enterprise,North America,2022-07-30,186591.88
+CUST-00061,Brightspark Industries #061,Government,EMEA,2023-04-30,176066.12
+CUST-00062,Tyrell Industries #062,Enterprise,EMEA,2023-11-12,325493.22
+CUST-00063,Cogswell Ltd #063,Enterprise,APAC,2022-08-10,195943.52
+CUST-00064,Initech Partners #064,Enterprise,APAC,2024-07-31,185289.33
+CUST-00065,Wonka Ltd #065,Enterprise,North America,2023-11-04,162267.39
+CUST-00066,Wayne Group #066,Mid-Market,EMEA,2025-10-23,129964.17
+CUST-00067,Stonebridge Holdings #067,Government,North America,2023-06-19,64927.99
+CUST-00068,LexCorp Inc #068,Enterprise,North America,2026-02-01,326802.73
+CUST-00069,Clampett Solutions #069,Government,North America,2025-03-26,66792.76
+CUST-00070,Initech Industries #070,Enterprise,APAC,2025-01-07,294541.72
+CUST-00071,Synergy Ltd #071,Mid-Market,North America,2025-09-22,123443.25
+CUST-00072,Polaris Holdings #072,SMB,North America,2023-09-08,15753.85
+CUST-00073,Zenith Industries #073,Mid-Market,EMEA,2025-02-09,37747.08
+CUST-00074,Cogswell Industries #074,SMB,APAC,2025-06-14,17092.67
+CUST-00075,Nakatomi Systems #075,SMB,North America,2023-03-07,14085.58
+CUST-00076,Helix Solutions #076,SMB,EMEA,2024-06-24,19393.55
+CUST-00077,Maplewood Partners #077,SMB,LATAM,2026-02-16,8465.33
+CUST-00078,Stark Group #078,Mid-Market,EMEA,2023-11-18,34085.82
+CUST-00079,Pinnacle Ltd #079,SMB,North America,2023-02-12,7982.85
+CUST-00080,Initech Ltd #080,Government,EMEA,2022-05-30,109777.42
+CUST-00081,Vertex Solutions #081,Enterprise,EMEA,2024-10-09,201487.53
+CUST-00082,Massive Dynamic Inc #082,SMB,APAC,2022-08-07,21613.88
+CUST-00083,Wonka LLC #083,SMB,EMEA,2024-08-09,5884.72
+CUST-00084,Oscorp Corp #084,Mid-Market,APAC,2025-09-29,81362.24
+CUST-00085,Brightspark Solutions #085,Mid-Market,APAC,2024-06-25,90166.45
+CUST-00086,Lumina Systems #086,Mid-Market,APAC,2024-07-02,120898.48
+CUST-00087,Synergy Partners #087,Mid-Market,APAC,2025-07-29,53949.63
+CUST-00088,Summit Systems #088,Mid-Market,North America,2024-06-19,32368.2
+CUST-00089,Vandelay Ltd #089,Enterprise,North America,2025-01-11,98107.16
+CUST-00090,Massive Dynamic Ltd #090,Mid-Market,North America,2023-03-15,30936.72
+CUST-00091,Cogswell Holdings #091,Mid-Market,North America,2023-02-28,113952.25
+CUST-00092,Pearson Solutions #092,Government,North America,2025-03-25,97621.73
+CUST-00093,Acme Holdings #093,Enterprise,North America,2024-05-08,246383.46
+CUST-00094,Synergy Systems #094,SMB,APAC,2024-09-26,9539.51
+CUST-00095,Clampett Partners #095,Enterprise,North America,2025-10-22,330598.11
+CUST-00096,Lumina LLC #096,SMB,APAC,2025-06-28,16337.07
+CUST-00097,Nakatomi Solutions #097,Mid-Market,North America,2025-08-09,70290.18
+CUST-00098,Bluebird LLC #098,Enterprise,North America,2023-03-10,219322.58
+CUST-00099,Bluth Industries #099,Enterprise,LATAM,2024-05-13,153735.98
+CUST-00100,Stark Partners #100,Enterprise,EMEA,2023-12-18,144647.98
+CUST-00101,Wayne Inc #101,SMB,APAC,2023-02-13,22927.34
+CUST-00102,Polaris LLC #102,Enterprise,EMEA,2022-08-23,254726.14
+CUST-00103,Black Mesa Partners #103,SMB,APAC,2022-12-10,17887.28
+CUST-00104,Synergy Corp #104,SMB,North America,2023-09-30,7134.93
+CUST-00105,Globex Group #105,Mid-Market,APAC,2024-02-08,66838.68
+CUST-00106,Quantum Ltd #106,Enterprise,EMEA,2025-07-08,150683.2
+CUST-00107,Nimbus Group #107,SMB,EMEA,2022-09-05,21998.51
+CUST-00108,Solstice Inc #108,Mid-Market,North America,2024-01-29,31447.33
+CUST-00109,Apex Holdings #109,Enterprise,North America,2024-09-30,106194.59
+CUST-00110,Sterling Partners #110,SMB,North America,2026-02-11,16069.73
+CUST-00111,Apex Group #111,Mid-Market,APAC,2024-09-17,74206.37
+CUST-00112,Lumina Solutions #112,Enterprise,APAC,2022-06-27,162372.75
+CUST-00113,Pemberley Ltd #113,SMB,EMEA,2025-09-30,12986.17
+CUST-00114,Globex Partners #114,SMB,North America,2023-03-11,12464.22
+CUST-00115,LexCorp Holdings #115,Enterprise,EMEA,2023-07-20,252076.29
+CUST-00116,Ironhold Ltd #116,Enterprise,EMEA,2024-09-27,251877.09
+CUST-00117,Oscorp Partners #117,Mid-Market,EMEA,2022-02-05,34049.76
+CUST-00118,Wonka Industries #118,SMB,North America,2025-04-06,12770.84
+CUST-00119,Brightspark Systems #119,Mid-Market,LATAM,2025-02-01,59725.46
+CUST-00120,Nimbus Partners #120,Enterprise,North America,2022-09-05,305696.12
+CUST-00121,Spacely Corp #121,SMB,LATAM,2025-11-14,8799.24
+CUST-00122,Black Mesa Partners #122,Enterprise,EMEA,2024-12-10,265360.2
+CUST-00123,Hooli Ltd #123,Enterprise,North America,2023-09-12,76584.07
+CUST-00124,Stonebridge LLC #124,Enterprise,LATAM,2025-02-07,166652.27
+CUST-00125,Cyberdyne Partners #125,Enterprise,North America,2023-08-06,224084.61
+CUST-00126,Pemberley Holdings #126,Enterprise,North America,2024-09-05,108964.23
+CUST-00127,Wayne Industries #127,Mid-Market,EMEA,2025-11-06,29789.78
+CUST-00128,Massive Dynamic Solutions #128,Government,North America,2023-05-24,55189.15
+CUST-00129,Pinnacle Industries #129,Mid-Market,APAC,2023-04-08,107774.9
+CUST-00130,Pearson Partners #130,Government,North America,2025-04-20,196385.06
+CUST-00131,Pendant Solutions #131,Mid-Market,EMEA,2026-02-24,34717.23
+CUST-00132,Pinnacle Ltd #132,Mid-Market,North America,2022-06-16,40962.17
+CUST-00133,Tyrell Systems #133,Enterprise,North America,2024-07-11,295356.25
+CUST-00134,Kingfisher Group #134,Enterprise,North America,2023-08-03,299767.97
+CUST-00135,Bluebird Corp #135,SMB,APAC,2025-07-04,17539.46
+CUST-00136,Aperture Industries #136,Enterprise,North America,2022-11-02,366325.31
+CUST-00137,Massive Dynamic Corp #137,Enterprise,APAC,2025-05-03,314662.3
+CUST-00138,Solstice Group #138,Mid-Market,EMEA,2023-09-15,99571.24
+CUST-00139,Gringotts Systems #139,Mid-Market,North America,2025-05-09,28304.96
+CUST-00140,Clampett Holdings #140,Mid-Market,North America,2023-04-14,127886.4
+CUST-00141,Solstice Solutions #141,Government,LATAM,2025-10-08,169070.24
+CUST-00142,Solstice Inc #142,SMB,North America,2024-11-28,18872.6
+CUST-00143,Gringotts LLC #143,Government,North America,2024-10-04,192986.95
+CUST-00144,Kingfisher Holdings #144,Mid-Market,North America,2022-08-03,116635.17
+CUST-00145,Bluth Industries #145,SMB,North America,2024-03-31,22373.03
+CUST-00146,Brightspark Inc #146,Mid-Market,North America,2023-10-25,36519.53
+CUST-00147,Summit Industries #147,SMB,APAC,2022-01-03,19005.46
+CUST-00148,Stonebridge Partners #148,Mid-Market,North America,2024-01-11,91244.46
+CUST-00149,Redwood Partners #149,SMB,North America,2025-01-29,7629.89
+CUST-00150,Vandelay Partners #150,SMB,EMEA,2022-03-01,25819.97
+CUST-00151,Atlas Ltd #151,SMB,North America,2022-01-29,16728.63
+CUST-00152,Stark Ltd #152,Government,APAC,2024-08-03,189423.84
+CUST-00153,Apex LLC #153,Mid-Market,EMEA,2024-11-08,100184.46
+CUST-00154,Cogswell Partners #154,Government,North America,2025-02-02,59432.0
+CUST-00155,Aperture Solutions #155,Mid-Market,APAC,2022-05-23,53834.72
+CUST-00156,Cogswell Holdings #156,Government,EMEA,2022-01-06,81819.92
+CUST-00157,Pendant Solutions #157,Mid-Market,EMEA,2022-11-01,72227.12
+CUST-00158,Kingfisher Holdings #158,Mid-Market,APAC,2024-02-12,73177.22
+CUST-00159,Spacely Ltd #159,Government,North America,2024-02-24,73837.12
+CUST-00160,Summit Industries #160,Enterprise,EMEA,2025-12-15,367951.37
+CUST-00161,Pearson Industries #161,Government,APAC,2025-08-28,194892.54
+CUST-00162,Redwood Inc #162,Enterprise,LATAM,2023-11-11,353782.9
+CUST-00163,Pemberley Corp #163,Mid-Market,EMEA,2026-01-19,39568.78
+CUST-00164,Apex LLC #164,Enterprise,APAC,2023-06-27,181693.84
+CUST-00165,Nimbus Industries #165,Mid-Market,APAC,2025-10-13,116808.96
+CUST-00166,Pearson Holdings #166,Mid-Market,APAC,2024-09-26,118217.37
+CUST-00167,Initech Solutions #167,Enterprise,EMEA,2023-08-12,395166.0
+CUST-00168,Synergy Corp #168,Mid-Market,North America,2025-07-21,100020.21
+CUST-00169,Hooli Partners #169,Enterprise,North America,2022-03-01,86901.07
+CUST-00170,Umbrella Group #170,Mid-Market,North America,2023-05-16,81365.96
+CUST-00171,Solstice LLC #171,Enterprise,North America,2024-02-23,272786.16
+CUST-00172,Oscorp Partners #172,Government,North America,2024-08-02,139340.55
+CUST-00173,Bluebird Group #173,SMB,APAC,2024-08-10,24266.12
+CUST-00174,Catalyst Systems #174,Enterprise,North America,2023-12-09,391999.15
+CUST-00175,Pendant Industries #175,SMB,EMEA,2023-09-11,9103.09
+CUST-00176,Pearson Partners #176,Enterprise,North America,2024-01-06,258239.07
+CUST-00177,Nimbus Group #177,Enterprise,APAC,2024-03-21,160931.64
+CUST-00178,Solstice Inc #178,Government,EMEA,2023-08-10,161670.04
+CUST-00179,Wonka Solutions #179,SMB,North America,2023-01-25,18211.25
+CUST-00180,Catalyst LLC #180,Mid-Market,APAC,2025-08-16,28257.64
+CUST-00181,Pemberley Inc #181,Mid-Market,EMEA,2022-07-04,122239.8
+CUST-00182,Spacely Industries #182,Enterprise,North America,2025-01-09,355973.23
+CUST-00183,Sterling Systems #183,Mid-Market,North America,2022-12-03,51752.77
+CUST-00184,Kingfisher Group #184,SMB,North America,2022-08-24,14915.96
+CUST-00185,Wayne LLC #185,SMB,North America,2025-10-17,20443.08
+CUST-00186,Nakatomi Systems #186,Mid-Market,APAC,2022-01-29,52561.53
+CUST-00187,Pied Piper Partners #187,Mid-Market,EMEA,2023-06-21,87132.49
+CUST-00188,Vertex Holdings #188,Enterprise,North America,2022-02-21,272733.18
+CUST-00189,Brightspark Holdings #189,Government,North America,2022-05-10,138935.44
+CUST-00190,Bluebird Group #190,Mid-Market,North America,2022-04-03,126196.25
+CUST-00191,Pendant Partners #191,Enterprise,North America,2025-01-05,115955.15
+CUST-00192,Bluebird Holdings #192,SMB,EMEA,2025-01-11,13853.14
+CUST-00193,Synergy LLC #193,SMB,EMEA,2024-09-29,18098.09
+CUST-00194,Gringotts Inc #194,SMB,North America,2024-06-29,25331.99
+CUST-00195,Sterling Corp #195,Government,North America,2025-08-13,94105.16
+CUST-00196,Nakatomi Group #196,Enterprise,North America,2024-07-20,101702.19
+CUST-00197,Black Mesa Solutions #197,Government,North America,2023-11-15,75458.16
+CUST-00198,Cyberdyne Solutions #198,Enterprise,APAC,2025-02-09,139118.99
+CUST-00199,Black Mesa Ltd #199,Mid-Market,North America,2025-05-05,24306.24
+CUST-00200,Massive Dynamic LLC #200,Mid-Market,APAC,2022-08-14,95394.23
+CUST-00201,Globex LLC #201,Enterprise,APAC,2023-05-03,262788.35
+CUST-00202,Globex LLC #202,Enterprise,North America,2024-05-12,242451.71
+CUST-00203,Synergy Corp #203,Mid-Market,APAC,2024-11-17,88115.93
+CUST-00204,Pemberley Systems #204,Enterprise,EMEA,2026-01-29,325765.55
+CUST-00205,Zenith Systems #205,Mid-Market,EMEA,2022-03-05,30569.14
+CUST-00206,Kingfisher Industries #206,Mid-Market,North America,2025-12-29,122247.69
+CUST-00207,Wayne Corp #207,Mid-Market,North America,2022-09-16,53701.73
+CUST-00208,Vertex Solutions #208,Mid-Market,North America,2025-05-08,81300.14
+CUST-00209,Bluebird Systems #209,Mid-Market,North America,2025-12-08,36356.72
+CUST-00210,Apex Systems #210,SMB,North America,2024-07-13,23982.77
+CUST-00211,Cogswell Holdings #211,SMB,North America,2026-02-03,6853.85
+CUST-00212,Clampett Holdings #212,SMB,North America,2022-11-09,19635.33
+CUST-00213,Kingfisher Corp #213,Enterprise,North America,2024-06-03,103286.88
+CUST-00214,Synergy Holdings #214,SMB,EMEA,2025-04-16,25463.09
+CUST-00215,Brightspark Holdings #215,SMB,North America,2025-09-24,25128.41
+CUST-00216,Clampett Inc #216,Government,EMEA,2023-12-22,52783.29
+CUST-00217,Maplewood Ltd #217,Enterprise,EMEA,2022-08-10,185436.93
+CUST-00218,Brightspark Holdings #218,Enterprise,North America,2023-04-09,333539.72
+CUST-00219,Brightspark Solutions #219,Mid-Market,EMEA,2022-02-23,89771.45
+CUST-00220,Zenith Group #220,Enterprise,North America,2023-09-25,370578.16
+CUST-00221,Dunder Mifflin Inc #221,Enterprise,North America,2025-09-08,201854.13
+CUST-00222,Massive Dynamic Inc #222,Enterprise,EMEA,2024-02-10,208025.73
+CUST-00223,Bluth LLC #223,Mid-Market,EMEA,2025-03-08,88392.17
+CUST-00224,Umbrella LLC #224,Enterprise,EMEA,2025-10-12,98432.41
+CUST-00225,Pemberley Industries #225,Mid-Market,North America,2023-07-14,47281.45
+CUST-00226,Maplewood Corp #226,Mid-Market,North America,2025-10-20,97276.52
+CUST-00227,Redwood Systems #227,SMB,North America,2024-03-20,26064.03
+CUST-00228,Umbrella Inc #228,Enterprise,APAC,2022-10-09,319588.13
+CUST-00229,Vandelay Holdings #229,Enterprise,EMEA,2024-05-31,128925.12
+CUST-00230,Pearson Systems #230,SMB,EMEA,2025-09-30,22213.92
+CUST-00231,Wayne Industries #231,SMB,North America,2022-02-08,14730.69
+CUST-00232,Wayne Holdings #232,Mid-Market,EMEA,2025-12-24,93135.3
+CUST-00233,Vandelay Corp #233,Mid-Market,LATAM,2022-12-18,110542.79
+CUST-00234,Polaris Partners #234,SMB,APAC,2022-06-30,14232.97
+CUST-00235,Hooli Ltd #235,Mid-Market,North America,2022-06-11,66742.8
+CUST-00236,Pendant Holdings #236,Enterprise,APAC,2022-06-06,237396.58
+CUST-00237,Pied Piper Systems #237,Mid-Market,APAC,2023-12-17,61918.77
+CUST-00238,Apex LLC #238,Enterprise,North America,2023-02-09,128213.68
+CUST-00239,Massive Dynamic Corp #239,Enterprise,APAC,2024-10-08,222320.79
+CUST-00240,Solstice Solutions #240,Mid-Market,APAC,2025-03-02,93443.12
+CUST-00241,Polaris Holdings #241,SMB,EMEA,2022-11-06,14298.88
+CUST-00242,Kingfisher Partners #242,Mid-Market,APAC,2025-04-26,30066.59
+CUST-00243,Maplewood Corp #243,Mid-Market,EMEA,2022-04-27,63823.66
+CUST-00244,Vandelay Corp #244,Mid-Market,LATAM,2022-07-04,90420.91
+CUST-00245,Maplewood Industries #245,Mid-Market,EMEA,2026-02-22,120754.69
+CUST-00246,Pemberley Solutions #246,SMB,North America,2024-09-01,15629.53
+CUST-00247,Umbrella Partners #247,Enterprise,APAC,2023-12-05,390292.93
+CUST-00248,Stark Systems #248,Mid-Market,North America,2025-12-20,71277.89
+CUST-00249,Pemberley Systems #249,Mid-Market,North America,2024-02-03,123137.17
+CUST-00250,Pearson Industries #250,SMB,EMEA,2022-04-18,21847.3
+CUST-00251,Apex Holdings #251,Enterprise,North America,2025-10-21,197246.8
+CUST-00252,LexCorp Solutions #252,SMB,North America,2025-04-08,19134.02
+CUST-00253,Dunder Mifflin Group #253,Government,EMEA,2024-03-13,56890.17
+CUST-00254,Quantum Corp #254,Mid-Market,North America,2023-11-04,111823.96
+CUST-00255,Zenith Systems #255,Enterprise,EMEA,2024-11-07,189232.3
+CUST-00256,Sterling Group #256,Enterprise,North America,2024-09-22,134209.7
+CUST-00257,Cyberdyne LLC #257,Enterprise,APAC,2022-07-27,236491.47
+CUST-00258,Stonebridge Systems #258,Enterprise,North America,2025-06-19,114459.89
+CUST-00259,Pearson LLC #259,Enterprise,APAC,2025-07-03,334130.17
+CUST-00260,Soylent Partners #260,Enterprise,North America,2026-01-13,148959.79
+CUST-00261,Pemberley Solutions #261,Enterprise,EMEA,2024-07-08,147816.95
+CUST-00262,Oscorp Group #262,Government,APAC,2023-02-02,95590.24
+CUST-00263,Solstice Partners #263,Mid-Market,North America,2024-02-22,78313.92
+CUST-00264,Cogswell LLC #264,SMB,APAC,2022-10-11,23656.84
+CUST-00265,Umbrella Partners #265,SMB,EMEA,2022-07-30,20166.26
+CUST-00266,Ironhold Corp #266,Enterprise,APAC,2023-07-13,217579.43
+CUST-00267,Maplewood LLC #267,SMB,North America,2023-03-31,22440.79
+CUST-00268,Dunder Mifflin Inc #268,Mid-Market,North America,2024-02-05,49464.03
+CUST-00269,Stark Holdings #269,Enterprise,North America,2022-07-22,343893.12
+CUST-00270,Apex Holdings #270,SMB,North America,2023-08-11,24615.76
+CUST-00271,Kingfisher LLC #271,SMB,EMEA,2025-06-14,4913.43
+CUST-00272,Stark Inc #272,Enterprise,APAC,2025-01-28,376633.21
+CUST-00273,Atlas Systems #273,Mid-Market,APAC,2023-05-02,56524.33
+CUST-00274,Umbrella Ltd #274,Mid-Market,APAC,2024-07-25,30783.17
+CUST-00275,Redwood Solutions #275,Mid-Market,EMEA,2025-03-23,50129.32
+CUST-00276,Massive Dynamic Group #276,Mid-Market,EMEA,2023-05-08,85631.68
+CUST-00277,Tyrell Corp #277,Mid-Market,North America,2024-12-13,82760.85
+CUST-00278,Maplewood Systems #278,Enterprise,APAC,2022-03-31,277957.34
+CUST-00279,Sterling Group #279,SMB,North America,2022-05-19,12247.73
+CUST-00280,Lumina Corp #280,SMB,EMEA,2023-11-12,7681.65
+CUST-00281,Dunder Mifflin Systems #281,Mid-Market,EMEA,2025-11-03,74179.27
+CUST-00282,Nimbus Partners #282,Mid-Market,APAC,2022-05-10,101332.87
+CUST-00283,Bluebird Inc #283,Enterprise,North America,2023-02-13,358996.08
+CUST-00284,Spacely Group #284,Mid-Market,LATAM,2025-01-17,75127.17
+CUST-00285,Initech Ltd #285,Enterprise,APAC,2022-04-08,352518.64
+CUST-00286,Bluth Group #286,Enterprise,North America,2024-03-30,312831.7
+CUST-00287,Pearson Holdings #287,Government,EMEA,2024-10-15,95510.2
+CUST-00288,Ironhold Group #288,SMB,EMEA,2022-06-11,14101.11
+CUST-00289,Tyrell Systems #289,Enterprise,North America,2023-11-03,286137.83
+CUST-00290,Pendant Partners #290,Mid-Market,North America,2025-11-13,71942.11
+CUST-00291,Pemberley Inc #291,SMB,APAC,2025-06-13,26360.05
+CUST-00292,Gringotts Inc #292,Enterprise,EMEA,2024-01-15,238239.87
+CUST-00293,Synergy LLC #293,Government,North America,2025-05-29,145850.4
+CUST-00294,Pemberley Inc #294,Enterprise,North America,2025-08-14,190690.43
+CUST-00295,Pearson Solutions #295,Enterprise,North America,2024-07-10,379418.82
+CUST-00296,Sterling Partners #296,SMB,EMEA,2024-12-20,12726.12
+CUST-00297,Spacely Group #297,Enterprise,North America,2026-02-15,132279.57
+CUST-00298,Ironhold Industries #298,Government,North America,2023-06-18,150054.13
+CUST-00299,Black Mesa Solutions #299,Enterprise,APAC,2024-10-02,136857.78
+CUST-00300,Cyberdyne Corp #300,Mid-Market,APAC,2024-06-30,131704.34
+CUST-00301,Catalyst Holdings #301,SMB,EMEA,2025-01-31,16510.9
+CUST-00302,Pendant LLC #302,SMB,APAC,2025-07-30,8560.37
+CUST-00303,Sterling Systems #303,Enterprise,LATAM,2022-10-12,148702.52
+CUST-00304,Redwood Inc #304,Mid-Market,EMEA,2024-08-15,110795.47
+CUST-00305,Brightspark LLC #305,Mid-Market,North America,2023-09-26,67001.28
+CUST-00306,Quantum Partners #306,Mid-Market,APAC,2025-03-23,31965.08
+CUST-00307,Spacely Corp #307,Mid-Market,EMEA,2023-12-07,37860.14
+CUST-00308,Summit Systems #308,Mid-Market,North America,2022-09-22,70722.77
+CUST-00309,Umbrella Corp #309,Mid-Market,North America,2022-11-28,58847.36
+CUST-00310,Quantum Ltd #310,Mid-Market,APAC,2023-08-05,115360.84
+CUST-00311,LexCorp Ltd #311,Mid-Market,EMEA,2022-09-14,91502.42
+CUST-00312,Polaris Systems #312,Enterprise,EMEA,2025-04-27,377080.66
+CUST-00313,Massive Dynamic LLC #313,SMB,EMEA,2025-05-24,12092.58
+CUST-00314,Solstice Inc #314,SMB,North America,2022-04-04,25288.61
+CUST-00315,Summit Solutions #315,Enterprise,North America,2025-03-17,206974.12
+CUST-00316,Vertex Inc #316,Mid-Market,EMEA,2023-08-17,93325.99
+CUST-00317,Pendant Partners #317,Enterprise,APAC,2024-04-11,168368.57
+CUST-00318,Wayne Inc #318,Enterprise,North America,2024-08-09,138103.46
+CUST-00319,Atlas LLC #319,Mid-Market,EMEA,2026-02-12,130706.52
+CUST-00320,Dunder Mifflin Industries #320,Enterprise,North America,2025-02-24,106403.59
+CUST-00321,Oscorp Partners #321,Enterprise,North America,2022-10-16,103366.98
+CUST-00322,Vandelay Industries #322,SMB,North America,2022-11-24,22371.12
+CUST-00323,Solstice Holdings #323,Enterprise,North America,2024-11-20,223248.1
+CUST-00324,Pendant Partners #324,Enterprise,APAC,2024-11-01,220142.73
+CUST-00325,Oscorp Ltd #325,Mid-Market,North America,2023-07-31,77448.57
+CUST-00326,Apex Partners #326,Enterprise,North America,2022-08-09,211620.6
+CUST-00327,LexCorp Holdings #327,SMB,North America,2024-03-31,5905.01
+CUST-00328,Brightspark Ltd #328,Mid-Market,North America,2024-03-02,78459.6
+CUST-00329,Pinnacle Systems #329,Enterprise,LATAM,2025-10-25,269977.98
+CUST-00330,Cyberdyne Corp #330,Mid-Market,APAC,2023-11-26,84245.84
+CUST-00331,Sterling LLC #331,Enterprise,EMEA,2024-10-21,85042.59
+CUST-00332,Initech LLC #332,SMB,APAC,2024-11-29,14670.95
+CUST-00333,Atlas Systems #333,Enterprise,APAC,2023-10-15,124650.66
+CUST-00334,Polaris Group #334,Mid-Market,EMEA,2024-11-09,81492.7
+CUST-00335,Quantum Solutions #335,Enterprise,APAC,2024-01-25,179321.63
+CUST-00336,Pied Piper Industries #336,Mid-Market,APAC,2026-01-25,118186.7
+CUST-00337,Vertex Inc #337,Mid-Market,North America,2025-09-04,108553.63
+CUST-00338,Summit Solutions #338,Mid-Market,EMEA,2025-04-10,75888.47
+CUST-00339,Ironhold Solutions #339,SMB,North America,2025-10-26,10031.45
+CUST-00340,Solstice Corp #340,Enterprise,North America,2024-05-07,121063.73
+CUST-00341,Nimbus Ltd #341,Mid-Market,APAC,2024-08-23,118264.31
+CUST-00342,Synergy Inc #342,SMB,EMEA,2025-02-22,11821.07
+CUST-00343,Zenith Partners #343,Mid-Market,North America,2022-12-21,73643.66
+CUST-00344,Stonebridge Holdings #344,Mid-Market,EMEA,2026-01-16,97520.56
+CUST-00345,Nimbus Group #345,Mid-Market,North America,2023-05-20,54132.69
+CUST-00346,Pendant Ltd #346,Government,LATAM,2023-08-15,150193.95
+CUST-00347,Nimbus Partners #347,Mid-Market,North America,2026-01-17,53533.41
+CUST-00348,Pied Piper Solutions #348,SMB,North America,2024-03-19,22476.95
+CUST-00349,Summit LLC #349,Enterprise,North America,2026-01-02,97605.54
+CUST-00350,Pemberley Group #350,SMB,North America,2025-01-08,10656.47
+CUST-00351,Brightspark Group #351,Enterprise,EMEA,2025-04-16,149527.39
+CUST-00352,Umbrella Systems #352,Enterprise,North America,2022-07-25,205909.64
+CUST-00353,Quantum Partners #353,Enterprise,APAC,2022-01-11,384504.08
+CUST-00354,Soylent Industries #354,SMB,APAC,2024-09-01,15112.89
+CUST-00355,Aperture Group #355,Mid-Market,EMEA,2022-07-03,94448.26
+CUST-00356,Wonka Systems #356,SMB,APAC,2022-03-18,24525.76
+CUST-00357,Tyrell Industries #357,SMB,North America,2022-03-16,26338.91
+CUST-00358,Nakatomi Partners #358,Enterprise,EMEA,2023-08-16,356064.79
+CUST-00359,Acme Group #359,Mid-Market,North America,2023-11-18,54732.66
+CUST-00360,Apex Systems #360,Mid-Market,APAC,2022-10-02,115914.45
+CUST-00361,Bluebird Group #361,Enterprise,North America,2022-11-29,308882.63
+CUST-00362,Apex Group #362,SMB,North America,2023-11-22,21880.58
+CUST-00363,Solstice Ltd #363,Enterprise,APAC,2024-04-10,339944.7
+CUST-00364,Maplewood Holdings #364,Enterprise,EMEA,2023-01-14,390066.0
+CUST-00365,Kingfisher Holdings #365,Government,North America,2024-02-25,74154.44
+CUST-00366,Pinnacle Group #366,Government,North America,2026-01-20,128806.13
+CUST-00367,LexCorp Holdings #367,SMB,North America,2022-08-31,14852.53
+CUST-00368,Soylent Industries #368,SMB,APAC,2025-12-11,21428.57
+CUST-00369,Nimbus Corp #369,Mid-Market,APAC,2024-01-23,90379.55
+CUST-00370,Wonka LLC #370,Mid-Market,EMEA,2025-05-25,64351.48
+CUST-00371,Nimbus Systems #371,Government,APAC,2025-09-22,169747.77
+CUST-00372,Pinnacle Ltd #372,SMB,EMEA,2022-06-17,16150.94
+CUST-00373,Ironhold Holdings #373,Enterprise,EMEA,2022-05-07,340522.79
+CUST-00374,Maplewood Ltd #374,Mid-Market,North America,2023-11-03,116284.49
+CUST-00375,Pemberley Corp #375,SMB,EMEA,2024-09-28,6764.34
+CUST-00376,Maplewood Partners #376,SMB,EMEA,2024-11-17,13773.17
+CUST-00377,Solstice Inc #377,Mid-Market,EMEA,2023-09-24,102114.25
+CUST-00378,Nakatomi Group #378,SMB,EMEA,2025-03-30,6377.44
+CUST-00379,Clampett Holdings #379,SMB,EMEA,2022-05-04,24986.99
+CUST-00380,Wayne Partners #380,Enterprise,North America,2022-10-05,320128.17
+CUST-00381,Lumina Industries #381,Mid-Market,APAC,2024-07-07,117918.99
+CUST-00382,Pearson Industries #382,Enterprise,LATAM,2025-01-09,115088.7
+CUST-00383,Dunder Mifflin Corp #383,Enterprise,EMEA,2024-12-19,113260.46
+CUST-00384,Wonka Inc #384,SMB,LATAM,2024-08-06,19347.6
+CUST-00385,Stonebridge Industries #385,Mid-Market,APAC,2023-05-22,73747.53
+CUST-00386,Massive Dynamic Group #386,Enterprise,APAC,2022-08-20,82438.41
+CUST-00387,Zenith Industries #387,Mid-Market,APAC,2022-02-02,49991.96
+CUST-00388,Wayne Corp #388,Mid-Market,North America,2025-10-08,99954.92
+CUST-00389,Umbrella Ltd #389,SMB,North America,2023-04-25,16458.81
+CUST-00390,Pinnacle Inc #390,Enterprise,LATAM,2023-04-25,336314.75
+CUST-00391,Lumina Solutions #391,Mid-Market,EMEA,2025-10-09,112385.31
+CUST-00392,Oscorp Group #392,SMB,LATAM,2024-12-03,9574.52
+CUST-00393,Pendant Group #393,Enterprise,APAC,2026-02-14,367351.16
+CUST-00394,Vertex Industries #394,Mid-Market,North America,2023-12-07,125691.33
+CUST-00395,Zenith Industries #395,SMB,North America,2024-05-02,13618.4
+CUST-00396,Pendant Industries #396,Enterprise,EMEA,2023-05-09,347186.46
+CUST-00397,Pendant LLC #397,SMB,APAC,2025-02-25,13713.83
+CUST-00398,Cogswell Systems #398,Mid-Market,North America,2023-06-07,45960.37
+CUST-00399,Apex Corp #399,Government,APAC,2022-07-09,122772.96
+CUST-00400,Aperture Inc #400,Enterprise,EMEA,2025-05-19,84813.41
+CUST-00401,Wayne Ltd #401,SMB,EMEA,2025-10-07,16871.17
+CUST-00402,Kingfisher Ltd #402,SMB,North America,2022-02-01,9375.05
+CUST-00403,Aperture Corp #403,SMB,APAC,2023-05-12,19825.53
+CUST-00404,Quantum Ltd #404,Mid-Market,North America,2023-10-21,107755.5
+CUST-00405,Pearson Partners #405,Mid-Market,North America,2023-06-20,62841.62
+CUST-00406,Redwood Partners #406,Enterprise,LATAM,2024-08-19,318767.79
+CUST-00407,Spacely Ltd #407,Mid-Market,North America,2025-02-26,117321.16
+CUST-00408,Synergy LLC #408,Enterprise,EMEA,2025-04-11,259642.31
+CUST-00409,Cogswell Group #409,Enterprise,North America,2024-02-17,256611.8
+CUST-00410,Oscorp Partners #410,Mid-Market,APAC,2023-11-23,51791.29
+CUST-00411,Redwood Partners #411,Mid-Market,EMEA,2023-12-23,42280.7
+CUST-00412,Lumina Systems #412,Mid-Market,APAC,2025-01-15,130954.94
+CUST-00413,Umbrella Systems #413,Enterprise,APAC,2025-09-30,87718.66
+CUST-00414,Acme Industries #414,Enterprise,EMEA,2022-05-20,301122.94
+CUST-00415,Acme Ltd #415,Mid-Market,North America,2025-06-19,92874.69
+CUST-00416,Polaris Partners #416,SMB,North America,2024-12-25,16715.5
+CUST-00417,Acme Inc #417,Mid-Market,North America,2023-08-11,25851.4
+CUST-00418,Nimbus Industries #418,SMB,APAC,2022-08-08,24629.86
+CUST-00419,Ironhold LLC #419,Enterprise,EMEA,2023-06-01,336129.46
+CUST-00420,Gringotts Industries #420,Enterprise,LATAM,2024-07-29,255060.71
+CUST-00421,Nimbus Ltd #421,Enterprise,APAC,2022-06-15,283810.37
+CUST-00422,Apex Inc #422,Enterprise,North America,2025-02-05,226225.65
+CUST-00423,Vertex Inc #423,SMB,North America,2024-06-07,18730.0
+CUST-00424,Bluth Solutions #424,Government,LATAM,2024-12-17,184902.66
+CUST-00425,Wonka Ltd #425,Government,EMEA,2025-03-06,113031.05
+CUST-00426,Initech Corp #426,SMB,North America,2025-01-17,16971.81
+CUST-00427,Initech LLC #427,Government,North America,2023-03-01,131099.85
+CUST-00428,Pinnacle Industries #428,Government,North America,2025-02-28,74956.5
+CUST-00429,Pearson Systems #429,Mid-Market,APAC,2022-10-14,109373.79
+CUST-00430,Nimbus Corp #430,Mid-Market,LATAM,2022-04-20,34550.07
+CUST-00431,Wonka Corp #431,Mid-Market,APAC,2025-05-04,66843.93
+CUST-00432,Summit Holdings #432,Enterprise,North America,2024-07-11,230955.52
+CUST-00433,Dunder Mifflin Systems #433,Government,North America,2025-10-24,130911.77
+CUST-00434,Pearson Corp #434,SMB,North America,2023-05-20,20203.14
+CUST-00435,Stark Group #435,Enterprise,EMEA,2025-07-22,121985.71
+CUST-00436,Pearson Holdings #436,Mid-Market,North America,2023-09-24,72031.47
+CUST-00437,Pinnacle Group #437,Enterprise,North America,2024-06-01,217425.35
+CUST-00438,Brightspark Systems #438,Mid-Market,North America,2023-12-26,83855.74
+CUST-00439,Atlas Solutions #439,SMB,APAC,2022-01-26,11103.9
+CUST-00440,Pearson Corp #440,SMB,EMEA,2023-05-13,17154.35
+CUST-00441,Soylent Industries #441,Enterprise,North America,2023-07-04,231772.16
+CUST-00442,Wayne LLC #442,Mid-Market,North America,2024-09-18,108528.0
+CUST-00443,Sterling Group #443,Government,EMEA,2024-10-12,132196.64
+CUST-00444,Aperture Partners #444,Enterprise,North America,2024-03-21,179638.38
+CUST-00445,Polaris Industries #445,SMB,North America,2023-11-17,14101.31
+CUST-00446,Apex Solutions #446,Enterprise,North America,2025-11-24,137075.88
+CUST-00447,Spacely LLC #447,Government,LATAM,2023-08-20,155049.65
+CUST-00448,Vertex Partners #448,Government,APAC,2023-10-30,96920.96
+CUST-00449,Nakatomi Holdings #449,Enterprise,EMEA,2025-04-27,395113.84
+CUST-00450,Tyrell Systems #450,Enterprise,EMEA,2025-12-21,139926.08
+CUST-00451,Vandelay Corp #451,SMB,APAC,2024-04-17,19336.32
+CUST-00452,Cyberdyne Group #452,Enterprise,EMEA,2026-01-04,209093.46
+CUST-00453,Pearson Corp #453,Mid-Market,EMEA,2025-04-07,67286.95
+CUST-00454,Maplewood Industries #454,Mid-Market,APAC,2024-01-07,99776.5
+CUST-00455,Stonebridge Solutions #455,Mid-Market,North America,2023-05-24,95020.98
+CUST-00456,Dunder Mifflin LLC #456,Mid-Market,North America,2025-08-14,97166.96
+CUST-00457,Nakatomi Holdings #457,Government,North America,2022-01-22,51974.26
+CUST-00458,Wonka Systems #458,SMB,EMEA,2025-11-09,17225.08
+CUST-00459,Pemberley Holdings #459,Mid-Market,APAC,2025-04-20,98567.23
+CUST-00460,Massive Dynamic Holdings #460,Government,EMEA,2023-08-29,103388.02
+CUST-00461,Stark Corp #461,SMB,EMEA,2023-12-15,11536.83
+CUST-00462,Bluebird Ltd #462,Mid-Market,North America,2022-07-19,71321.92
+CUST-00463,Nimbus Partners #463,Mid-Market,North America,2025-12-26,36429.21
+CUST-00464,Bluth Corp #464,SMB,North America,2026-02-25,10068.52
+CUST-00465,Tyrell Systems #465,Enterprise,EMEA,2024-08-04,147121.2
+CUST-00466,Nakatomi LLC #466,Enterprise,EMEA,2024-03-21,81458.3
+CUST-00467,Polaris Ltd #467,Mid-Market,North America,2022-01-10,100111.45
+CUST-00468,Black Mesa Group #468,SMB,APAC,2022-05-09,17270.71
+CUST-00469,Stonebridge LLC #469,Mid-Market,North America,2022-08-22,52334.17
+CUST-00470,Redwood Systems #470,Government,North America,2024-03-06,135031.96
+CUST-00471,Helix Corp #471,Mid-Market,APAC,2025-06-18,42632.97
+CUST-00472,Catalyst Group #472,Government,EMEA,2025-10-08,57699.54
+CUST-00473,Pied Piper Ltd #473,Mid-Market,North America,2025-11-21,39266.72
+CUST-00474,Pearson Industries #474,Mid-Market,EMEA,2024-05-16,44061.4
+CUST-00475,Vertex Systems #475,SMB,EMEA,2022-12-21,16786.11
+CUST-00476,Redwood Group #476,Enterprise,North America,2024-07-12,272688.83
+CUST-00477,Dunder Mifflin Inc #477,Mid-Market,North America,2024-02-26,128093.54
+CUST-00478,Maplewood Partners #478,Mid-Market,EMEA,2025-12-25,114708.31
+CUST-00479,Redwood LLC #479,Enterprise,North America,2023-03-28,166637.13
+CUST-00480,Gringotts Ltd #480,Mid-Market,North America,2024-07-25,85090.25
+CUST-00481,Summit Partners #481,Mid-Market,North America,2022-08-22,52932.0
+CUST-00482,Stonebridge Holdings #482,Mid-Market,APAC,2026-01-12,71667.59
+CUST-00483,Black Mesa Industries #483,Enterprise,APAC,2026-03-19,152200.25
+CUST-00484,Initech Partners #484,Enterprise,APAC,2022-06-28,214258.65
+CUST-00485,Pied Piper Ltd #485,Enterprise,EMEA,2025-11-12,185604.39
+CUST-00486,Quantum Solutions #486,Mid-Market,North America,2022-10-13,108763.73
+CUST-00487,Black Mesa Inc #487,Mid-Market,EMEA,2025-05-07,82187.0
+CUST-00488,Spacely Group #488,Enterprise,North America,2024-11-19,391298.21
+CUST-00489,Catalyst Corp #489,Enterprise,APAC,2024-04-22,369681.06
+CUST-00490,Gringotts LLC #490,SMB,North America,2022-10-27,20166.13
+CUST-00491,Oscorp Industries #491,Mid-Market,EMEA,2023-07-05,91803.78
+CUST-00492,Pearson Partners #492,Enterprise,APAC,2022-07-10,202523.65
+CUST-00493,Synergy Group #493,SMB,APAC,2024-07-20,25325.49
+CUST-00494,Spacely Solutions #494,Enterprise,APAC,2026-02-09,102177.9
+CUST-00495,Bluebird Holdings #495,SMB,APAC,2024-03-25,9505.13
+CUST-00496,Clampett Ltd #496,Mid-Market,North America,2023-08-04,60477.56
+CUST-00497,Solstice LLC #497,Mid-Market,EMEA,2023-12-05,120568.7
+CUST-00498,Pinnacle Inc #498,Enterprise,EMEA,2024-07-30,77275.16
+CUST-00499,Soylent Partners #499,Mid-Market,LATAM,2024-05-26,45850.37
+CUST-00500,Nimbus LLC #500,SMB,North America,2023-07-16,6816.14
