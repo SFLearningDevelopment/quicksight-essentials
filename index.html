@@ -555,7 +555,14 @@ body.preview-active .p-slot-tabs,body.preview-active .p-slot-tab{
                 <option value="sf-ds-mlops-certification">SFLearningDevelopment/sf-ds-mlops-certification</option>
               </select>
             </div>
-
+            
+            <!-- URL of the course (manual override / source of truth) -->
+            <div class="form-group" style="margin-bottom:14px;">
+              <label class="form-label">URL of the course</label>
+              <input class="form-input" id="rev-repo-url" placeholder="e.g. sf-knowledge-hub" autocomplete="off">
+              <div style="font-size:11px;color:var(--muted);margin-top:4px;">Repo slug. Auto-fills when you select from the dropdown above; you can also type a repo not in the list. <strong>Reviewer generation always uses this value.</strong></div>
+            </div>
+            
             <!-- Destination folder -->
             <div class="form-group" style="margin-bottom:18px;">
               <label class="form-label">Destination folder in repo</label>
@@ -3087,6 +3094,12 @@ function revGetRepoFiles() {
   return REV_REPO_FILES[repo] || null;
 }
 window.revOnRepoChange = function() {
+// ── NEW: auto-populate the URL textbox from the dropdown ──
+  const _dropdownVal = document.getElementById('rev-repo-select').value;
+  const _urlInput = document.getElementById('rev-repo-url');
+  if (_urlInput) _urlInput.value = _dropdownVal;
+  
+  // ── existing code below, unchanged ──  
   document.getElementById('rev-module-rows').innerHTML = '';
   revModuleCount = 0;
   const repoFiles = revGetRepoFiles();
@@ -3172,7 +3185,14 @@ async function revPopulateCourseConfig(courseId) {
     const rc = snap.exists() ? (snap.data().reviewerConfig || {}) : {};
 
     // Populate repo
-    if (rc.repo) document.getElementById('rev-repo-select').value = rc.repo;
+    // New line
+    if (rc.repo) {
+      document.getElementById('rev-repo-select').value = rc.repo;
+      // ── NEW: also populate the URL textbox ──
+      const _urlInput = document.getElementById('rev-repo-url');
+      if (_urlInput) _urlInput.value = rc.repo;
+    }    
+    // Old line: if (rc.repo) document.getElementById('rev-repo-select').value = rc.repo;
     if (rc.questionsPerSection) document.getElementById('rev-questions-per-section').value = rc.questionsPerSection;
 
     // Populate dest folder
@@ -3201,7 +3221,10 @@ async function revPopulateCourseConfig(courseId) {
 
 // ── Collect current config from UI ──
 function revCollectConfig() {
-  const repo = document.getElementById('rev-repo-select').value;
+  // New line:
+  const _urlInput = document.getElementById('rev-repo-url');
+  const repo = (_urlInput ? _urlInput.value : '').trim();
+  // Old line: const repo = document.getElementById('rev-repo-select').value;
   const destFolder = document.getElementById('rev-dest-folder').value.trim().replace(/\/?$/, '/');
   const modules = [];
   document.querySelectorAll('[id^="rev-mod-row-"]').forEach(row => {
