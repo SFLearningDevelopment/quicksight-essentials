@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate"/>
+<title>[Reviewer] Module 4: Quicksight Module 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#eef2f7;--bg2:#ffffff;--bg3:#f0f4f9;--border:#d0dae8;--text:#1a2332;--text-dim:#4a5568;--text-dimmer:#8fa3bc;--blue:#1a6eb5;--blue-light:#e8f1fb;--blue-mid:#b8d0ed;--green:#1a6b3a;--green-light:#e8f5ed;--coral:#c0392b;--coral-light:#fdf0ee;--radius:12px;}
+  html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Merriweather Sans',sans-serif;font-size:15px;line-height:1.6;}
+  a{color:var(--blue);text-decoration:none;}
+  .reviewer-topbanner{background:#f5f0ff;border-bottom:2px solid #c4bdf0;padding:9px 40px;font-size:12px;font-family:'Source Code Pro',monospace;color:#5b4fcf;display:flex;align-items:center;gap:8px;}
+  .sf-signin-overlay{position:fixed;inset:0;background:rgba(20,30,50,.82);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(3px);}
+  .sf-signin-overlay.hidden{display:none;}
+  .sf-signin-card{background:#fff;border-radius:16px;padding:36px 40px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;}
+  .sf-signin-logo{font-size:32px;margin-bottom:12px;}
+  .sf-signin-title{font-size:17px;font-weight:700;color:#1a2332;margin-bottom:8px;}
+  .sf-signin-sub{font-size:13px;color:#4a5568;line-height:1.6;margin-bottom:24px;}
+  .sf-google-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #d0dae8;border-radius:8px;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;color:#1a2332;width:100%;justify-content:center;transition:box-shadow .15s;}
+  .sf-google-btn:hover{box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .sf-google-btn img{width:20px;height:20px;}
+  .sf-signin-divider{font-size:11px;color:#8fa3bc;text-align:center;margin:14px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Source Code Pro',monospace;}
+  .sf-signin-divider::before,.sf-signin-divider::after{content:'';flex:1;height:1px;background:#d0dae8;}
+  .sf-fallback-input{width:100%;padding:10px 12px;border:1.5px solid #d0dae8;border-radius:8px;font-size:14px;font-family:'Merriweather Sans',sans-serif;color:#1a2332;margin-bottom:10px;outline:none;}
+  .sf-fallback-input:focus{border-color:var(--blue);}
+  .sf-fallback-btn{width:100%;padding:10px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;}
+  .sf-signin-error{margin-top:14px;font-size:12.5px;color:#c0392b;font-family:'Source Code Pro',monospace;background:#fdf0ee;border:1px solid #f0b8b2;border-radius:6px;padding:10px 12px;display:none;text-align:left;}
+  .sf-signin-error.visible{display:block;}
+  .sf-signed-in-bar{background:#e8f5ed;border-bottom:1px solid #a3d4b8;padding:7px 40px;font-size:11px;font-family:'Source Code Pro',monospace;color:var(--green);display:flex;align-items:center;justify-content:space-between;}
+  .sf-signed-in-bar.hidden{display:none;}
+  .sf-signout-btn{font-size:10px;color:var(--blue);background:none;border:1px solid #b8d0ed;border-radius:4px;padding:2px 8px;cursor:pointer;}
+  .topnav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 40px;height:48px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dimmer);font-family:'Source Code Pro',monospace;position:sticky;top:0;z-index:100;}
+  .topnav a{color:var(--blue);}
+  .sep{margin:0 4px;color:var(--text-dimmer);}
+  .main{max-width:860px;margin:0 auto;padding:36px 40px 80px;}
+  .module-hero{margin-bottom:28px;}
+  .hero-eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:8px;font-family:'Source Code Pro',monospace;}
+  .module-hero h1{font-size:clamp(18px,2.5vw,26px);font-weight:700;color:var(--text);line-height:1.25;}
+  .section-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+  .section-header{padding:14px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+  .section-header:hover{background:var(--bg3);}
+  .section-num{font-size:10px;font-weight:700;color:var(--text-dimmer);min-width:24px;font-family:'Source Code Pro',monospace;}
+  .section-title{font-weight:600;font-size:14px;flex:1;color:var(--text);}
+  .section-toggle{font-size:11px;color:var(--text-dimmer);transition:transform .2s;}
+  .section-toggle.open{transform:rotate(180deg);}
+  .section-body{display:none;padding:20px 22px 14px;border-top:1px solid var(--border);font-size:14px;color:var(--text-dim);line-height:1.75;}
+  .section-body.open{display:block;}
+  .section-body h3{font-size:15px;font-weight:700;color:var(--text);margin:16px 0 8px;}
+  .section-body p{margin-bottom:10px;}
+  .section-body ul,.section-body ol{margin:8px 0 12px 20px;}
+  .section-body li{margin-bottom:4px;}
+  .section-body code{font-family:'Source Code Pro',monospace;font-size:12.5px;background:var(--bg3);border:1px solid var(--border);padding:1px 5px;border-radius:4px;color:#0f4a7a;}
+  .section-body pre{background:#1e2433;color:#cdd6f4;padding:16px;border-radius:8px;font-size:12.5px;font-family:'Source Code Pro',monospace;overflow-x:auto;margin:12px 0;position:relative;}
+  .copy-btn,.copy-btn-small{position:absolute;top:8px;right:8px;background:#252b3b;border:1px solid #3a4155;color:#7a8ab0;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;font-family:'Source Code Pro',monospace;}
+  .copy-btn:hover,.copy-btn-small:hover{color:#cdd6f4;}
+  .reviewer-bar{background:#fff8e6;border:1px solid #f0d4a0;border-left:3px solid #92600a;border-radius:8px;padding:10px 16px;margin:18px 0 6px;display:flex;align-items:center;gap:10px;font-size:13px;color:#92600a;font-family:'Source Code Pro',monospace;}
+  .reviewer-bar input[type="checkbox"]{width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:var(--green);}
+  .reviewer-bar label{cursor:pointer;font-weight:600;user-select:none;}
+  .reviewer-bar.checked{background:var(--green-light);border-color:#a3d4b8;border-left-color:var(--green);color:var(--green);}
+  .reviewer-panel{background:#f5f0ff;border:1px solid #c4bdf0;border-top:3px solid #5b4fcf;border-radius:12px;padding:24px 28px;margin:32px 0;}
+  .reviewer-panel-label{font-size:9px;font-family:'Source Code Pro',monospace;letter-spacing:.18em;text-transform:uppercase;color:#5b4fcf;font-weight:600;margin-bottom:16px;}
+  .reviewer-q-text{font-size:14px;font-weight:600;color:#1a2332;line-height:1.65;margin-bottom:14px;}
+  .reviewer-options{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+  .reviewer-option{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1px solid #d0dae8;border-radius:8px;cursor:pointer;font-size:13.5px;color:#4a5568;line-height:1.5;background:#fff;transition:background .12s,border-color .12s;}
+  .reviewer-option:hover{background:#f0f4f9;border-color:#b8d0ed;}
+  .reviewer-option.selected{background:#e8f1fb;border-color:var(--blue);color:#1a2332;}
+  .reviewer-option.correct{background:var(--green-light);border-color:#a3d4b8;color:var(--green);}
+  .reviewer-option.wrong{background:var(--coral-light);border-color:#f0b8b2;color:var(--coral);}
+  .reviewer-option-key{font-family:'Source Code Pro',monospace;font-size:11px;font-weight:700;color:#8fa3bc;flex-shrink:0;margin-top:1px;}
+  .reviewer-reveal{font-size:12px;font-family:'Source Code Pro',monospace;color:#5b4fcf;cursor:pointer;text-decoration:underline;background:none;border:none;padding:0;margin-bottom:14px;display:block;}
+  .reviewer-explanation{font-size:13px;color:#4a5568;line-height:1.7;padding:12px 14px;background:#eef2f7;border-radius:8px;margin-bottom:16px;display:none;}
+  .reviewer-explanation.visible{display:block;}
+  .reviewer-exp-label{font-size:9px;font-family:'Source Code Pro',monospace;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+  .reviewer-exp-label.correct{color:var(--green);}
+  .reviewer-exp-label.wrong{color:var(--coral);}
+  .reviewer-comment-label{font-size:11px;font-family:'Source Code Pro',monospace;letter-spacing:.12em;text-transform:uppercase;color:#8fa3bc;font-weight:600;margin-bottom:6px;}
+  .reviewer-comment{width:100%;min-height:80px;padding:10px 12px;border:1px solid #c4bdf0;border-radius:8px;font-family:'Merriweather Sans',sans-serif;font-size:13.5px;color:#1a2332;background:#fff;resize:vertical;line-height:1.6;}
+  .reviewer-comment:focus{outline:none;border-color:#5b4fcf;}
+  .reviewer-save-note{font-size:11px;font-family:'Source Code Pro',monospace;color:#8fa3bc;margin-top:6px;}
+  .rev-complete-wrap{margin:28px 0 0;}
+  .rev-complete-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:8px;font-size:13.5px;font-family:'Source Code Pro',monospace;font-weight:600;border:1.5px solid var(--border);background:var(--bg3);color:var(--text-dimmer);transition:all .2s;}
+  .rev-complete-bar.disabled{opacity:.6;cursor:not-allowed;}
+  .rev-complete-bar.ready{background:#fff8e6;border-color:#f0d4a0;border-left:3px solid #92600a;color:#92600a;cursor:pointer;}
+  .rev-complete-bar.done{background:var(--green-light);border-color:#a3d4b8;border-left:3px solid var(--green);color:var(--green);cursor:default;}
+  .rev-complete-bar input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;accent-color:var(--green);}
+  .rev-complete-bar.disabled input{cursor:not-allowed;}
+  .rev-complete-hint{font-size:11px;font-family:'Source Code Pro',monospace;color:var(--text-dimmer);margin-top:6px;min-height:16px;}
+  .bottom-nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0 0;border-top:1px solid var(--border);margin-top:40px;}
+  .nav-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-family:'Source Code Pro',monospace;color:var(--blue);text-decoration:none;padding:10px 18px;border:1px solid var(--blue-mid);border-radius:8px;background:var(--blue-light);font-weight:600;}
+  .nav-btn.secondary{background:var(--bg2);color:var(--text-dim);border-color:var(--border);}
+  .nav-btn:hover{background:var(--blue-mid);}
+</style>
+<style>
+.section-questions{margin-top:16px;border-top:2px solid #e2e8f0;padding-top:16px;}
+.section-question-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:12px;}
+.section-question-item.answered-correct{border-color:#16a34a;background:#f0fdf4;}
+.section-question-item.answered-wrong{border-color:#dc2626;background:#fef2f2;}
+.sq-text{font-size:14px;font-weight:600;color:#0f172a;margin-bottom:10px;}
+.sq-options{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.sq-option{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;background:#fff;transition:all .15s;}
+.sq-option:hover{border-color:#2563eb;background:#eff6ff;}
+.sq-option.selected{border-color:#2563eb;background:#eff6ff;}
+.sq-option.correct{border-color:#16a34a;background:#f0fdf4;color:#16a34a;font-weight:600;}
+.sq-option.wrong{border-color:#dc2626;background:#fef2f2;color:#dc2626;}
+.sq-option-key{font-family:'Source Code Pro',monospace;font-size:11px;font-weight:700;color:#94a3b8;min-width:18px;}
+.sq-feedback{font-size:12px;font-weight:700;padding:4px 0;}
+.sq-feedback.correct{color:#16a34a;}
+.sq-feedback.wrong{color:#dc2626;}
+.sq-check-btn{background:#2563eb;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;}
+.sq-check-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.section-complete-btn{display:flex;align-items:center;gap:8px;background:transparent;border:2px solid #e2e8f0;color:#94a3b8;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:not-allowed;margin-top:14px;transition:all .2s;}
+.section-complete-btn.unlocked{border-color:#16a34a;color:#16a34a;cursor:pointer;background:#f0fdf4;}
+.section-complete-btn.done{border-color:#16a34a;background:#16a34a;color:#fff;cursor:default;}
+.module-complete-wrap{background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:20px;margin-top:28px;text-align:center;}
+.module-complete-btn{background:#16a34a;color:#fff;border:none;border-radius:10px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;opacity:0.4;pointer-events:none;transition:all .2s;}
+.module-complete-btn.unlocked{opacity:1;pointer-events:auto;}
+.module-complete-hint{font-size:13px;color:#64748b;margin-top:8px;}
+.reviewer-comment-wrap{margin-top:20px;}
+.reviewer-comment-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748b;margin-bottom:6px;}
+.reviewer-comment{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:80px;outline:none;}
+.reviewer-comment:focus{border-color:#2563eb;}
+</style>
+</head>
+<body>
+<div class="sf-signin-overlay" id="sfSigninOverlay">
+  <div class="sf-signin-card">
+    <div class="sf-signin-logo">🔐</div>
+    <div class="sf-signin-title">Sign in to save your progress</div>
+    <div class="sf-signin-sub">Sign in with your SourceFuse Gmail. Review progress, checkboxes and question attempts are saved and restored across devices.</div>
+    <button class="sf-google-btn" id="sfGoogleSignInBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Sign in with Google</button>
+    <div class="sf-signin-divider">or</div>
+    <input type="text" class="sf-fallback-input" id="sfEmailInput" placeholder="your.name@sourcefuse.com" autocomplete="off" inputmode="email">
+    <button class="sf-fallback-btn" id="sfEmailSignInBtn">Continue with SF email</button>
+    <div class="sf-signin-error" id="sfSigninError"></div>
+  </div>
+</div>
+<div class="sf-signed-in-bar hidden" id="sfSignedInBar"><span id="sfSignedInEmail">Signed in as …</span><button class="sf-signout-btn" id="sfSignoutLink">Sign out</button></div>
+<div class="reviewer-topbanner"><span>👁</span><strong>Reviewer Mode</strong> — Module 4: Quicksight Module 4</div>
+<div class="main">
+  <div class="module-hero">
+    <div class="hero-eyebrow">Module 4 of 6 · Reviewer Mode</div>
+    <h1>Quicksight Module 4</h1>
+    <p style="color:#64748b;font-size:14px;margin-top:8px;">Review each section carefully and answer all questions correctly to mark sections complete. Once all sections are complete, submit your module review.</p>
+  </div>
+  <div id="sections-container"></div>
+  <div class="module-complete-wrap">
+    <div class="module-complete-hint" id="module-complete-hint">Complete all sections to unlock</div>
+    <div class="reviewer-comment-wrap">
+      <div class="reviewer-comment-label">Module Review Notes</div>
+      <textarea class="reviewer-comment" id="module-comment" placeholder="Add your overall notes for this module…"></textarea>
+    </div>
+    <button class="module-complete-btn" id="module-complete-btn" onclick="submitModuleComplete()">✓ Mark Module 4 as Reviewed</button>
+  </div>
+</div>
+<script>
+function sfShowError(msg){const el=document.getElementById('sfSigninError');if(el){el.textContent=msg;el.classList.add('visible');}}
+function sfHideOverlay(user){
+  window.sfReviewerEmail=user.email||user;window.sfReviewerUid=user.uid||'email_'+btoa(window.sfReviewerEmail).replace(/=/g,'');
+  const ov=document.getElementById('sfSigninOverlay');if(ov)ov.classList.add('hidden');
+  const bar=document.getElementById('sfSignedInBar');const lbl=document.getElementById('sfSignedInEmail');
+  if(bar)bar.classList.remove('hidden');if(lbl)lbl.textContent='Signed in as '+window.sfReviewerEmail;
+  if(typeof sfInitSession==='function')sfInitSession();
+  if(window._sfFirebaseReady&&typeof window.sfDb!=='undefined'&&typeof sfFetchAndMerge==='function')sfFetchAndMerge();
+}
+function sfSignInWithEmail(){const emailEl=document.getElementById('sfEmailInput');if(!emailEl)return;const email=emailEl.value.trim();if(!email||!email.includes('@')){sfShowError('Please enter a valid email address.');return;}if(!email.endsWith('@sourcefuse.com')){sfShowError('Please use your @sourcefuse.com email address.');return;}sfHideOverlay(email);}
+async function sfSignInWithGoogle(){if(typeof firebase==='undefined'||!window._sfFirebaseReady){sfShowError('Popup blocked. Please enter your SF email below.');return;}const provider=new firebase.auth.GoogleAuthProvider();provider.setCustomParameters({hd:'sourcefuse.com',prompt:'select_account'});const t=setTimeout(()=>sfShowError('Popup blocked. Please enter your SF email below.'),30000);try{const r=await firebase.auth().signInWithPopup(provider);clearTimeout(t);sfHideOverlay(r.user);}catch(e){clearTimeout(t);sfShowError('Popup blocked. Please enter your SF email below.');}}
+function sfSignOut(){window.sfReviewerEmail=null;window.sfReviewerUid=null;const bar=document.getElementById('sfSignedInBar');const ov=document.getElementById('sfSigninOverlay');if(bar)bar.classList.add('hidden');if(ov)ov.classList.remove('hidden');if(typeof firebase!=='undefined'&&window._sfFirebaseReady)firebase.auth().signOut();}
+document.addEventListener('DOMContentLoaded',function(){const gb=document.getElementById('sfGoogleSignInBtn');const eb=document.getElementById('sfEmailSignInBtn');const so=document.getElementById('sfSignoutLink');if(gb)gb.addEventListener('click',sfSignInWithGoogle);if(eb)eb.addEventListener('click',sfSignInWithEmail);if(so)so.addEventListener('click',sfSignOut);});
+</script>
+<script>
+const HUB_URL = 'https://sflearningdevelopment.github.io/sf-knowledge-hub/index.html';
+const SECTION_COUNT = 19326;
+const SECTION_QUESTIONS = {"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]};
+
+function submitModuleComplete() {
+  const btn = document.getElementById('module-complete-btn');
+  if (!btn.classList.contains('unlocked')) return;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  const comment = document.getElementById('module-comment')?.value || '';
+  const completedAt = new Date().toISOString();
+  if (typeof sfWrite === 'function') {
+    sfWrite({ completed: true, comment, completedAt, sectionCount: SECTION_COUNT });
+  }
+  setTimeout(() => { window.location.href = HUB_URL; }, 1200);
+}
+</script>
+<script>
+const REV_KEY='reviewer_'+window.location.pathname.replace(/[^a-z0-9]/gi,'_');
+const BADGES={foundation:'Foundation',essential:'Essential',important:'Important'};
+const SECTIONS=[
+  {
+    id: 1,
+    title: 'Expression Syntax & The Function Library',
+    badge: 'foundation',
+    content: `
+      <h3>ð£ The four building blocks of any QuickSight expression</h3>
+      <p>Every calculated field, no matter how complex, is built from four ingredients:</p>
+      <ol>
+        <li><strong>Field references</strong> â wrapped in curly braces: <code>{revenue}</code>, <code>{order_date}</code>. The braces are required for any field name.</li>
+        <li><strong>Literals</strong> â numbers (<code>0.15</code>), strings (<code>'Enterprise'</code>), dates (<code>parseDate('2026-01-01')</code>), booleans (<code>true</code>, <code>false</code>).</li>
+        <li><strong>Operators</strong> â arithmetic (<code>+ - * /</code>), comparison (<code>= != &lt; &gt; &lt;= &gt;=</code>), logical (<code>AND OR NOT</code>).</li>
+        <li><strong>Functions</strong> â call style is <code>functionName(arg1, arg2, ...)</code>. QuickSight ships ~150 functions across categories.</li>
+      </ol>
+
+      <h3>ð Function categories you'll use most</h3>
+      <table>
+        <tr><th>Category</th><th>Examples</th></tr>
+        <tr><td>Aggregation</td><td><code>sum</code>, <code>avg</code>, <code>min</code>, <code>max</code>, <code>count</code>, <code>distinct_count</code>, <code>median</code>, <code>percentile</code>, <code>stdev</code></td></tr>
+        <tr><td>Conditional</td><td><code>ifelse</code>, <code>switch</code>, <code>coalesce</code>, <code>nullIf</code></td></tr>
+        <tr><td>Date</td><td><code>extract</code>, <code>truncDate</code>, <code>addDateTime</code>, <code>dateDiff</code>, <code>now</code>, <code>parseDate</code></td></tr>
+        <tr><td>String</td><td><code>concat</code>, <code>substring</code>, <code>toUpper</code>, <code>toLower</code>, <code>trim</code>, <code>replace</code>, <code>split</code>, <code>locate</code></td></tr>
+        <tr><td>Numeric</td><td><code>abs</code>, <code>round</code>, <code>ceil</code>, <code>floor</code>, <code>mod</code>, <code>ln</code>, <code>exp</code>, <code>sqrt</code></td></tr>
+        <tr><td>Type conversion</td><td><code>toString</code>, <code>parseInt</code>, <code>parseDecimal</code>, <code>parseDate</code></td></tr>
+        <tr><td>Level-aware</td><td><code>sumOver</code>, <code>avgOver</code>, <code>denseRank</code>, <code>runningSum</code>, <code>periodOverPeriodDifference</code> (covered in section 6)</td></tr>
+      </table>
+
+      <h3>ð¨ The expression editor</h3>
+      <p>Open it from <strong>+ Add calculated field</strong> in either the dataset prep view or an analysis. Three useful affordances:</p>
+      <ul>
+        <li><strong>Function reference panel</strong> â searchable list with inline syntax help</li>
+        <li><strong>Field picker</strong> â click a field name to insert <code>{field_name}</code> with correct braces</li>
+        <li><strong>Validate button</strong> â checks syntax before save; will not let you save an invalid expression</li>
+      </ul>
+
+      <div class="callout callout-tip">
+        <h4>ð¡ Read errors top-down</h4>
+        <p>If an expression won't validate, QuickSight points to the first problem it finds â but cascading errors often hide a single root cause earlier in the formula. Fix the topmost error and revalidate before chasing the others.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m4-s1"></div>
+    `
+  },
+  {
+    id: 2,
+    title: 'Aggregations and Aggregate Awareness',
+    badge: 'essential',
+    content: `
+      <h3>â Aggregate vs row-level expressions â the most important distinction</h3>
+      <p>Every QuickSight calculated field is one of two kinds:</p>
+      <ul>
+        <li><strong>Row-level</strong> â computed for each individual row in the dataset. Example: <code>{revenue} - {profit}</code> (cost per row)</li>
+        <li><strong>Aggregate</strong> â computed across many rows. Example: <code>sum({revenue}) / sum({quantity})</code> (avg revenue per unit)</li>
+      </ul>
+      <p>Mixing them in one expression is illegal. <code>{revenue} / sum({revenue})</code> will not validate â you can't divide a single row by a group total in one step.</p>
+
+      <h3>ð The aggregation functions in detail</h3>
+      <table>
+        <tr><th>Function</th><th>What it does</th><th>Use whenâ¦</th></tr>
+        <tr><td><code>sum(x)</code></td><td>Adds all non-null values</td><td>Default for revenue, units, hours</td></tr>
+        <tr><td><code>avg(x)</code></td><td>Mean</td><td>Avg deal size, avg rating</td></tr>
+        <tr><td><code>median(x)</code></td><td>50th percentile</td><td>When outliers would skew avg (incomes, response times)</td></tr>
+        <tr><td><code>min(x)</code> / <code>max(x)</code></td><td>Extrema</td><td>Earliest signup, highest single sale</td></tr>
+        <tr><td><code>count(x)</code></td><td>Count of non-null values</td><td>How many rows in this group?</td></tr>
+        <tr><td><code>distinct_count(x)</code></td><td>Count of unique values</td><td>How many unique customers?</td></tr>
+        <tr><td><code>percentile(x, p)</code></td><td>p-th percentile</td><td>p90 latency, p95 deal size</td></tr>
+        <tr><td><code>stdev(x)</code></td><td>Standard deviation</td><td>Variability of returns, error spread</td></tr>
+      </table>
+
+      <h3>ð« Common aggregate-mixing errors</h3>
+      <p>Three patterns that look reasonable but fail validation:</p>
+      <ol>
+        <li><code>sum({revenue}) - {discount}</code> â aggregate minus row-level. Fix: <code>sum({revenue}) - sum({discount})</code> or <code>sum({revenue} - {discount})</code></li>
+        <li><code>ifelse({region}='APAC', sum({revenue}), 0)</code> â row-level condition on aggregate result. Fix: <code>sum(ifelse({region}='APAC', {revenue}, 0))</code></li>
+        <li><code>{revenue} > avg({revenue})</code> in a row-level filter â the avg can only resolve at aggregate time. Use a level-aware function (section 6) or table calc instead.</li>
+      </ol>
+
+      <div class="callout callout-info">
+        <h4>ð¡ Where the calculation lives matters</h4>
+        <p>A <strong>row-level</strong> calc evaluates once per row at SPICE-import time and is cached. An <strong>aggregate</strong> calc evaluates fresh on every visual based on the visual's current grouping. Row-level is faster; aggregate is more flexible. Pick consciously.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m4-s2"></div>
+    `
+  },
+  {
+    id: 3,
+    title: 'Conditional Logic â ifelse, switch, coalesce',
+    badge: 'essential',
+    content: `
+      <h3>ð ifelse â the workhorse</h3>
+      <p>Use <code>ifelse</code> when you have one or more conditions and a fallback. Syntax:</p>
+      <div class="diagram">ifelse(
+  condition1, result1,
+  condition2, result2,
+  ...
+  defaultResult
+)</div>
+      <p>Conditions are evaluated top-down. The first one that's true wins. The final argument (without a paired condition) is the default if nothing matches.</p>
+
+      <p><strong>Example â bucket revenue into bands:</strong></p>
+      <div class="diagram">ifelse(
+  {revenue} >= 100000, 'Strategic',
+  {revenue} >= 25000,  'Major',
+  {revenue} >= 5000,   'Mid',
+  'Small'
+)</div>
+
+      <h3>ð switch â cleaner for value-equality dispatch</h3>
+      <p>When all your conditions are "field equals X", <code>switch</code> reads better:</p>
+      <div class="diagram">switch(
+  {region},
+  'NA',     'North America',
+  'EMEA',   'Europe / Middle East / Africa',
+  'APAC',   'Asia Pacific',
+  'LATAM',  'Latin America',
+  'Other'   /* default */
+)</div>
+
+      <h3>ðª coalesce and nullIf â handling missing data</h3>
+      <ul>
+        <li><strong><code>coalesce(a, b, c, ...)</code></strong> â returns the first non-null argument. Useful for fallback chains: <code>coalesce({nickname}, {first_name}, 'Unknown')</code></li>
+        <li><strong><code>nullIf(a, b)</code></strong> â returns null if a equals b, otherwise a. Most common use: <code>nullIf({revenue}, 0)</code> to turn zero revenues into null so they're excluded from averages</li>
+      </ul>
+
+      <h3>â ï¸ Boolean logic gotchas</h3>
+      <ul>
+        <li>Use <code>=</code> for equality, not <code>==</code> (single equals, unlike most programming languages)</li>
+        <li>String comparison is case-sensitive: <code>{region}='apac'</code> won't match <code>'APAC'</code>. Wrap with <code>toLower()</code> or <code>toUpper()</code> for case-insensitive matches.</li>
+        <li>Comparing to null with <code>=</code> always returns false. Use <code>isNull(field)</code> or <code>isNotNull(field)</code>.</li>
+      </ul>
+
+      <div class="quiz-placeholder" data-quiz="m4-s3"></div>
+    `
+  },
+  {
+    id: 4,
+    title: 'Date Functions and Time Calculations',
+    badge: 'essential',
+    content: `
+      <h3>ð The five date functions you'll use weekly</h3>
+      <table>
+        <tr><th>Function</th><th>Returns</th><th>Example</th></tr>
+        <tr><td><code>extract(period, date)</code></td><td>The numeric value of a period</td><td><code>extract('YYYY', {order_date})</code> â 2026</td></tr>
+        <tr><td><code>truncDate(period, date)</code></td><td>Date snapped down to start of period</td><td><code>truncDate('MM', {order_date})</code> â 2026-04-01</td></tr>
+        <tr><td><code>dateDiff(start, end, period)</code></td><td>Number of periods between two dates</td><td><code>dateDiff({signup_date}, now(), 'DD')</code> â days since signup</td></tr>
+        <tr><td><code>addDateTime(amount, period, date)</code></td><td>Date offset by N periods</td><td><code>addDateTime(-30, 'DD', now())</code> â 30 days ago</td></tr>
+        <tr><td><code>now()</code></td><td>Current timestamp at evaluation</td><td>Used as today-anchor in age calcs</td></tr>
+      </table>
+
+      <h3>ð°ï¸ Period codes</h3>
+      <p>Most date functions take a period code as a string argument. The valid codes:</p>
+      <ul>
+        <li><code>'YYYY'</code> â year (e.g., 2026)</li>
+        <li><code>'Q'</code> â quarter (1â4)</li>
+        <li><code>'MM'</code> â month (1â12)</li>
+        <li><code>'WK'</code> â week of year</li>
+        <li><code>'DD'</code> â day of month</li>
+        <li><code>'HH'</code>, <code>'MI'</code>, <code>'SS'</code> â hour, minute, second</li>
+      </ul>
+
+      <h3>ð·ï¸ Useful date-derived calculated fields</h3>
+      <p>Things worth defining once at dataset level so every analysis can use them:</p>
+      <div class="diagram">order_year      = extract('YYYY', {order_date})
+order_quarter   = concat('Q', toString(extract('Q', {order_date})), ' ', toString(extract('YYYY', {order_date})))
+order_month     = truncDate('MM', {order_date})
+days_since_order= dateDiff({order_date}, now(), 'DD')
+is_recent       = ifelse(dateDiff({order_date}, now(), 'DD') &lt;= 30, 'Recent', 'Older')
+fiscal_year     = ifelse(extract('MM', {order_date}) >= 4,
+                         extract('YYYY', {order_date}),
+                         extract('YYYY', {order_date}) - 1)</div>
+
+      <div class="callout callout-warn">
+        <h4>â ï¸ now() recomputes on every visual interaction</h4>
+        <p>If you use <code>now()</code> in a calculated field, the field re-evaluates every time the dashboard refreshes. For age-based bucketing (e.g., "deals older than 90 days"), this is what you want. But it does mean SPICE caching gives you less benefit on those fields â they always recompute.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m4-s4"></div>
+    `
+  },
+  {
+    id: 5,
+    title: 'String and Type-Conversion Functions',
+    badge: 'important',
+    content: `
+      <h3>ð¤ The string toolkit</h3>
+      <table>
+        <tr><th>Function</th><th>Use for</th></tr>
+        <tr><td><code>concat(a, b, ...)</code></td><td>Joining strings â labels, full names, composite keys</td></tr>
+        <tr><td><code>substring(s, start, length)</code></td><td>Pulling fixed-width chunks (e.g., postcode prefix, year from a coded ID)</td></tr>
+        <tr><td><code>locate(s, find)</code></td><td>Finds the position of a substring; returns 0 if not found</td></tr>
+        <tr><td><code>replace(s, find, with)</code></td><td>Substitution â clean up suffixes, normalise variants</td></tr>
+        <tr><td><code>split(s, delim, n)</code></td><td>Returns the n-th piece of a delimited string (1-indexed)</td></tr>
+        <tr><td><code>trim</code> / <code>ltrim</code> / <code>rtrim</code></td><td>Strip whitespace</td></tr>
+        <tr><td><code>toUpper</code> / <code>toLower</code></td><td>Case normalisation â essential before comparisons</td></tr>
+        <tr><td><code>strlen(s)</code></td><td>Length in characters</td></tr>
+      </table>
+
+      <h3>ðªª Useful string-calc patterns</h3>
+      <p><strong>Customer display label combining name and segment:</strong></p>
+      <div class="diagram">concat({customer_name}, ' (', {segment}, ')')</div>
+
+      <p><strong>Extracting domain from email address:</strong></p>
+      <div class="diagram">substring({email}, locate({email}, '@') + 1, strlen({email}))</div>
+
+      <p><strong>First word of a multi-word string:</strong></p>
+      <div class="diagram">split({customer_name}, ' ', 1)</div>
+
+      <h3>ð Type conversion â when QuickSight needs a hint</h3>
+      <table>
+        <tr><th>Function</th><th>Converts</th><th>Common use</th></tr>
+        <tr><td><code>toString(x)</code></td><td>Number/date â string</td><td>Building labels: <code>concat('Order #', toString({order_id}))</code></td></tr>
+        <tr><td><code>parseInt(s)</code></td><td>String â integer</td><td>Source has numbers stored as text</td></tr>
+        <tr><td><code>parseDecimal(s)</code></td><td>String â decimal</td><td>Currency strings like '1,234.56'</td></tr>
+        <tr><td><code>parseDate(s, fmt)</code></td><td>String â date</td><td>Source dates as text in a known format</td></tr>
+      </table>
+
+      <p><strong>parseDate</strong> requires the format pattern as the second argument:</p>
+      <div class="diagram">parseDate({date_text}, 'yyyy-MM-dd')
+parseDate({date_text}, 'MM/dd/yyyy HH:mm:ss')</div>
+
+      <div class="callout callout-tip">
+        <h4>ð¡ Always trim before comparing</h4>
+        <p>Source data picked up from CSVs or APIs often has trailing whitespace. <code>{region}='APAC'</code> may silently fail because the actual value is <code>'APAC '</code>. Wrap with <code>trim()</code> in your calc or do it once at dataset level.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m4-s5"></div>
+    `
+  },
+  {
+    id: 6,
+    title: 'Level-Aware Calculations & Lab 4',
+    badge: 'important',
+    content: `
+      <h3>ðª What "level-aware" means</h3>
+      <p>Standard aggregations roll up to whatever dimension the visual groups by. That's usually fine â but sometimes you need an aggregation at a <em>specific</em> level regardless of how the visual is grouped. That's what level-aware calculations (LAC) are for.</p>
+
+      <p>Two flavours, both available in QuickSight:</p>
+      <ul>
+        <li><strong>Pre-aggregate (LAC-A)</strong> â aggregates before joins/filters apply, computed once per row group at the chosen level</li>
+        <li><strong>Pre-filter (LAC-W)</strong> â aggregates after joins but before filters, useful for "% of overall" calculations that should ignore filters</li>
+      </ul>
+
+      <h3>ð The level-aware function family</h3>
+      <table>
+        <tr><th>Function</th><th>What it does</th></tr>
+        <tr><td><code>sumOver(measure, [partition_by], pre_agg|post_agg)</code></td><td>Sum at a chosen partition level</td></tr>
+        <tr><td><code>avgOver</code>, <code>minOver</code>, <code>maxOver</code>, <code>countOver</code></td><td>Other aggregations at chosen level</td></tr>
+        <tr><td><code>percentOfTotal(measure, [partition_by])</code></td><td>Each row's share of a partition total</td></tr>
+        <tr><td><code>denseRank(...)</code>, <code>rank(...)</code></td><td>Ranking within a partition</td></tr>
+        <tr><td><code>runningSum(measure, [sort_by], [partition_by])</code></td><td>Cumulative running total</td></tr>
+        <tr><td><code>periodOverPeriodDifference(measure, date, period, offset)</code></td><td>Change vs prior period</td></tr>
+      </table>
+
+      <h3>ð¯ Two patterns to memorise</h3>
+
+      <p><strong>1. % of regional total (each row vs its region's sum):</strong></p>
+      <div class="diagram">{revenue} / sumOver(sum({revenue}), [{region}], PRE_AGG)</div>
+
+      <p><strong>2. Month-over-month revenue change:</strong></p>
+      <div class="diagram">periodOverPeriodDifference(
+  sum({revenue}),
+  {order_date},
+  MONTH,
+  1
+)</div>
+
+      <div class="lab">
+        <h4>ð§ª Lab 4: Add three calculated fields to your sales analysis</h4>
+        <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~20 minutes. Prerequisite: Lab 3 â the SF Regional Sales analysis with the 4-visual sheet.</p>
+        <ol>
+          <li>Open the <strong>SF Regional Sales â Practice</strong> analysis from Lab 3.</li>
+          <li>Click <strong>+ Add â Add calculated field</strong> at the top of the fields list.</li>
+          <li><strong>Field 1 â Deal Tier (row-level conditional):</strong>
+            <div class="diagram">ifelse(
+  {revenue} >= 50000, 'Strategic',
+  {revenue} >= 10000, 'Major',
+  {revenue} >= 1000,  'Mid',
+  'Small'
+)</div>
+            Name it <code>deal_tier</code>. Save.
+          </li>
+          <li><strong>Field 2 â Pct of Region Revenue (level-aware):</strong>
+            <div class="diagram">{revenue} / sumOver(sum({revenue}), [{region}], PRE_AGG)</div>
+            Name it <code>pct_of_region</code>. Format as Percent, 1 decimal. Save.
+          </li>
+          <li><strong>Field 3 â Days Since Order (date arithmetic):</strong>
+            <div class="diagram">dateDiff({order_date}, now(), 'DD')</div>
+            Name it <code>days_since_order</code>. Save.
+          </li>
+          <li><strong>Add a new visual</strong> on the same sheet â Pivot Table.
+            <ul>
+              <li>Rows: <code>region</code>, <code>deal_tier</code></li>
+              <li>Values: <code>revenue</code> (Sum), <code>pct_of_region</code> (Sum)</li>
+              <li>Title: <strong>Deal Tier Mix by Region</strong></li>
+            </ul>
+          </li>
+          <li>Verify: within each region, the <code>pct_of_region</code> values should sum to ~100% across the four deal tiers.</li>
+          <li>Save the analysis.</li>
+        </ol>
+        <div class="lab-expected">
+          <strong>Expected outcome:</strong> A pivot showing each region split into Strategic / Major / Mid / Small tiers, with revenue totals per tier and a percentage column where each region's tiers add to 100%. Strategic should be the smallest count of orders but largest revenue share in most regions.
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <h4>ð¡ LAC functions ignore visual grouping</h4>
+        <p>Even if you add <code>category</code> to the rows of the pivot, <code>pct_of_region</code> still divides by region totals â that's what makes it level-aware. Without LAC, you'd be re-dividing by the row's grouping context.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m4-s6"></div>
+    `
+  }
+];
+const SQ=typeof SECTION_QUESTIONS!=='undefined'?SECTION_QUESTIONS:{};
+function revLoad(){try{return JSON.parse(localStorage.getItem(REV_KEY))||{};}catch(e){return {};}}
+function revSave(s){localStorage.setItem(REV_KEY,JSON.stringify(s));if(typeof sfWrite==='function')sfWrite(s);}
+
+function allSectionsComplete(){
+  return SECTIONS.every(s=>revLoad()['section_complete_'+s.id]===true);
+}
+
+function updateModuleCompleteBtn(){
+  const btn=document.getElementById('module-complete-btn');
+  const hint=document.getElementById('module-complete-hint');
+  if(!btn)return;
+  const state=revLoad();
+  if(state.completed){
+    btn.textContent='✓ Module Review Submitted';
+    btn.classList.add('unlocked');
+    btn.disabled=true;
+    if(hint)hint.textContent='Review submitted on '+new Date(state.completedAt).toLocaleString();
+    return;
+  }
+  const done=SECTIONS.filter(s=>state['section_complete_'+s.id]===true).length;
+  const total=SECTIONS.length;
+  if(done===total){
+    btn.classList.add('unlocked');
+    if(hint)hint.textContent='All '+total+' sections complete. You may now submit your module review.';
+  } else {
+    btn.classList.remove('unlocked');
+    if(hint)hint.textContent=done+' of '+total+' sections complete. Complete all sections to unlock.';
+  }
+}
+
+function buildQuestionBlock(secId,questions){
+  if(!questions||!questions.length)return '';
+  const keys=['A','B','C','D'];
+  const state=revLoad();
+  const secDone=state['section_complete_'+secId]===true;
+  let html='<div class="section-questions">';
+  questions.forEach((q,qi)=>{
+    const answered=state['sq_'+secId+'_'+qi+'_correct']===true;
+    html+='<div class="section-question-item'+(answered?' answered-correct':'')+'" id="sq-item-'+secId+'-'+qi+'">';
+    html+='<div class="sq-text">'+(qi+1)+'. '+q.q.replace(/</g,'&lt;')+'</div>';
+    html+='<div class="sq-options" id="sq-opts-'+secId+'-'+qi+'">';
+    q.o.forEach((opt,oi)=>{
+      html+='<div class="sq-option" data-sec="'+secId+'" data-q="'+qi+'" data-i="'+oi+'" onclick="sqSelect(this)"><span class="sq-option-key">'+keys[oi]+'</span><span>'+opt.replace(/</g,'&lt;')+'</span></div>';
+    });
+    html+='</div>';
+    html+='<div class="sq-feedback" id="sq-fb-'+secId+'-'+qi+'"></div>';
+    html+='<button class="sq-check-btn" id="sq-btn-'+secId+'-'+qi+'" onclick="sqCheck('+secId+','+qi+','+q.c+')" '+(answered?'disabled':'')+'>Check Answer</button>';
+    html+='</div>';
+  });
+  html+='</div>';
+  const allAnswered=questions.every((_,qi)=>revLoad()['sq_'+secId+'_'+qi+'_correct']===true);
+  html+='<button class="section-complete-btn'+(allAnswered||secDone?' unlocked':'')+' '+(secDone?'done':'')+'" id="sec-complete-btn-'+secId+'" onclick="sectionComplete('+secId+')" '+(secDone?'disabled':(allAnswered?'':'disabled'))+'>'+(secDone?'✓ Section Reviewed':'Mark Section as Reviewed')+'</button>';
+  return html;
+}
+
+window.sqSelect=function(el){
+  const secId=el.dataset.sec,qi=el.dataset.q;
+  document.querySelectorAll('[data-sec="'+secId+'"][data-q="'+qi+'"]').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+};
+
+window.sqCheck=function(secId,qi,correctIdx){
+  const selected=document.querySelector('[data-sec="'+secId+'"][data-q="'+qi+'"].selected');
+  if(!selected){alert('Please select an answer first.');return;}
+  const chosenIdx=parseInt(selected.dataset.i);
+  const isCorrect=(chosenIdx===correctIdx);
+  const fb=document.getElementById('sq-fb-'+secId+'-'+qi);
+  const btn=document.getElementById('sq-btn-'+secId+'-'+qi);
+  const item=document.getElementById('sq-item-'+secId+'-'+qi);
+  if(isCorrect){
+    selected.classList.add('correct');
+    if(fb){fb.textContent='✓ Correct!';fb.className='sq-feedback correct';}
+    if(btn)btn.disabled=true;
+    if(item)item.classList.add('answered-correct');
+    const st=revLoad();st['sq_'+secId+'_'+qi+'_correct']=true;revSave(st);
+    const secQs=SQ[secId]||[];
+    const allCorrect=secQs.every((_,i)=>revLoad()['sq_'+secId+'_'+i+'_correct']===true);
+    const secBtn=document.getElementById('sec-complete-btn-'+secId);
+    if(allCorrect&&secBtn){secBtn.classList.add('unlocked');secBtn.removeAttribute('disabled');}
+  } else {
+    selected.classList.add('wrong');
+    if(fb){fb.textContent='✗ Incorrect — please try again.';fb.className='sq-feedback wrong';}
+    setTimeout(()=>{
+      selected.classList.remove('wrong','selected');
+      if(fb){fb.textContent='';fb.className='sq-feedback';}
+    },1500);
+  }
+};
+
+window.sectionComplete=function(secId){
+  const btn=document.getElementById('sec-complete-btn-'+secId);
+  if(!btn||!btn.classList.contains('unlocked'))return;
+  btn.classList.add('done');btn.disabled=true;btn.textContent='✓ Section Reviewed';
+  const st=revLoad();st['section_complete_'+secId]=true;st['section_completed_at_'+secId]=new Date().toISOString();revSave(st);
+  updateModuleCompleteBtn();
+};
+
+window.toggleSection=(id)=>{const body=document.getElementById('body-'+id);const toggle=document.getElementById('toggle-'+id);const isOpen=body.classList.contains('open');document.querySelectorAll('.section-body').forEach(b=>b.classList.remove('open'));document.querySelectorAll('.section-toggle').forEach(t=>t.classList.remove('open'));if(!isOpen){body.classList.add('open');toggle.classList.add('open');}};
+window.copyCode=(btn)=>{const text=btn.parentElement.innerText.replace('Copy','').trim();navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);});};
+
+function renderAll(){
+  const sec=document.getElementById('sections-container');if(!sec)return;sec.innerHTML='';
+  const s0=revLoad();
+  SECTIONS.forEach(s=>{
+    const secDone=s0['section_complete_'+s.id]===true;
+    const sd=document.createElement('div');sd.className='section-block';
+    const badgeTxt=BADGES[s.badge]||s.badge||'';
+    const questions=SQ[s.id]||[];
+    const qBlock=buildQuestionBlock(s.id,questions);
+    sd.innerHTML='<div class="section-header" onclick="toggleSection('+s.id+')"><span class="section-num">'+s.id+'.</span><span class="section-title">'+s.title+'</span>'+(badgeTxt?'<span style="font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;background:#e8f1fb;color:#1a6eb5;font-family:Source Code Pro,monospace;">'+badgeTxt+'</span>':'')+(secDone?'<span style="font-size:12px;margin-left:4px;">✅</span>':'')+'<span class="section-toggle" id="toggle-'+s.id+'">▼</span></div><div class="section-body" id="body-'+s.id+'">'+s.content+'</div>';
+    sec.appendChild(sd);
+    if(qBlock){const bodyEl=document.getElementById('body-'+s.id);if(bodyEl)bodyEl.insertAdjacentHTML('beforeend',qBlock);}
+  });
+  updateModuleCompleteBtn();
+}
+
+const moduleCommentEl=document.getElementById('module-comment');
+if(moduleCommentEl){
+  const s=revLoad();if(s.moduleComment)moduleCommentEl.value=s.moduleComment;
+  moduleCommentEl.addEventListener('input',()=>{const s=revLoad();s.moduleComment=moduleCommentEl.value;revSave(s);});
+}
+renderAll();
+</script>
+<script>
+(function(){var scripts=['https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js','https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js'];function loadNext(i){if(i>=scripts.length){window._sfFirebaseReady=true;initRevFirebase();return;}var s=document.createElement('script');s.src=scripts[i];s.onload=function(){loadNext(i+1);};s.onerror=function(){window._sfFirebaseReady=false;};document.head.appendChild(s);}loadNext(0);})();
+</script>
+<script>
+function initRevFirebase(){
+  const SF_CONFIG={apiKey:"AIzaSyA-8fatW5D7uR69rcuGFPH54IFqrz0PhU0",authDomain:"sfcertification-grafana.firebaseapp.com",projectId:"sfcertification-grafana",storageBucket:"sfcertification-grafana.firebasestorage.app",messagingSenderId:"227322696511",appId:"1:227322696511:web:12e7ced7dd3d45fa06798a"};
+  if(!firebase.apps.length)firebase.initializeApp(SF_CONFIG);
+  window.sfAuth=firebase.auth();window.sfDb=firebase.firestore();
+  const REV_KEY_FB='reviewer_quicksight-essentials_module-4';
+  const COURSE_ID='E6LTgyyfu779VtlpALjO';
+  function sfDocRef(){if(!window.sfReviewerUid)return null;return window.sfDb.collection('reviewerSessions').doc(window.sfReviewerUid).collection('quicksight-essentials').doc('module-4');}
+  function sfInitSession(){const local=revLoad();if(!local.startedAt){local.startedAt=new Date().toISOString();localStorage.setItem(REV_KEY,JSON.stringify(local));}if(!window._sfFirebaseReady||!window.sfReviewerUid)return;sfDocRef().set({email:window.sfReviewerEmail,moduleId:'module-4',courseId:COURSE_ID,startedAt:local.startedAt,lastUpdated:firebase.firestore.FieldValue.serverTimestamp(),reviewComplete:local.reviewComplete||false,attemptCount:local.attemptCount||0},{merge:true}).catch(e=>console.warn('SF init:',e.message));}
+  window.sfInitSession=sfInitSession;
+  window.sfWrite=function(extra){if(!window._sfFirebaseReady||!window.sfReviewerUid)return;const ref=sfDocRef();if(!ref)return;const local=revLoad();const payload=Object.assign({},local,extra,{email:window.sfReviewerEmail,moduleId:'module-4',courseId:COURSE_ID,lastUpdated:firebase.firestore.FieldValue.serverTimestamp()});ref.set(payload,{merge:true}).catch(e=>console.warn('SF write:',e.message));};
+  window.sfFetchAndMerge=async function(){const ref=sfDocRef();if(!ref)return;try{const snap=await ref.get();if(!snap.exists)return;const remote=snap.data();const local=revLoad();const merged=Object.assign({},local,remote);delete merged.email;delete merged.lastUpdated;localStorage.setItem(REV_KEY,JSON.stringify(merged));if(typeof renderAll==='function'){renderAll();}if(typeof updateCompleteBar==='function')updateCompleteBar();}catch(e){console.warn('SF fetch:',e.message);}};
+  function sfHideOverlayFB(user){window.sfReviewerEmail=user.email;window.sfReviewerUid=user.uid;const ov=document.getElementById('sfSigninOverlay');if(ov)ov.classList.add('hidden');const bar=document.getElementById('sfSignedInBar');const lbl=document.getElementById('sfSignedInEmail');if(bar)bar.classList.remove('hidden');if(lbl)lbl.textContent='Signed in as '+user.email;sfInitSession();window.sfFetchAndMerge();}
+  window.sfAuth.onAuthStateChanged(user=>{if(user){sfHideOverlayFB(user);}else{document.getElementById('sfSigninOverlay').classList.remove('hidden');}});
+}
+</script>
+</body>
+</html>
