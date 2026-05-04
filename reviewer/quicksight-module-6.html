@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate"/>
+<title>[Reviewer] Module 6: Quicksight Module 6</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#eef2f7;--bg2:#ffffff;--bg3:#f0f4f9;--border:#d0dae8;--text:#1a2332;--text-dim:#4a5568;--text-dimmer:#8fa3bc;--blue:#1a6eb5;--blue-light:#e8f1fb;--blue-mid:#b8d0ed;--green:#1a6b3a;--green-light:#e8f5ed;--coral:#c0392b;--coral-light:#fdf0ee;--radius:12px;}
+  html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Merriweather Sans',sans-serif;font-size:15px;line-height:1.6;}
+  a{color:var(--blue);text-decoration:none;}
+  .reviewer-topbanner{background:#f5f0ff;border-bottom:2px solid #c4bdf0;padding:9px 40px;font-size:12px;font-family:'Source Code Pro',monospace;color:#5b4fcf;display:flex;align-items:center;gap:8px;}
+  .sf-signin-overlay{position:fixed;inset:0;background:rgba(20,30,50,.82);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(3px);}
+  .sf-signin-overlay.hidden{display:none;}
+  .sf-signin-card{background:#fff;border-radius:16px;padding:36px 40px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;}
+  .sf-signin-logo{font-size:32px;margin-bottom:12px;}
+  .sf-signin-title{font-size:17px;font-weight:700;color:#1a2332;margin-bottom:8px;}
+  .sf-signin-sub{font-size:13px;color:#4a5568;line-height:1.6;margin-bottom:24px;}
+  .sf-google-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #d0dae8;border-radius:8px;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;color:#1a2332;width:100%;justify-content:center;transition:box-shadow .15s;}
+  .sf-google-btn:hover{box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .sf-google-btn img{width:20px;height:20px;}
+  .sf-signin-divider{font-size:11px;color:#8fa3bc;text-align:center;margin:14px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Source Code Pro',monospace;}
+  .sf-signin-divider::before,.sf-signin-divider::after{content:'';flex:1;height:1px;background:#d0dae8;}
+  .sf-fallback-input{width:100%;padding:10px 12px;border:1.5px solid #d0dae8;border-radius:8px;font-size:14px;font-family:'Merriweather Sans',sans-serif;color:#1a2332;margin-bottom:10px;outline:none;}
+  .sf-fallback-input:focus{border-color:var(--blue);}
+  .sf-fallback-btn{width:100%;padding:10px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;}
+  .sf-signin-error{margin-top:14px;font-size:12.5px;color:#c0392b;font-family:'Source Code Pro',monospace;background:#fdf0ee;border:1px solid #f0b8b2;border-radius:6px;padding:10px 12px;display:none;text-align:left;}
+  .sf-signin-error.visible{display:block;}
+  .sf-signed-in-bar{background:#e8f5ed;border-bottom:1px solid #a3d4b8;padding:7px 40px;font-size:11px;font-family:'Source Code Pro',monospace;color:var(--green);display:flex;align-items:center;justify-content:space-between;}
+  .sf-signed-in-bar.hidden{display:none;}
+  .sf-signout-btn{font-size:10px;color:var(--blue);background:none;border:1px solid #b8d0ed;border-radius:4px;padding:2px 8px;cursor:pointer;}
+  .topnav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 40px;height:48px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dimmer);font-family:'Source Code Pro',monospace;position:sticky;top:0;z-index:100;}
+  .topnav a{color:var(--blue);}
+  .sep{margin:0 4px;color:var(--text-dimmer);}
+  .main{max-width:860px;margin:0 auto;padding:36px 40px 80px;}
+  .module-hero{margin-bottom:28px;}
+  .hero-eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:8px;font-family:'Source Code Pro',monospace;}
+  .module-hero h1{font-size:clamp(18px,2.5vw,26px);font-weight:700;color:var(--text);line-height:1.25;}
+  .section-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+  .section-header{padding:14px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+  .section-header:hover{background:var(--bg3);}
+  .section-num{font-size:10px;font-weight:700;color:var(--text-dimmer);min-width:24px;font-family:'Source Code Pro',monospace;}
+  .section-title{font-weight:600;font-size:14px;flex:1;color:var(--text);}
+  .section-toggle{font-size:11px;color:var(--text-dimmer);transition:transform .2s;}
+  .section-toggle.open{transform:rotate(180deg);}
+  .section-body{display:none;padding:20px 22px 14px;border-top:1px solid var(--border);font-size:14px;color:var(--text-dim);line-height:1.75;}
+  .section-body.open{display:block;}
+  .section-body h3{font-size:15px;font-weight:700;color:var(--text);margin:16px 0 8px;}
+  .section-body p{margin-bottom:10px;}
+  .section-body ul,.section-body ol{margin:8px 0 12px 20px;}
+  .section-body li{margin-bottom:4px;}
+  .section-body code{font-family:'Source Code Pro',monospace;font-size:12.5px;background:var(--bg3);border:1px solid var(--border);padding:1px 5px;border-radius:4px;color:#0f4a7a;}
+  .section-body pre{background:#1e2433;color:#cdd6f4;padding:16px;border-radius:8px;font-size:12.5px;font-family:'Source Code Pro',monospace;overflow-x:auto;margin:12px 0;position:relative;}
+  .copy-btn,.copy-btn-small{position:absolute;top:8px;right:8px;background:#252b3b;border:1px solid #3a4155;color:#7a8ab0;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;font-family:'Source Code Pro',monospace;}
+  .copy-btn:hover,.copy-btn-small:hover{color:#cdd6f4;}
+  .reviewer-bar{background:#fff8e6;border:1px solid #f0d4a0;border-left:3px solid #92600a;border-radius:8px;padding:10px 16px;margin:18px 0 6px;display:flex;align-items:center;gap:10px;font-size:13px;color:#92600a;font-family:'Source Code Pro',monospace;}
+  .reviewer-bar input[type="checkbox"]{width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:var(--green);}
+  .reviewer-bar label{cursor:pointer;font-weight:600;user-select:none;}
+  .reviewer-bar.checked{background:var(--green-light);border-color:#a3d4b8;border-left-color:var(--green);color:var(--green);}
+  .reviewer-panel{background:#f5f0ff;border:1px solid #c4bdf0;border-top:3px solid #5b4fcf;border-radius:12px;padding:24px 28px;margin:32px 0;}
+  .reviewer-panel-label{font-size:9px;font-family:'Source Code Pro',monospace;letter-spacing:.18em;text-transform:uppercase;color:#5b4fcf;font-weight:600;margin-bottom:16px;}
+  .reviewer-q-text{font-size:14px;font-weight:600;color:#1a2332;line-height:1.65;margin-bottom:14px;}
+  .reviewer-options{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+  .reviewer-option{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1px solid #d0dae8;border-radius:8px;cursor:pointer;font-size:13.5px;color:#4a5568;line-height:1.5;background:#fff;transition:background .12s,border-color .12s;}
+  .reviewer-option:hover{background:#f0f4f9;border-color:#b8d0ed;}
+  .reviewer-option.selected{background:#e8f1fb;border-color:var(--blue);color:#1a2332;}
+  .reviewer-option.correct{background:var(--green-light);border-color:#a3d4b8;color:var(--green);}
+  .reviewer-option.wrong{background:var(--coral-light);border-color:#f0b8b2;color:var(--coral);}
+  .reviewer-option-key{font-family:'Source Code Pro',monospace;font-size:11px;font-weight:700;color:#8fa3bc;flex-shrink:0;margin-top:1px;}
+  .reviewer-reveal{font-size:12px;font-family:'Source Code Pro',monospace;color:#5b4fcf;cursor:pointer;text-decoration:underline;background:none;border:none;padding:0;margin-bottom:14px;display:block;}
+  .reviewer-explanation{font-size:13px;color:#4a5568;line-height:1.7;padding:12px 14px;background:#eef2f7;border-radius:8px;margin-bottom:16px;display:none;}
+  .reviewer-explanation.visible{display:block;}
+  .reviewer-exp-label{font-size:9px;font-family:'Source Code Pro',monospace;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+  .reviewer-exp-label.correct{color:var(--green);}
+  .reviewer-exp-label.wrong{color:var(--coral);}
+  .reviewer-comment-label{font-size:11px;font-family:'Source Code Pro',monospace;letter-spacing:.12em;text-transform:uppercase;color:#8fa3bc;font-weight:600;margin-bottom:6px;}
+  .reviewer-comment{width:100%;min-height:80px;padding:10px 12px;border:1px solid #c4bdf0;border-radius:8px;font-family:'Merriweather Sans',sans-serif;font-size:13.5px;color:#1a2332;background:#fff;resize:vertical;line-height:1.6;}
+  .reviewer-comment:focus{outline:none;border-color:#5b4fcf;}
+  .reviewer-save-note{font-size:11px;font-family:'Source Code Pro',monospace;color:#8fa3bc;margin-top:6px;}
+  .rev-complete-wrap{margin:28px 0 0;}
+  .rev-complete-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:8px;font-size:13.5px;font-family:'Source Code Pro',monospace;font-weight:600;border:1.5px solid var(--border);background:var(--bg3);color:var(--text-dimmer);transition:all .2s;}
+  .rev-complete-bar.disabled{opacity:.6;cursor:not-allowed;}
+  .rev-complete-bar.ready{background:#fff8e6;border-color:#f0d4a0;border-left:3px solid #92600a;color:#92600a;cursor:pointer;}
+  .rev-complete-bar.done{background:var(--green-light);border-color:#a3d4b8;border-left:3px solid var(--green);color:var(--green);cursor:default;}
+  .rev-complete-bar input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;accent-color:var(--green);}
+  .rev-complete-bar.disabled input{cursor:not-allowed;}
+  .rev-complete-hint{font-size:11px;font-family:'Source Code Pro',monospace;color:var(--text-dimmer);margin-top:6px;min-height:16px;}
+  .bottom-nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0 0;border-top:1px solid var(--border);margin-top:40px;}
+  .nav-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-family:'Source Code Pro',monospace;color:var(--blue);text-decoration:none;padding:10px 18px;border:1px solid var(--blue-mid);border-radius:8px;background:var(--blue-light);font-weight:600;}
+  .nav-btn.secondary{background:var(--bg2);color:var(--text-dim);border-color:var(--border);}
+  .nav-btn:hover{background:var(--blue-mid);}
+</style>
+<style>
+.section-questions{margin-top:16px;border-top:2px solid #e2e8f0;padding-top:16px;}
+.section-question-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:12px;}
+.section-question-item.answered-correct{border-color:#16a34a;background:#f0fdf4;}
+.section-question-item.answered-wrong{border-color:#dc2626;background:#fef2f2;}
+.sq-text{font-size:14px;font-weight:600;color:#0f172a;margin-bottom:10px;}
+.sq-options{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.sq-option{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;background:#fff;transition:all .15s;}
+.sq-option:hover{border-color:#2563eb;background:#eff6ff;}
+.sq-option.selected{border-color:#2563eb;background:#eff6ff;}
+.sq-option.correct{border-color:#16a34a;background:#f0fdf4;color:#16a34a;font-weight:600;}
+.sq-option.wrong{border-color:#dc2626;background:#fef2f2;color:#dc2626;}
+.sq-option-key{font-family:'Source Code Pro',monospace;font-size:11px;font-weight:700;color:#94a3b8;min-width:18px;}
+.sq-feedback{font-size:12px;font-weight:700;padding:4px 0;}
+.sq-feedback.correct{color:#16a34a;}
+.sq-feedback.wrong{color:#dc2626;}
+.sq-check-btn{background:#2563eb;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;}
+.sq-check-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.section-complete-btn{display:flex;align-items:center;gap:8px;background:transparent;border:2px solid #e2e8f0;color:#94a3b8;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:not-allowed;margin-top:14px;transition:all .2s;}
+.section-complete-btn.unlocked{border-color:#16a34a;color:#16a34a;cursor:pointer;background:#f0fdf4;}
+.section-complete-btn.done{border-color:#16a34a;background:#16a34a;color:#fff;cursor:default;}
+.module-complete-wrap{background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:20px;margin-top:28px;text-align:center;}
+.module-complete-btn{background:#16a34a;color:#fff;border:none;border-radius:10px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;opacity:0.4;pointer-events:none;transition:all .2s;}
+.module-complete-btn.unlocked{opacity:1;pointer-events:auto;}
+.module-complete-hint{font-size:13px;color:#64748b;margin-top:8px;}
+.reviewer-comment-wrap{margin-top:20px;}
+.reviewer-comment-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748b;margin-bottom:6px;}
+.reviewer-comment{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:80px;outline:none;}
+.reviewer-comment:focus{border-color:#2563eb;}
+</style>
+</head>
+<body>
+<div class="sf-signin-overlay" id="sfSigninOverlay">
+  <div class="sf-signin-card">
+    <div class="sf-signin-logo">🔐</div>
+    <div class="sf-signin-title">Sign in to save your progress</div>
+    <div class="sf-signin-sub">Sign in with your SourceFuse Gmail. Review progress, checkboxes and question attempts are saved and restored across devices.</div>
+    <button class="sf-google-btn" id="sfGoogleSignInBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Sign in with Google</button>
+    <div class="sf-signin-divider">or</div>
+    <input type="text" class="sf-fallback-input" id="sfEmailInput" placeholder="your.name@sourcefuse.com" autocomplete="off" inputmode="email">
+    <button class="sf-fallback-btn" id="sfEmailSignInBtn">Continue with SF email</button>
+    <div class="sf-signin-error" id="sfSigninError"></div>
+  </div>
+</div>
+<div class="sf-signed-in-bar hidden" id="sfSignedInBar"><span id="sfSignedInEmail">Signed in as …</span><button class="sf-signout-btn" id="sfSignoutLink">Sign out</button></div>
+<div class="reviewer-topbanner"><span>👁</span><strong>Reviewer Mode</strong> — Module 6: Quicksight Module 6</div>
+<div class="main">
+  <div class="module-hero">
+    <div class="hero-eyebrow">Module 6 of 6 · Reviewer Mode</div>
+    <h1>Quicksight Module 6</h1>
+    <p style="color:#64748b;font-size:14px;margin-top:8px;">Review each section carefully and answer all questions correctly to mark sections complete. Once all sections are complete, submit your module review.</p>
+  </div>
+  <div id="sections-container"></div>
+  <div class="module-complete-wrap">
+    <div class="module-complete-hint" id="module-complete-hint">Complete all sections to unlock</div>
+    <div class="reviewer-comment-wrap">
+      <div class="reviewer-comment-label">Module Review Notes</div>
+      <textarea class="reviewer-comment" id="module-comment" placeholder="Add your overall notes for this module…"></textarea>
+    </div>
+    <button class="module-complete-btn" id="module-complete-btn" onclick="submitModuleComplete()">✓ Mark Module 6 as Reviewed</button>
+  </div>
+</div>
+<script>
+function sfShowError(msg){const el=document.getElementById('sfSigninError');if(el){el.textContent=msg;el.classList.add('visible');}}
+function sfHideOverlay(user){
+  window.sfReviewerEmail=user.email||user;window.sfReviewerUid=user.uid||'email_'+btoa(window.sfReviewerEmail).replace(/=/g,'');
+  const ov=document.getElementById('sfSigninOverlay');if(ov)ov.classList.add('hidden');
+  const bar=document.getElementById('sfSignedInBar');const lbl=document.getElementById('sfSignedInEmail');
+  if(bar)bar.classList.remove('hidden');if(lbl)lbl.textContent='Signed in as '+window.sfReviewerEmail;
+  if(typeof sfInitSession==='function')sfInitSession();
+  if(window._sfFirebaseReady&&typeof window.sfDb!=='undefined'&&typeof sfFetchAndMerge==='function')sfFetchAndMerge();
+}
+function sfSignInWithEmail(){const emailEl=document.getElementById('sfEmailInput');if(!emailEl)return;const email=emailEl.value.trim();if(!email||!email.includes('@')){sfShowError('Please enter a valid email address.');return;}if(!email.endsWith('@sourcefuse.com')){sfShowError('Please use your @sourcefuse.com email address.');return;}sfHideOverlay(email);}
+async function sfSignInWithGoogle(){if(typeof firebase==='undefined'||!window._sfFirebaseReady){sfShowError('Popup blocked. Please enter your SF email below.');return;}const provider=new firebase.auth.GoogleAuthProvider();provider.setCustomParameters({hd:'sourcefuse.com',prompt:'select_account'});const t=setTimeout(()=>sfShowError('Popup blocked. Please enter your SF email below.'),30000);try{const r=await firebase.auth().signInWithPopup(provider);clearTimeout(t);sfHideOverlay(r.user);}catch(e){clearTimeout(t);sfShowError('Popup blocked. Please enter your SF email below.');}}
+function sfSignOut(){window.sfReviewerEmail=null;window.sfReviewerUid=null;const bar=document.getElementById('sfSignedInBar');const ov=document.getElementById('sfSigninOverlay');if(bar)bar.classList.add('hidden');if(ov)ov.classList.remove('hidden');if(typeof firebase!=='undefined'&&window._sfFirebaseReady)firebase.auth().signOut();}
+document.addEventListener('DOMContentLoaded',function(){const gb=document.getElementById('sfGoogleSignInBtn');const eb=document.getElementById('sfEmailSignInBtn');const so=document.getElementById('sfSignoutLink');if(gb)gb.addEventListener('click',sfSignInWithGoogle);if(eb)eb.addEventListener('click',sfSignInWithEmail);if(so)so.addEventListener('click',sfSignOut);});
+</script>
+<script>
+const HUB_URL = 'https://sflearningdevelopment.github.io/sf-knowledge-hub/index.html';
+const SECTION_COUNT = 17155;
+const SECTION_QUESTIONS = {"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]};
+
+function submitModuleComplete() {
+  const btn = document.getElementById('module-complete-btn');
+  if (!btn.classList.contains('unlocked')) return;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  const comment = document.getElementById('module-comment')?.value || '';
+  const completedAt = new Date().toISOString();
+  if (typeof sfWrite === 'function') {
+    sfWrite({ completed: true, comment, completedAt, sectionCount: SECTION_COUNT });
+  }
+  setTimeout(() => { window.location.href = HUB_URL; }, 1200);
+}
+</script>
+<script>
+const REV_KEY='reviewer_'+window.location.pathname.replace(/[^a-z0-9]/gi,'_');
+const BADGES={foundation:'Foundation',essential:'Essential',important:'Important'};
+const SECTIONS=[
+  {
+    id: 1,
+    title: 'Publishing Dashboards from Analyses',
+    badge: 'foundation',
+    content: `
+      <h3>ð The publish workflow</h3>
+      <p>An analysis is private to its creator (and explicit collaborators). To make it consumable by readers, you publish it as a dashboard.</p>
+
+      <ol>
+        <li>Open the analysis. Top right: <strong>Share â Publish dashboard</strong>.</li>
+        <li>Pick: <strong>Publish new dashboard</strong> (creates a new one) or <strong>Replace existing dashboard</strong> (updates the published version of one you've published before).</li>
+        <li>Set the dashboard name (visible to readers).</li>
+        <li>Optionally allow <strong>ad-hoc filtering</strong>, <strong>CSV export</strong>, and <strong>email reports</strong>. Toggle these per-dashboard.</li>
+        <li>Click <strong>Publish</strong>. The dashboard is created (or replaced).</li>
+        <li>Share it with users / groups in the next step.</li>
+      </ol>
+
+      <h3>ð Versions and rollback</h3>
+      <p>Each publish creates a version. From the dashboard's <strong>Manage versions</strong> menu you can:</p>
+      <ul>
+        <li>See all past versions with timestamps and the user who published</li>
+        <li>Roll back to a prior version (becomes the active version)</li>
+        <li>Delete old versions to clean up</li>
+      </ul>
+
+      <h3>ð What readers can do (and can't)</h3>
+      <table>
+        <tr><th>Capability</th><th>Reader</th><th>Author</th></tr>
+        <tr><td>View visuals</td><td>â</td><td>â</td></tr>
+        <tr><td>Use exposed filters and parameter controls</td><td>â</td><td>â</td></tr>
+        <tr><td>Drill down via configured drill paths</td><td>â</td><td>â</td></tr>
+        <tr><td>Export to CSV / PDF (if enabled)</td><td>â (if enabled)</td><td>â</td></tr>
+        <tr><td>Ad-hoc filter (filter beyond what's exposed)</td><td>â (if enabled)</td><td>â</td></tr>
+        <tr><td>Edit visual definitions</td><td>â</td><td>â</td></tr>
+        <tr><td>Add new visuals</td><td>â</td><td>â</td></tr>
+        <tr><td>See the underlying analysis</td><td>â</td><td>â</td></tr>
+      </table>
+
+      <div class="callout callout-warn">
+        <h4>â ï¸ Re-publishing is not automatic</h4>
+        <p>Iterating on the analysis does not change the dashboard. You must republish (Share â Publish dashboard â Replace existing). This is a feature: it protects readers from in-progress edits.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m6-s1"></div>
+    `
+  },
+  {
+    id: 2,
+    title: 'Users, Groups, and Sharing',
+    badge: 'foundation',
+    content: `
+      <h3>ð¥ Users and groups</h3>
+      <p>QuickSight has individual users and groups. Groups are collections of users â share with the group once, every member gets access. Manage from <strong>Manage QuickSight â Manage users â Manage groups</strong>.</p>
+
+      <p>Group examples that scale:</p>
+      <ul>
+        <li><code>sales-leadership</code> â VPs and directors</li>
+        <li><code>regional-managers-emea</code> â region-scoped managers</li>
+        <li><code>finance-readers</code> â anyone in finance who consumes dashboards</li>
+        <li><code>finance-authors</code> â finance team members who build dashboards</li>
+      </ul>
+
+      <h3>ð Sharing dashboards</h3>
+      <p>From a published dashboard: <strong>Share â Share dashboard</strong>. For each user or group, set the permission level:</p>
+      <ul>
+        <li><strong>Viewer</strong> â read-only access</li>
+        <li><strong>Co-owner</strong> â can re-share, modify permissions, and (if they're an author) edit the source analysis</li>
+      </ul>
+
+      <h3>ð Sharing datasets and analyses</h3>
+      <p>Sharing the dashboard does not automatically share the underlying dataset or analysis. If you want collaborators to be able to build on top, you need to explicitly share each artefact:</p>
+      <ul>
+        <li><strong>Datasets</strong> â share with view (use in their own analyses) or owner permission</li>
+        <li><strong>Analyses</strong> â share with view (see but not edit) or co-owner</li>
+        <li><strong>Folders</strong> â share a folder, all contents inherit the permissions</li>
+      </ul>
+
+      <h3>ð Folders for governance</h3>
+      <p>Use folders to organise assets and apply consistent permissions:</p>
+      <ul>
+        <li><strong>Personal folders</strong> â only the owner sees them</li>
+        <li><strong>Shared folders</strong> â visible to anyone the folder is shared with; all contents inherit folder permissions</li>
+      </ul>
+
+      <div class="callout callout-tip">
+        <h4>ð¡ Group everything, share to groups</h4>
+        <p>Sharing to individual users seems faster but creates a maintenance nightmare â the moment someone joins or leaves the team, you scramble. Always share to groups; manage group membership separately.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m6-s2"></div>
+    `
+  },
+  {
+    id: 3,
+    title: 'Row-Level Security (RLS)',
+    badge: 'essential',
+    content: `
+      <h3>ð¡ï¸ What RLS solves</h3>
+      <p>RLS ensures that different users see different rows of the same dataset. The classic example: regional managers each see only their own region's data, even though all regions live in the same dataset.</p>
+      <p>RLS is <strong>Enterprise edition only</strong>. Without it, anyone with access to the dataset sees all rows.</p>
+
+      <h3>ð§± The two RLS approaches</h3>
+
+      <h4>1. User-based RLS (rules dataset)</h4>
+      <ol>
+        <li>Build a <strong>rules dataset</strong> â a small table mapping users (or groups) to permitted values:
+          <table>
+            <tr><th>UserName</th><th>region</th></tr>
+            <tr><td>jv.ravichandran@sourcefuse.com</td><td>EMEA,APAC</td></tr>
+            <tr><td>finance-readers (group)</td><td>*</td></tr>
+            <tr><td>na-managers (group)</td><td>North America</td></tr>
+          </table>
+        </li>
+        <li>Upload it to QuickSight as a separate dataset</li>
+        <li>On the main dataset: <strong>Permissions â Set up row-level security â Choose rules dataset</strong></li>
+        <li>QuickSight enforces filtering at query time based on the logged-in user</li>
+      </ol>
+
+      <h4>2. Tag-based RLS (for embedded use cases)</h4>
+      <p>For embedded dashboards where the embedding application sets the user context, you pass <strong>session tags</strong> at embed time. The dataset filters by tag values rather than a rules table.</p>
+
+      <h3>ð¯ RLS rules â wildcards and multi-value</h3>
+      <ul>
+        <li>A blank cell or <code>*</code> = "no restriction on this column" (sees everything)</li>
+        <li>Comma-separated values = multi-value match: <code>EMEA,APAC</code> means user sees both</li>
+        <li>Multiple columns = AND logic: a row must match all column rules to be visible</li>
+        <li>Multiple rows for the same user = OR logic: row visible if any of the user's rules match</li>
+      </ul>
+
+      <h3>ð§ Column-level security (CLS) â bonus</h3>
+      <p>CLS hides specific columns from specific users/groups. From the dataset's permissions: <strong>Restrict access to certain fields</strong> â pick fields and users/groups. They simply don't see the field at all in any analysis built on the dataset.</p>
+
+      <div class="callout callout-warn">
+        <h4>â ï¸ Test RLS as a real user</h4>
+        <p>Use the <strong>View as</strong> feature in the dataset menu to see the dataset as a specific user â confirms your rules behave correctly before sharing.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m6-s3"></div>
+    `
+  },
+  {
+    id: 4,
+    title: 'Subscriptions, Alerts, and Email Reports',
+    badge: 'important',
+    content: `
+      <h3>ð¬ Email reports â push dashboards to inboxes</h3>
+      <p>Readers can subscribe to a dashboard so it arrives in their inbox on a schedule. As an author, you set up the schedule:</p>
+      <ol>
+        <li>Open the dashboard â <strong>Schedule â Create new schedule</strong></li>
+        <li>Set frequency: daily, weekly (pick days), monthly (pick day of month)</li>
+        <li>Set time and timezone</li>
+        <li>Pick what to send: full dashboard PDF, one specific sheet, or a tabular CSV</li>
+        <li>Pick recipients (specific users, groups, or all dashboard viewers)</li>
+        <li>Add an optional email subject and body</li>
+      </ol>
+
+      <h3>ð¨ Threshold alerts (KPI/Insights)</h3>
+      <p>Different from scheduled reports â alerts fire <em>only when a condition is met</em>. They run on KPI visuals.</p>
+      <ol>
+        <li>Open a KPI visual on a dashboard â context menu (...) â <strong>Create alert</strong></li>
+        <li>Set the condition: above / below / equal to a value, or % change vs prior period</li>
+        <li>Set the check frequency: hourly (Enterprise) or daily</li>
+        <li>Recipient receives an email only when the condition triggers</li>
+      </ol>
+
+      <p>Examples worth alerting on:</p>
+      <ul>
+        <li>Daily revenue drops &gt; 20% vs prior day</li>
+        <li>Open ticket count exceeds 500</li>
+        <li>SPICE refresh failure count &gt; 0 in the last 24 hours</li>
+      </ul>
+
+      <h3>â ï¸ Anomaly detection (ML Insights)</h3>
+      <p>Enterprise edition only. Add an Insight visual to your analysis â ML Insights â Anomaly detection. Configure the metric, dimensions, and a confidence threshold. QuickSight learns the baseline and surfaces anomalies in narrative form ("Revenue in EMEA was 38% below expected on April 22") and can be wired to alerts.</p>
+
+      <div class="callout callout-tip">
+        <h4>ð¡ Less is more on alerts</h4>
+        <p>Alert fatigue kills attention. Set thresholds that fire rarely (a few times a quarter). If an alert fires daily, it's a status report, not an alert â convert it to a scheduled report instead.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m6-s4"></div>
+    `
+  },
+  {
+    id: 5,
+    title: 'Embedding QuickSight in Applications',
+    badge: 'important',
+    content: `
+      <h3>ðª Why embed?</h3>
+      <p>Sometimes you don't want users to log into QuickSight at all. They use your application; the analytics should appear seamlessly inside it. QuickSight Enterprise supports embedding for exactly this â and the embedding flow has changed enough over the years that it's worth knowing the current model.</p>
+
+      <h3>ð§± Two embedding modes</h3>
+      <table>
+        <tr><th>Mode</th><th>Who sees it</th><th>Auth model</th></tr>
+        <tr><td><strong>Registered user</strong></td><td>Users who exist in QuickSight (typically a B2B internal app)</td><td>QuickSight identifies them by their registered email/username</td></tr>
+        <tr><td><strong>Anonymous</strong></td><td>Users who do not exist in QuickSight (typically a public-facing or B2C app)</td><td>Your backend assumes a session role; QuickSight uses session tags for security</td></tr>
+      </table>
+
+      <h3>ð The embed flow (high level)</h3>
+      <ol>
+        <li>Your backend authenticates the user (whatever way your app does that)</li>
+        <li>Your backend calls QuickSight's <code>GenerateEmbedUrlForRegisteredUser</code> or <code>GenerateEmbedUrlForAnonymousUser</code> API</li>
+        <li>QuickSight returns a short-lived URL (valid for ~5 min to start, can be auto-refreshed)</li>
+        <li>Your frontend uses the QuickSight Embedding SDK (JavaScript) to load that URL into an iframe</li>
+        <li>The SDK handles resize, theme overrides, parameter passing, and event callbacks</li>
+      </ol>
+
+      <h3>ð Security model</h3>
+      <ul>
+        <li>The embed URL is single-use and short-lived â even if leaked, it expires quickly</li>
+        <li>For anonymous embed, RLS uses <strong>session tags</strong> (passed at embed time) instead of a user-based rules table</li>
+        <li>Your backend must whitelist the embedding domain in QuickSight settings â embed URLs only render in approved origins</li>
+      </ul>
+
+      <h3>ð¨ Embed customisation options via the SDK</h3>
+      <ul>
+        <li>Toggle the QuickSight UI chrome (top bar, footer)</li>
+        <li>Pass parameter values at load â pre-filter the dashboard</li>
+        <li>Apply a theme (Q, custom theme, or inherit your app's CSS variables)</li>
+        <li>Listen to events: filter changes, sheet changes, errors</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <h4>ð¡ Always check the current docs before implementing embed</h4>
+        <p>The embedding API has gone through several iterations (1-click, registered user, anonymous, Q embedding). Always cross-check parameter names and SDK methods against the current AWS docs at <code>docs.aws.amazon.com/quicksight</code> â examples in older blogs are often stale.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m6-s5"></div>
+    `
+  },
+  {
+    id: 6,
+    title: 'Lab 6 â Publish, Secure, Share',
+    badge: 'essential',
+    content: `
+      <h3>ð¯ What you'll build</h3>
+      <p>You'll publish the SF Regional Sales analysis as a dashboard, configure who can access it, set up row-level security so each region only sees its own data, and schedule a weekly email report. The full author-to-reader pipeline in one lab.</p>
+
+      <div class="lab">
+        <h4>ð§ª Lab 6: Full publish + secure + share</h4>
+        <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~30 minutes. Prerequisite: Lab 5 â the SF Regional Sales analysis with controls, top-N, and Region Detail sheet.</p>
+
+        <ol>
+          <li><strong>Publish:</strong> Open the SF Regional Sales analysis â Share â Publish dashboard. Name it <strong>SF Regional Sales â Live</strong>. Allow CSV export and email reports. Click Publish.</li>
+
+          <li><strong>Create test groups:</strong> Manage QuickSight â Manage groups â Create:
+            <ul>
+              <li><code>sf-bi-test-na</code></li>
+              <li><code>sf-bi-test-emea</code></li>
+              <li><code>sf-bi-test-leadership</code></li>
+            </ul>
+            (For this lab, add yourself to all three so you can test "view as".)
+          </li>
+
+          <li><strong>Build a rules dataset:</strong> Create a CSV file <code>sf-rls-rules.csv</code> with this content:
+            <div class="diagram">GroupName,region
+sf-bi-test-na,North America
+sf-bi-test-emea,EMEA
+sf-bi-test-leadership,*</div>
+            Upload to QuickSight as a new dataset (SPICE).
+          </li>
+
+          <li><strong>Apply RLS:</strong> Open the SF Sales + Customers dataset â Permissions â Set up row-level security â User-based â choose <code>sf-rls-rules</code> as the rules dataset â Save.</li>
+
+          <li><strong>Test RLS:</strong> Open the dashboard â top right â "View as" â pick a member of <code>sf-bi-test-emea</code>. Confirm only EMEA data appears in every visual. Switch to <code>sf-bi-test-leadership</code> â all regions should appear.</li>
+
+          <li><strong>Share the dashboard:</strong> Share â Share dashboard â add the three groups as Viewers. (Optionally add yourself as Co-owner.)</li>
+
+          <li><strong>Schedule a weekly report:</strong> Schedule â Create new schedule â Weekly, Monday 09:00 AM IST â Send PDF of full dashboard â Recipients: <code>sf-bi-test-leadership</code>. Subject: "Weekly SF Regional Sales".</li>
+
+          <li><strong>Add a KPI alert:</strong> On Sheet 1 â Total Revenue KPI â ... menu â Create alert â Condition: revenue drops &gt; 20% week-over-week â Recipient: yourself â Frequency: daily check.</li>
+
+          <li><strong>Document it:</strong> In the dashboard description, add a note: "Filtered by RLS based on group membership. Contact L&amp;D to request access for a new region."</li>
+
+          <li>Save and verify everything from the dashboard view (not the analysis view).</li>
+        </ol>
+
+        <div class="lab-expected">
+          <strong>Expected outcome:</strong> A published dashboard secured with RLS such that switching "View as" to a region-specific group restricts visible data to that region; the leadership group sees everything. A weekly Monday email schedule is configured. A revenue-drop alert is armed. The dashboard is shared with three test groups.
+        </div>
+      </div>
+
+      <h3>ð Course wrap-up</h3>
+      <p>You've now walked the full QuickSight pipeline from dataset â analysis â dashboard â published, secured, scheduled, and alerted. The artefact you built across Labs 1â6 (the SF Sales + Customers dataset, the SF Regional Sales analysis, and the SF Regional Sales â Live dashboard) is a real production-shaped deliverable.</p>
+
+      <p>Next: head back to the course dashboard and unlock the certification exam. The 40-question test samples from the question bank you've been practising against in every section.</p>
+
+      <div class="quiz-placeholder" data-quiz="m6-s6"></div>
+    `
+  }
+];
+const SQ=typeof SECTION_QUESTIONS!=='undefined'?SECTION_QUESTIONS:{};
+function revLoad(){try{return JSON.parse(localStorage.getItem(REV_KEY))||{};}catch(e){return {};}}
+function revSave(s){localStorage.setItem(REV_KEY,JSON.stringify(s));if(typeof sfWrite==='function')sfWrite(s);}
+
+function allSectionsComplete(){
+  return SECTIONS.every(s=>revLoad()['section_complete_'+s.id]===true);
+}
+
+function updateModuleCompleteBtn(){
+  const btn=document.getElementById('module-complete-btn');
+  const hint=document.getElementById('module-complete-hint');
+  if(!btn)return;
+  const state=revLoad();
+  if(state.completed){
+    btn.textContent='✓ Module Review Submitted';
+    btn.classList.add('unlocked');
+    btn.disabled=true;
+    if(hint)hint.textContent='Review submitted on '+new Date(state.completedAt).toLocaleString();
+    return;
+  }
+  const done=SECTIONS.filter(s=>state['section_complete_'+s.id]===true).length;
+  const total=SECTIONS.length;
+  if(done===total){
+    btn.classList.add('unlocked');
+    if(hint)hint.textContent='All '+total+' sections complete. You may now submit your module review.';
+  } else {
+    btn.classList.remove('unlocked');
+    if(hint)hint.textContent=done+' of '+total+' sections complete. Complete all sections to unlock.';
+  }
+}
+
+function buildQuestionBlock(secId,questions){
+  if(!questions||!questions.length)return '';
+  const keys=['A','B','C','D'];
+  const state=revLoad();
+  const secDone=state['section_complete_'+secId]===true;
+  let html='<div class="section-questions">';
+  questions.forEach((q,qi)=>{
+    const answered=state['sq_'+secId+'_'+qi+'_correct']===true;
+    html+='<div class="section-question-item'+(answered?' answered-correct':'')+'" id="sq-item-'+secId+'-'+qi+'">';
+    html+='<div class="sq-text">'+(qi+1)+'. '+q.q.replace(/</g,'&lt;')+'</div>';
+    html+='<div class="sq-options" id="sq-opts-'+secId+'-'+qi+'">';
+    q.o.forEach((opt,oi)=>{
+      html+='<div class="sq-option" data-sec="'+secId+'" data-q="'+qi+'" data-i="'+oi+'" onclick="sqSelect(this)"><span class="sq-option-key">'+keys[oi]+'</span><span>'+opt.replace(/</g,'&lt;')+'</span></div>';
+    });
+    html+='</div>';
+    html+='<div class="sq-feedback" id="sq-fb-'+secId+'-'+qi+'"></div>';
+    html+='<button class="sq-check-btn" id="sq-btn-'+secId+'-'+qi+'" onclick="sqCheck('+secId+','+qi+','+q.c+')" '+(answered?'disabled':'')+'>Check Answer</button>';
+    html+='</div>';
+  });
+  html+='</div>';
+  const allAnswered=questions.every((_,qi)=>revLoad()['sq_'+secId+'_'+qi+'_correct']===true);
+  html+='<button class="section-complete-btn'+(allAnswered||secDone?' unlocked':'')+' '+(secDone?'done':'')+'" id="sec-complete-btn-'+secId+'" onclick="sectionComplete('+secId+')" '+(secDone?'disabled':(allAnswered?'':'disabled'))+'>'+(secDone?'✓ Section Reviewed':'Mark Section as Reviewed')+'</button>';
+  return html;
+}
+
+window.sqSelect=function(el){
+  const secId=el.dataset.sec,qi=el.dataset.q;
+  document.querySelectorAll('[data-sec="'+secId+'"][data-q="'+qi+'"]').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+};
+
+window.sqCheck=function(secId,qi,correctIdx){
+  const selected=document.querySelector('[data-sec="'+secId+'"][data-q="'+qi+'"].selected');
+  if(!selected){alert('Please select an answer first.');return;}
+  const chosenIdx=parseInt(selected.dataset.i);
+  const isCorrect=(chosenIdx===correctIdx);
+  const fb=document.getElementById('sq-fb-'+secId+'-'+qi);
+  const btn=document.getElementById('sq-btn-'+secId+'-'+qi);
+  const item=document.getElementById('sq-item-'+secId+'-'+qi);
+  if(isCorrect){
+    selected.classList.add('correct');
+    if(fb){fb.textContent='✓ Correct!';fb.className='sq-feedback correct';}
+    if(btn)btn.disabled=true;
+    if(item)item.classList.add('answered-correct');
+    const st=revLoad();st['sq_'+secId+'_'+qi+'_correct']=true;revSave(st);
+    const secQs=SQ[secId]||[];
+    const allCorrect=secQs.every((_,i)=>revLoad()['sq_'+secId+'_'+i+'_correct']===true);
+    const secBtn=document.getElementById('sec-complete-btn-'+secId);
+    if(allCorrect&&secBtn){secBtn.classList.add('unlocked');secBtn.removeAttribute('disabled');}
+  } else {
+    selected.classList.add('wrong');
+    if(fb){fb.textContent='✗ Incorrect — please try again.';fb.className='sq-feedback wrong';}
+    setTimeout(()=>{
+      selected.classList.remove('wrong','selected');
+      if(fb){fb.textContent='';fb.className='sq-feedback';}
+    },1500);
+  }
+};
+
+window.sectionComplete=function(secId){
+  const btn=document.getElementById('sec-complete-btn-'+secId);
+  if(!btn||!btn.classList.contains('unlocked'))return;
+  btn.classList.add('done');btn.disabled=true;btn.textContent='✓ Section Reviewed';
+  const st=revLoad();st['section_complete_'+secId]=true;st['section_completed_at_'+secId]=new Date().toISOString();revSave(st);
+  updateModuleCompleteBtn();
+};
+
+window.toggleSection=(id)=>{const body=document.getElementById('body-'+id);const toggle=document.getElementById('toggle-'+id);const isOpen=body.classList.contains('open');document.querySelectorAll('.section-body').forEach(b=>b.classList.remove('open'));document.querySelectorAll('.section-toggle').forEach(t=>t.classList.remove('open'));if(!isOpen){body.classList.add('open');toggle.classList.add('open');}};
+window.copyCode=(btn)=>{const text=btn.parentElement.innerText.replace('Copy','').trim();navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);});};
+
+function renderAll(){
+  const sec=document.getElementById('sections-container');if(!sec)return;sec.innerHTML='';
+  const s0=revLoad();
+  SECTIONS.forEach(s=>{
+    const secDone=s0['section_complete_'+s.id]===true;
+    const sd=document.createElement('div');sd.className='section-block';
+    const badgeTxt=BADGES[s.badge]||s.badge||'';
+    const questions=SQ[s.id]||[];
+    const qBlock=buildQuestionBlock(s.id,questions);
+    sd.innerHTML='<div class="section-header" onclick="toggleSection('+s.id+')"><span class="section-num">'+s.id+'.</span><span class="section-title">'+s.title+'</span>'+(badgeTxt?'<span style="font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;background:#e8f1fb;color:#1a6eb5;font-family:Source Code Pro,monospace;">'+badgeTxt+'</span>':'')+(secDone?'<span style="font-size:12px;margin-left:4px;">✅</span>':'')+'<span class="section-toggle" id="toggle-'+s.id+'">▼</span></div><div class="section-body" id="body-'+s.id+'">'+s.content+'</div>';
+    sec.appendChild(sd);
+    if(qBlock){const bodyEl=document.getElementById('body-'+s.id);if(bodyEl)bodyEl.insertAdjacentHTML('beforeend',qBlock);}
+  });
+  updateModuleCompleteBtn();
+}
+
+const moduleCommentEl=document.getElementById('module-comment');
+if(moduleCommentEl){
+  const s=revLoad();if(s.moduleComment)moduleCommentEl.value=s.moduleComment;
+  moduleCommentEl.addEventListener('input',()=>{const s=revLoad();s.moduleComment=moduleCommentEl.value;revSave(s);});
+}
+renderAll();
+</script>
+<script>
+(function(){var scripts=['https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js','https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js'];function loadNext(i){if(i>=scripts.length){window._sfFirebaseReady=true;initRevFirebase();return;}var s=document.createElement('script');s.src=scripts[i];s.onload=function(){loadNext(i+1);};s.onerror=function(){window._sfFirebaseReady=false;};document.head.appendChild(s);}loadNext(0);})();
+</script>
+<script>
+function initRevFirebase(){
+  const SF_CONFIG={apiKey:"AIzaSyA-8fatW5D7uR69rcuGFPH54IFqrz0PhU0",authDomain:"sfcertification-grafana.firebaseapp.com",projectId:"sfcertification-grafana",storageBucket:"sfcertification-grafana.firebasestorage.app",messagingSenderId:"227322696511",appId:"1:227322696511:web:12e7ced7dd3d45fa06798a"};
+  if(!firebase.apps.length)firebase.initializeApp(SF_CONFIG);
+  window.sfAuth=firebase.auth();window.sfDb=firebase.firestore();
+  const REV_KEY_FB='reviewer_quicksight-essentials_module-6';
+  const COURSE_ID='E6LTgyyfu779VtlpALjO';
+  function sfDocRef(){if(!window.sfReviewerUid)return null;return window.sfDb.collection('reviewerSessions').doc(window.sfReviewerUid).collection('quicksight-essentials').doc('module-6');}
+  function sfInitSession(){const local=revLoad();if(!local.startedAt){local.startedAt=new Date().toISOString();localStorage.setItem(REV_KEY,JSON.stringify(local));}if(!window._sfFirebaseReady||!window.sfReviewerUid)return;sfDocRef().set({email:window.sfReviewerEmail,moduleId:'module-6',courseId:COURSE_ID,startedAt:local.startedAt,lastUpdated:firebase.firestore.FieldValue.serverTimestamp(),reviewComplete:local.reviewComplete||false,attemptCount:local.attemptCount||0},{merge:true}).catch(e=>console.warn('SF init:',e.message));}
+  window.sfInitSession=sfInitSession;
+  window.sfWrite=function(extra){if(!window._sfFirebaseReady||!window.sfReviewerUid)return;const ref=sfDocRef();if(!ref)return;const local=revLoad();const payload=Object.assign({},local,extra,{email:window.sfReviewerEmail,moduleId:'module-6',courseId:COURSE_ID,lastUpdated:firebase.firestore.FieldValue.serverTimestamp()});ref.set(payload,{merge:true}).catch(e=>console.warn('SF write:',e.message));};
+  window.sfFetchAndMerge=async function(){const ref=sfDocRef();if(!ref)return;try{const snap=await ref.get();if(!snap.exists)return;const remote=snap.data();const local=revLoad();const merged=Object.assign({},local,remote);delete merged.email;delete merged.lastUpdated;localStorage.setItem(REV_KEY,JSON.stringify(merged));if(typeof renderAll==='function'){renderAll();}if(typeof updateCompleteBar==='function')updateCompleteBar();}catch(e){console.warn('SF fetch:',e.message);}};
+  function sfHideOverlayFB(user){window.sfReviewerEmail=user.email;window.sfReviewerUid=user.uid;const ov=document.getElementById('sfSigninOverlay');if(ov)ov.classList.add('hidden');const bar=document.getElementById('sfSignedInBar');const lbl=document.getElementById('sfSignedInEmail');if(bar)bar.classList.remove('hidden');if(lbl)lbl.textContent='Signed in as '+user.email;sfInitSession();window.sfFetchAndMerge();}
+  window.sfAuth.onAuthStateChanged(user=>{if(user){sfHideOverlayFB(user);}else{document.getElementById('sfSigninOverlay').classList.remove('hidden');}});
+}
+</script>
+</body>
+</html>
