@@ -3113,8 +3113,14 @@ window.revOnRepoChange = function() {
 };
 
 window.revAddModuleRow = function(num, title, file) {
-  const repo = document.getElementById('rev-repo-select').value;
-  if (!repo) { alert('Please select a Course GitHub Repo first.'); return; }
+  // Old
+  // const repo = document.getElementById('rev-repo-select').value;
+  // if (!repo) { alert('Please select a Course GitHub Repo first.'); return; }
+  // New
+  const _urlInput = document.getElementById('rev-repo-url');
+  const repo = (_urlInput ? _urlInput.value : '').trim();
+  if (!repo) { alert('Please enter the URL of the course first.'); return; }
+
   revModuleCount++;
   const n = revModuleCount;
   const row = document.createElement('div');
