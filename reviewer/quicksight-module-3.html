@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate"/>
+<title>[Reviewer] Module 3: Quicksight Module 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#eef2f7;--bg2:#ffffff;--bg3:#f0f4f9;--border:#d0dae8;--text:#1a2332;--text-dim:#4a5568;--text-dimmer:#8fa3bc;--blue:#1a6eb5;--blue-light:#e8f1fb;--blue-mid:#b8d0ed;--green:#1a6b3a;--green-light:#e8f5ed;--coral:#c0392b;--coral-light:#fdf0ee;--radius:12px;}
+  html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Merriweather Sans',sans-serif;font-size:15px;line-height:1.6;}
+  a{color:var(--blue);text-decoration:none;}
+  .reviewer-topbanner{background:#f5f0ff;border-bottom:2px solid #c4bdf0;padding:9px 40px;font-size:12px;font-family:'Source Code Pro',monospace;color:#5b4fcf;display:flex;align-items:center;gap:8px;}
+  .sf-signin-overlay{position:fixed;inset:0;background:rgba(20,30,50,.82);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(3px);}
+  .sf-signin-overlay.hidden{display:none;}
+  .sf-signin-card{background:#fff;border-radius:16px;padding:36px 40px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;}
+  .sf-signin-logo{font-size:32px;margin-bottom:12px;}
+  .sf-signin-title{font-size:17px;font-weight:700;color:#1a2332;margin-bottom:8px;}
+  .sf-signin-sub{font-size:13px;color:#4a5568;line-height:1.6;margin-bottom:24px;}
+  .sf-google-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #d0dae8;border-radius:8px;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;color:#1a2332;width:100%;justify-content:center;transition:box-shadow .15s;}
+  .sf-google-btn:hover{box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .sf-google-btn img{width:20px;height:20px;}
+  .sf-signin-divider{font-size:11px;color:#8fa3bc;text-align:center;margin:14px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Source Code Pro',monospace;}
+  .sf-signin-divider::before,.sf-signin-divider::after{content:'';flex:1;height:1px;background:#d0dae8;}
+  .sf-fallback-input{width:100%;padding:10px 12px;border:1.5px solid #d0dae8;border-radius:8px;font-size:14px;font-family:'Merriweather Sans',sans-serif;color:#1a2332;margin-bottom:10px;outline:none;}
+  .sf-fallback-input:focus{border-color:var(--blue);}
+  .sf-fallback-btn{width:100%;padding:10px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;}
+  .sf-signin-error{margin-top:14px;font-size:12.5px;color:#c0392b;font-family:'Source Code Pro',monospace;background:#fdf0ee;border:1px solid #f0b8b2;border-radius:6px;padding:10px 12px;display:none;text-align:left;}
+  .sf-signin-error.visible{display:block;}
+  .sf-signed-in-bar{background:#e8f5ed;border-bottom:1px solid #a3d4b8;padding:7px 40px;font-size:11px;font-family:'Source Code Pro',monospace;color:var(--green);display:flex;align-items:center;justify-content:space-between;}
+  .sf-signed-in-bar.hidden{display:none;}
+  .sf-signout-btn{font-size:10px;color:var(--blue);background:none;border:1px solid #b8d0ed;border-radius:4px;padding:2px 8px;cursor:pointer;}
+  .topnav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 40px;height:48px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dimmer);font-family:'Source Code Pro',monospace;position:sticky;top:0;z-index:100;}
+  .topnav a{color:var(--blue);}
+  .sep{margin:0 4px;color:var(--text-dimmer);}
+  .main{max-width:860px;margin:0 auto;padding:36px 40px 80px;}
+  .module-hero{margin-bottom:28px;}
+  .hero-eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:8px;font-family:'Source Code Pro',monospace;}
+  .module-hero h1{font-size:clamp(18px,2.5vw,26px);font-weight:700;color:var(--text);line-height:1.25;}
+  .section-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+  .section-header{padding:14px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+  .section-header:hover{background:var(--bg3);}
+  .section-num{font-size:10px;font-weight:700;color:var(--text-dimmer);min-width:24px;font-family:'Source Code Pro',monospace;}
+  .section-title{font-weight:600;font-size:14px;flex:1;color:var(--text);}
+  .section-toggle{font-size:11px;color:var(--text-dimmer);transition:transform .2s;}
+  .section-toggle.open{transform:rotate(180deg);}
+  .section-body{display:none;padding:20px 22px 14px;border-top:1px solid var(--border);font-size:14px;color:var(--text-dim);line-height:1.75;}
+  .section-body.open{display:block;}
+  .section-body h3{font-size:15px;font-weight:700;color:var(--text);margin:16px 0 8px;}
+  .section-body p{margin-bottom:10px;}
+  .section-body ul,.section-body ol{margin:8px 0 12px 20px;}
+  .section-body li{margin-bottom:4px;}
+  .section-body code{font-family:'Source Code Pro',monospace;font-size:12.5px;background:var(--bg3);border:1px solid var(--border);padding:1px 5px;border-radius:4px;color:#0f4a7a;}
+  .section-body pre{background:#1e2433;color:#cdd6f4;padding:16px;border-radius:8px;font-size:12.5px;font-family:'Source Code Pro',monospace;overflow-x:auto;margin:12px 0;position:relative;}
+  .copy-btn,.copy-btn-small{position:absolute;top:8px;right:8px;background:#252b3b;border:1px solid #3a4155;color:#7a8ab0;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;font-family:'Source Code Pro',monospace;}
+  .copy-btn:hover,.copy-btn-small:hover{color:#cdd6f4;}
+  .reviewer-bar{background:#fff8e6;border:1px solid #f0d4a0;border-left:3px solid #92600a;border-radius:8px;padding:10px 16px;margin:18px 0 6px;display:flex;align-items:center;gap:10px;font-size:13px;color:#92600a;font-family:'Source Code Pro',monospace;}
+  .reviewer-bar input[type="checkbox"]{width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:var(--green);}
+  .reviewer-bar label{cursor:pointer;font-weight:600;user-select:none;}
+  .reviewer-bar.checked{background:var(--green-light);border-color:#a3d4b8;border-left-color:var(--green);color:var(--green);}
+  .reviewer-panel{background:#f5f0ff;border:1px solid #c4bdf0;border-top:3px solid #5b4fcf;border-radius:12px;padding:24px 28px;margin:32px 0;}
+  .reviewer-panel-label{font-size:9px;font-family:'Source Code Pro',monospace;letter-spacing:.18em;text-transform:uppercase;color:#5b4fcf;font-weight:600;margin-bottom:16px;}
+  .reviewer-q-text{font-size:14px;font-weight:600;color:#1a2332;line-height:1.65;margin-bottom:14px;}
+  .reviewer-options{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+  .reviewer-option{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1px solid #d0dae8;border-radius:8px;cursor:pointer;font-size:13.5px;color:#4a5568;line-height:1.5;background:#fff;transition:background .12s,border-color .12s;}
+  .reviewer-option:hover{background:#f0f4f9;border-color:#b8d0ed;}
+  .reviewer-option.selected{background:#e8f1fb;border-color:var(--blue);color:#1a2332;}
+  .reviewer-option.correct{background:var(--green-light);border-color:#a3d4b8;color:var(--green);}
+  .reviewer-option.wrong{background:var(--coral-light);border-color:#f0b8b2;color:var(--coral);}
+  .reviewer-option-key{font-family:'Source Code Pro',monospace;font-size:11px;font-weight:700;color:#8fa3bc;flex-shrink:0;margin-top:1px;}
+  .reviewer-reveal{font-size:12px;font-family:'Source Code Pro',monospace;color:#5b4fcf;cursor:pointer;text-decoration:underline;background:none;border:none;padding:0;margin-bottom:14px;display:block;}
+  .reviewer-explanation{font-size:13px;color:#4a5568;line-height:1.7;padding:12px 14px;background:#eef2f7;border-radius:8px;margin-bottom:16px;display:none;}
+  .reviewer-explanation.visible{display:block;}
+  .reviewer-exp-label{font-size:9px;font-family:'Source Code Pro',monospace;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+  .reviewer-exp-label.correct{color:var(--green);}
+  .reviewer-exp-label.wrong{color:var(--coral);}
+  .reviewer-comment-label{font-size:11px;font-family:'Source Code Pro',monospace;letter-spacing:.12em;text-transform:uppercase;color:#8fa3bc;font-weight:600;margin-bottom:6px;}
+  .reviewer-comment{width:100%;min-height:80px;padding:10px 12px;border:1px solid #c4bdf0;border-radius:8px;font-family:'Merriweather Sans',sans-serif;font-size:13.5px;color:#1a2332;background:#fff;resize:vertical;line-height:1.6;}
+  .reviewer-comment:focus{outline:none;border-color:#5b4fcf;}
+  .reviewer-save-note{font-size:11px;font-family:'Source Code Pro',monospace;color:#8fa3bc;margin-top:6px;}
+  .rev-complete-wrap{margin:28px 0 0;}
+  .rev-complete-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:8px;font-size:13.5px;font-family:'Source Code Pro',monospace;font-weight:600;border:1.5px solid var(--border);background:var(--bg3);color:var(--text-dimmer);transition:all .2s;}
+  .rev-complete-bar.disabled{opacity:.6;cursor:not-allowed;}
+  .rev-complete-bar.ready{background:#fff8e6;border-color:#f0d4a0;border-left:3px solid #92600a;color:#92600a;cursor:pointer;}
+  .rev-complete-bar.done{background:var(--green-light);border-color:#a3d4b8;border-left:3px solid var(--green);color:var(--green);cursor:default;}
+  .rev-complete-bar input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;accent-color:var(--green);}
+  .rev-complete-bar.disabled input{cursor:not-allowed;}
+  .rev-complete-hint{font-size:11px;font-family:'Source Code Pro',monospace;color:var(--text-dimmer);margin-top:6px;min-height:16px;}
+  .bottom-nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0 0;border-top:1px solid var(--border);margin-top:40px;}
+  .nav-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-family:'Source Code Pro',monospace;color:var(--blue);text-decoration:none;padding:10px 18px;border:1px solid var(--blue-mid);border-radius:8px;background:var(--blue-light);font-weight:600;}
+  .nav-btn.secondary{background:var(--bg2);color:var(--text-dim);border-color:var(--border);}
+  .nav-btn:hover{background:var(--blue-mid);}
+</style>
+<style>
+.section-questions{margin-top:16px;border-top:2px solid #e2e8f0;padding-top:16px;}
+.section-question-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:12px;}
+.section-question-item.answered-correct{border-color:#16a34a;background:#f0fdf4;}
+.section-question-item.answered-wrong{border-color:#dc2626;background:#fef2f2;}
+.sq-text{font-size:14px;font-weight:600;color:#0f172a;margin-bottom:10px;}
+.sq-options{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.sq-option{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;background:#fff;transition:all .15s;}
+.sq-option:hover{border-color:#2563eb;background:#eff6ff;}
+.sq-option.selected{border-color:#2563eb;background:#eff6ff;}
+.sq-option.correct{border-color:#16a34a;background:#f0fdf4;color:#16a34a;font-weight:600;}
+.sq-option.wrong{border-color:#dc2626;background:#fef2f2;color:#dc2626;}
+.sq-option-key{font-family:'Source Code Pro',monospace;font-size:11px;font-weight:700;color:#94a3b8;min-width:18px;}
+.sq-feedback{font-size:12px;font-weight:700;padding:4px 0;}
+.sq-feedback.correct{color:#16a34a;}
+.sq-feedback.wrong{color:#dc2626;}
+.sq-check-btn{background:#2563eb;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;}
+.sq-check-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.section-complete-btn{display:flex;align-items:center;gap:8px;background:transparent;border:2px solid #e2e8f0;color:#94a3b8;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:not-allowed;margin-top:14px;transition:all .2s;}
+.section-complete-btn.unlocked{border-color:#16a34a;color:#16a34a;cursor:pointer;background:#f0fdf4;}
+.section-complete-btn.done{border-color:#16a34a;background:#16a34a;color:#fff;cursor:default;}
+.module-complete-wrap{background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:20px;margin-top:28px;text-align:center;}
+.module-complete-btn{background:#16a34a;color:#fff;border:none;border-radius:10px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;opacity:0.4;pointer-events:none;transition:all .2s;}
+.module-complete-btn.unlocked{opacity:1;pointer-events:auto;}
+.module-complete-hint{font-size:13px;color:#64748b;margin-top:8px;}
+.reviewer-comment-wrap{margin-top:20px;}
+.reviewer-comment-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748b;margin-bottom:6px;}
+.reviewer-comment{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:80px;outline:none;}
+.reviewer-comment:focus{border-color:#2563eb;}
+</style>
+</head>
+<body>
+<div class="sf-signin-overlay" id="sfSigninOverlay">
+  <div class="sf-signin-card">
+    <div class="sf-signin-logo">🔐</div>
+    <div class="sf-signin-title">Sign in to save your progress</div>
+    <div class="sf-signin-sub">Sign in with your SourceFuse Gmail. Review progress, checkboxes and question attempts are saved and restored across devices.</div>
+    <button class="sf-google-btn" id="sfGoogleSignInBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Sign in with Google</button>
+    <div class="sf-signin-divider">or</div>
+    <input type="text" class="sf-fallback-input" id="sfEmailInput" placeholder="your.name@sourcefuse.com" autocomplete="off" inputmode="email">
+    <button class="sf-fallback-btn" id="sfEmailSignInBtn">Continue with SF email</button>
+    <div class="sf-signin-error" id="sfSigninError"></div>
+  </div>
+</div>
+<div class="sf-signed-in-bar hidden" id="sfSignedInBar"><span id="sfSignedInEmail">Signed in as …</span><button class="sf-signout-btn" id="sfSignoutLink">Sign out</button></div>
+<div class="reviewer-topbanner"><span>👁</span><strong>Reviewer Mode</strong> — Module 3: Quicksight Module 3</div>
+<div class="main">
+  <div class="module-hero">
+    <div class="hero-eyebrow">Module 3 of 6 · Reviewer Mode</div>
+    <h1>Quicksight Module 3</h1>
+    <p style="color:#64748b;font-size:14px;margin-top:8px;">Review each section carefully and answer all questions correctly to mark sections complete. Once all sections are complete, submit your module review.</p>
+  </div>
+  <div id="sections-container"></div>
+  <div class="module-complete-wrap">
+    <div class="module-complete-hint" id="module-complete-hint">Complete all sections to unlock</div>
+    <div class="reviewer-comment-wrap">
+      <div class="reviewer-comment-label">Module Review Notes</div>
+      <textarea class="reviewer-comment" id="module-comment" placeholder="Add your overall notes for this module…"></textarea>
+    </div>
+    <button class="module-complete-btn" id="module-complete-btn" onclick="submitModuleComplete()">✓ Mark Module 3 as Reviewed</button>
+  </div>
+</div>
+<script>
+function sfShowError(msg){const el=document.getElementById('sfSigninError');if(el){el.textContent=msg;el.classList.add('visible');}}
+function sfHideOverlay(user){
+  window.sfReviewerEmail=user.email||user;window.sfReviewerUid=user.uid||'email_'+btoa(window.sfReviewerEmail).replace(/=/g,'');
+  const ov=document.getElementById('sfSigninOverlay');if(ov)ov.classList.add('hidden');
+  const bar=document.getElementById('sfSignedInBar');const lbl=document.getElementById('sfSignedInEmail');
+  if(bar)bar.classList.remove('hidden');if(lbl)lbl.textContent='Signed in as '+window.sfReviewerEmail;
+  if(typeof sfInitSession==='function')sfInitSession();
+  if(window._sfFirebaseReady&&typeof window.sfDb!=='undefined'&&typeof sfFetchAndMerge==='function')sfFetchAndMerge();
+}
+function sfSignInWithEmail(){const emailEl=document.getElementById('sfEmailInput');if(!emailEl)return;const email=emailEl.value.trim();if(!email||!email.includes('@')){sfShowError('Please enter a valid email address.');return;}if(!email.endsWith('@sourcefuse.com')){sfShowError('Please use your @sourcefuse.com email address.');return;}sfHideOverlay(email);}
+async function sfSignInWithGoogle(){if(typeof firebase==='undefined'||!window._sfFirebaseReady){sfShowError('Popup blocked. Please enter your SF email below.');return;}const provider=new firebase.auth.GoogleAuthProvider();provider.setCustomParameters({hd:'sourcefuse.com',prompt:'select_account'});const t=setTimeout(()=>sfShowError('Popup blocked. Please enter your SF email below.'),30000);try{const r=await firebase.auth().signInWithPopup(provider);clearTimeout(t);sfHideOverlay(r.user);}catch(e){clearTimeout(t);sfShowError('Popup blocked. Please enter your SF email below.');}}
+function sfSignOut(){window.sfReviewerEmail=null;window.sfReviewerUid=null;const bar=document.getElementById('sfSignedInBar');const ov=document.getElementById('sfSigninOverlay');if(bar)bar.classList.add('hidden');if(ov)ov.classList.remove('hidden');if(typeof firebase!=='undefined'&&window._sfFirebaseReady)firebase.auth().signOut();}
+document.addEventListener('DOMContentLoaded',function(){const gb=document.getElementById('sfGoogleSignInBtn');const eb=document.getElementById('sfEmailSignInBtn');const so=document.getElementById('sfSignoutLink');if(gb)gb.addEventListener('click',sfSignInWithGoogle);if(eb)eb.addEventListener('click',sfSignInWithEmail);if(so)so.addEventListener('click',sfSignOut);});
+</script>
+<script>
+const HUB_URL = 'https://sflearningdevelopment.github.io/sf-knowledge-hub/index.html';
+const SECTION_COUNT = 23030;
+const SECTION_QUESTIONS = {"1":[],"2":[],"3":[],"4":[],"5":[],"6":[],"7":[],"8":[]};
+
+function submitModuleComplete() {
+  const btn = document.getElementById('module-complete-btn');
+  if (!btn.classList.contains('unlocked')) return;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  const comment = document.getElementById('module-comment')?.value || '';
+  const completedAt = new Date().toISOString();
+  if (typeof sfWrite === 'function') {
+    sfWrite({ completed: true, comment, completedAt, sectionCount: SECTION_COUNT });
+  }
+  setTimeout(() => { window.location.href = HUB_URL; }, 1200);
+}
+</script>
+<script>
+const REV_KEY='reviewer_'+window.location.pathname.replace(/[^a-z0-9]/gi,'_');
+const BADGES={foundation:'Foundation',essential:'Essential',important:'Important'};
+const SECTIONS=[
+  {
+    id: 1,
+    title: 'The Visual Catalog â When to Use What',
+    badge: 'foundation',
+    content: `
+      <h3>ð QuickSight's visual library at a glance</h3>
+      <p>QuickSight ships ~30 visual types. Most authors use 6 of them for 90% of dashboards. The rest are situational. Let's map them to the question they answer.</p>
+
+      <table>
+        <tr><th>Visual</th><th>Answers the question</th><th>Best for</th></tr>
+        <tr><td><strong>KPI</strong></td><td>"What's the headline number?"</td><td>Single metric with optional comparison</td></tr>
+        <tr><td><strong>Bar / column</strong></td><td>"How does X compare across categories?"</td><td>Categorical comparison (â¤ 20 categories)</td></tr>
+        <tr><td><strong>Line</strong></td><td>"How is X trending over time?"</td><td>Time series, multiple series allowed</td></tr>
+        <tr><td><strong>Pie / donut</strong></td><td>"What's the share of total?"</td><td>2â6 categories, parts of a whole</td></tr>
+        <tr><td><strong>Table</strong></td><td>"What are the exact values?"</td><td>Detailed data, sortable, exportable</td></tr>
+        <tr><td><strong>Pivot table</strong></td><td>"What's X by Y by Z?"</td><td>Cross-tabulation with totals/subtotals</td></tr>
+        <tr><td><strong>Heat map</strong></td><td>"Where are the hot spots in two dimensions?"</td><td>Density / intensity across a grid</td></tr>
+        <tr><td><strong>Scatter</strong></td><td>"Is X correlated with Y?"</td><td>Two-measure relationships, outliers</td></tr>
+        <tr><td><strong>Map (points / filled)</strong></td><td>"How does X vary geographically?"</td><td>Country/state-level metrics</td></tr>
+        <tr><td><strong>Combo</strong></td><td>"How do two related metrics move together?"</td><td>Bar + line on dual axis</td></tr>
+      </table>
+
+      <h3>â Visual mistakes that signal "amateur dashboard"</h3>
+      <ul>
+        <li>Pie chart with 12 slices â eyes can't compare angles past ~6</li>
+        <li>Line chart with categorical x-axis â lines imply continuity, categories don't have it</li>
+        <li>3D bars â adds nothing, distorts comparison</li>
+        <li>Stacked bar without a clear total story â readers can't compare middle segments</li>
+        <li>Tables when a chart would do â readers shouldn't have to mentally sort numbers</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <h4>ð¡ The 5-second rule</h4>
+        <p>If a stakeholder can't get the main message of a visual within 5 seconds, the visual type is wrong. Switch to KPI cards, simpler bar charts, or annotated callouts.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m3-s1"></div>
+    `
+  },
+  {
+    id: 2,
+    title: 'AutoGraph and Field Wells',
+    badge: 'foundation',
+    content: `
+      <h3>â¨ AutoGraph â QuickSight's smart starter</h3>
+      <p>When you drag fields onto a blank visual, QuickSight uses AutoGraph to pick the most likely chart type based on the field types you dropped. It's surprisingly good â usually right within 80% â but you should know what it's doing so you can override it consciously.</p>
+
+      <table>
+        <tr><th>You dropâ¦</th><th>AutoGraph picksâ¦</th></tr>
+        <tr><td>1 dimension only</td><td>Vertical bar chart with count of records</td></tr>
+        <tr><td>1 measure only</td><td>KPI</td></tr>
+        <tr><td>1 dimension + 1 measure</td><td>Vertical bar chart</td></tr>
+        <tr><td>1 date + 1 measure</td><td>Line chart</td></tr>
+        <tr><td>2 dimensions + 1 measure</td><td>Heat map</td></tr>
+        <tr><td>2 measures</td><td>Scatter plot</td></tr>
+        <tr><td>3+ measures</td><td>Combo or stacked chart</td></tr>
+      </table>
+
+      <h3>ð§± Field wells â the controls under the hood</h3>
+      <p>Every visual has <strong>field wells</strong> shown at the top of the canvas. They're labelled by role and tell you what each field is doing in the visual. Different visual types have different wells.</p>
+
+      <table>
+        <tr><th>Visual</th><th>Field wells</th></tr>
+        <tr><td>Bar / column</td><td>X axis (dimension), Value (measure), Group/Color (dimension), Small multiples (dimension)</td></tr>
+        <tr><td>Line</td><td>X axis (date), Value (measure), Color (dimension)</td></tr>
+        <tr><td>Pivot table</td><td>Rows, Columns, Values</td></tr>
+        <tr><td>KPI</td><td>Value, Target value, Trend group</td></tr>
+        <tr><td>Map</td><td>Geospatial, Size, Color</td></tr>
+      </table>
+
+      <h3>ð Switching visual types preserves your fields</h3>
+      <p>Click a different visual type from the visual-type icon row, and QuickSight maps your existing fields to the new visual's wells where it can. You don't lose work â you just adjust.</p>
+
+      <div class="callout callout-tip">
+        <h4>ð¡ Aggregation type lives in the field well</h4>
+        <p>Click a measure in its field well to change aggregation: Sum, Average, Min, Max, Count, Distinct count, Median, Percentile, Standard deviation. Default is Sum for numeric fields. Picking the wrong default is one of the most common dashboarding bugs.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m3-s2"></div>
+    `
+  },
+  {
+    id: 3,
+    title: 'Daily-Driver Visuals â Bar, Line, Pie, KPI',
+    badge: 'essential',
+    content: `
+      <h3>ð The four visuals you'll build most</h3>
+      <p>If you only learned four QuickSight visual types, these would be them. Master the field wells and formatting for each.</p>
+
+      <h3>1. Bar / column charts</h3>
+      <ul>
+        <li><strong>Horizontal bar</strong> â when category labels are long (default for &gt; 5 categories)</li>
+        <li><strong>Vertical column</strong> â when categories are short (months, regions, statuses)</li>
+        <li><strong>Stacked</strong> â when you want to show composition; only works if total is also a meaningful number</li>
+        <li><strong>Stacked 100%</strong> â when comparing proportions, ignoring absolute size</li>
+        <li><strong>Clustered (side-by-side)</strong> â comparing 2â4 measures across the same categories</li>
+      </ul>
+
+      <h3>2. Line charts</h3>
+      <ul>
+        <li>X-axis must be <strong>continuous</strong> (date or numeric); never categorical</li>
+        <li>Use <strong>Color (group/color)</strong> well to overlay multiple series â keep â¤ 5 series or it becomes spaghetti</li>
+        <li><strong>Aggregation by date granularity</strong> â Sum/Avg auto-rolls up by day, week, month, quarter, year. Configure in the field well.</li>
+        <li>Add <strong>reference lines</strong> for goals or thresholds (Format â Reference lines)</li>
+      </ul>
+
+      <h3>3. Pie / donut</h3>
+      <ul>
+        <li>â¤ 6 slices, otherwise switch to a horizontal bar</li>
+        <li>Donut variant frees up the centre for a total â better than a regular pie 90% of the time</li>
+        <li>Sort slices by size for readability (Format â Sort)</li>
+      </ul>
+
+      <h3>4. KPI</h3>
+      <ul>
+        <li>Single primary value with optional <strong>target</strong> or <strong>trend</strong></li>
+        <li>Add <strong>conditional formatting</strong> on the primary value to show traffic-light colours based on threshold</li>
+        <li>Use the <strong>trend group</strong> well to add sparkline-style trend underneath</li>
+        <li>Comparison label uses period-over-period â set the comparison via the calculation type setting</li>
+      </ul>
+
+      <div class="callout callout-tip">
+        <h4>ð¡ KPI sparkline trick</h4>
+        <p>To show a trend line under a KPI, drop a date field into the trend-group field well. You get an instant sparkline that scales with the value. Combined with conditional formatting on the headline number, this makes for compact executive dashboards.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m3-s3"></div>
+    `
+  },
+  {
+    id: 4,
+    title: 'Tables vs Pivot Tables',
+    badge: 'essential',
+    content: `
+      <h3>ð Two table types, very different uses</h3>
+      <p>QuickSight has both a regular table and a pivot table. They look similar; they behave very differently.</p>
+
+      <table>
+        <tr><th>Feature</th><th>Table</th><th>Pivot Table</th></tr>
+        <tr><td>Layout</td><td>Flat: one row per record (or aggregated row)</td><td>Cross-tabulation with rows and columns</td></tr>
+        <tr><td>Subtotals / totals</td><td>Optional row totals at bottom</td><td>Subtotals at every level + grand total</td></tr>
+        <tr><td>Drill-down</td><td>No</td><td>Yes â collapse / expand row hierarchies</td></tr>
+        <tr><td>Sorting</td><td>Per column</td><td>Per row group, per column group, by measure</td></tr>
+        <tr><td>Conditional formatting</td><td>Per column</td><td>Per measure cell, with heat-map style colour scales</td></tr>
+        <tr><td>Best for</td><td>Detail listings, exports</td><td>Multi-dimensional analysis, exec summaries</td></tr>
+      </table>
+
+      <h3>ð When to pick a regular table</h3>
+      <ul>
+        <li>Showing transaction-level detail (orders, tickets, line items)</li>
+        <li>Users will export to Excel for further work</li>
+        <li>Stakeholders want to "see all the data" not summarise it</li>
+        <li>Combining text and numbers â names + amounts</li>
+      </ul>
+
+      <h3>ð When to pick a pivot table</h3>
+      <ul>
+        <li>You have 2+ dimensions and want to see them crossed</li>
+        <li>You need subtotals at multiple grouping levels</li>
+        <li>The measure varies meaningfully across both axes</li>
+        <li>Common patterns: <code>region Ã month â revenue</code>, <code>product Ã segment â margin</code></li>
+      </ul>
+
+      <h3>ð¡ï¸ Conditional formatting on tables</h3>
+      <p>Both table types support conditional formatting, but pivots really shine here. Click a measure â <strong>Conditional formatting</strong> â choose:</p>
+      <ul>
+        <li><strong>Solid colour</strong> â discrete thresholds (red &lt; 0, yellow &lt; 100, green &gt;= 100)</li>
+        <li><strong>Gradient</strong> â continuous colour scale (blue â red)</li>
+        <li><strong>Bars</strong> â in-cell horizontal bars showing relative value</li>
+      </ul>
+
+      <div class="callout callout-warn">
+        <h4>â ï¸ Pivot table performance</h4>
+        <p>Pivots that span thousands of unique values in either axis become slow and unreadable. Cap your dimensions: top-N filters, region rollups, or date bucketing usually solves this before users notice.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m3-s4"></div>
+    `
+  },
+  {
+    id: 5,
+    title: 'Maps and Geospatial Visuals',
+    badge: 'important',
+    content: `
+      <h3>ðºï¸ QuickSight's three map flavours</h3>
+      <table>
+        <tr><th>Map type</th><th>What it shows</th><th>Field well</th></tr>
+        <tr><td><strong>Points on map</strong></td><td>Each location as a pin or bubble; size or colour can encode a measure</td><td>Latitude, Longitude, Size, Color</td></tr>
+        <tr><td><strong>Filled map (choropleth)</strong></td><td>Regions (countries, states) shaded by a measure</td><td>Geospatial, Color</td></tr>
+        <tr><td><strong>Cluster map</strong></td><td>Many close-together points clustered into bubbles by zoom level</td><td>Latitude, Longitude</td></tr>
+      </table>
+
+      <h3>ð Geographic roles</h3>
+      <p>Before you can map a string field, you must assign it a <strong>geographic role</strong> in the dataset. Click the field â Edit â set role to one of: Country, State, County, City, ZIP / Postcode, Latitude, Longitude.</p>
+      <p>QuickSight then uses Amazon Location Service or built-in geocoding to plot it. You don't need actual lat/long for filled maps â just the place name with the right role.</p>
+
+      <h3>ð§ Custom regions and supported countries</h3>
+      <ul>
+        <li>Filled maps work out of the box for ~120 countries â full list in AWS docs</li>
+        <li>For sub-national admin boundaries (US states, UK counties, Indian states), QuickSight has built-in support</li>
+        <li>For custom geographies (sales territories, store regions), you need lat/long pairs and the points-on-map visual</li>
+      </ul>
+
+      <div class="callout callout-tip">
+        <h4>ð¡ Geocoding caveat</h4>
+        <p>If your data has city names without country/state context (just "Springfield"), QuickSight may pick the wrong one. Always pair geographic fields with their parent â Country &amp; State &amp; City â and assign roles to all of them.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m3-s5"></div>
+    `
+  },
+  {
+    id: 6,
+    title: 'Formatting and Conditional Formatting',
+    badge: 'important',
+    content: `
+      <h3>ð¨ The Format menu and what's in it</h3>
+      <p>Every visual has a <strong>Format visual</strong> menu (right-side panel). The exact options vary by visual type, but you'll always see categories like:</p>
+      <ul>
+        <li><strong>Title and subtitle</strong> â visual name and description</li>
+        <li><strong>Legend</strong> â show/hide, position</li>
+        <li><strong>Data labels</strong> â show values on bars/points; format as currency, percent, or custom</li>
+        <li><strong>Axes</strong> â labels, scale (linear/log), tick formats</li>
+        <li><strong>Colors</strong> â per-series colour overrides, theme palette</li>
+        <li><strong>Tooltip</strong> â what hover info shows</li>
+        <li><strong>Reference lines</strong> â fixed value or computed (avg, median, percentile)</li>
+      </ul>
+
+      <h3>ð± Number formatting</h3>
+      <p>Right-click any measure â <strong>Format</strong> â choose currency, percent, number, or custom. Setting it once on the field uses that format everywhere it appears in the analysis.</p>
+      <ul>
+        <li><strong>Currency</strong> â pick currency code, decimal places, abbreviate large numbers (1.2M)</li>
+        <li><strong>Percent</strong> â decimal places, optional sign</li>
+        <li><strong>Number</strong> â thousands separator, decimal places, abbreviation</li>
+      </ul>
+
+      <h3>ð¦ Conditional formatting on cells, KPIs, and gauges</h3>
+      <p>Conditional formatting lets you encode meaning in colour. Apply to:</p>
+      <ul>
+        <li><strong>Table / pivot cells</strong> â colour cells by value (gradient or thresholds)</li>
+        <li><strong>KPI primary value</strong> â green / amber / red on the headline number</li>
+        <li><strong>Bars in a bar chart</strong> â bars over target are green, under are red</li>
+      </ul>
+
+      <p>Define rules with operators (greater than, between, equal to) and pair with a colour. Use the <strong>conditional</strong> tab inside Format visual.</p>
+
+      <h3>ð¨ Themes</h3>
+      <p>QuickSight ships with a few default themes (Classic, Midnight, Seaside, Rainier). For brand consistency, create a <strong>custom theme</strong>: Themes â Create â set primary colour, font, data colour palette. Apply it to any analysis.</p>
+
+      <div class="callout callout-info">
+        <h4>ð¡ Less colour, more meaning</h4>
+        <p>The temptation is to colour everything. The reality: every colour you add must <em>encode information</em>. Random colours are noise. A well-designed dashboard uses 2â3 brand colours plus traffic-light tones for conditional formatting.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m3-s6"></div>
+    `
+  },
+  {
+    id: 7,
+    title: 'Drill-Down, Tooltips, and Visual Interactivity',
+    badge: 'important',
+    content: `
+      <h3>â¬ï¸ Drill-down â the click-to-detail pattern</h3>
+      <p>Drill-down lets readers click a visual element to "go deeper". QuickSight supports two drill flavours:</p>
+
+      <h3>1. Hierarchical drill (within a visual)</h3>
+      <p>Add multiple fields to the same field well â for example, drop both <code>region</code> and <code>category</code> into the X-axis. QuickSight creates a hierarchy. Readers click a region bar to drill into that region's category breakdown.</p>
+      <ul>
+        <li>Works on bar, column, line, pie, donut, treemap</li>
+        <li>Hierarchy levels show as breadcrumbs at the top of the visual</li>
+        <li>Readers can drill back up by clicking a higher breadcrumb</li>
+      </ul>
+
+      <h3>2. Date hierarchies</h3>
+      <p>Date fields automatically support drill: Year â Quarter â Month â Day â Hour. Click a year bar, drill to quarters; click a quarter, drill to months. No setup required.</p>
+
+      <h3>ð¬ Custom tooltips</h3>
+      <p>Hover over any data point and QuickSight shows a default tooltip with the dimension and measure. You can override this:</p>
+      <ol>
+        <li>Format visual â <strong>Tooltip</strong></li>
+        <li>Toggle <strong>Type</strong>: Primary (defaults), Detailed, or Hidden</li>
+        <li>For Detailed, drag fields into the <strong>Tooltip</strong> field well â they appear in hover</li>
+        <li>You can include calculated fields, dimensions not on the visual, even narrative-style strings</li>
+      </ol>
+
+      <h3>ð Filter actions â click one visual, filter another</h3>
+      <p>The most powerful interactivity in QuickSight. Click a region bar in Visual A, and Visuals B, C, D all filter to that region. Setup:</p>
+      <ol>
+        <li>Click the source visual â menu (...) â <strong>Actions</strong></li>
+        <li><strong>Filter same-sheet visuals</strong> on click â choose target visuals</li>
+        <li>Save</li>
+      </ol>
+      <p>You can also configure <strong>URL actions</strong> to open external pages with the clicked value as a parameter â useful for jumping to a customer record in Salesforce or a ticket in Jira.</p>
+
+      <h3>ð Navigation actions</h3>
+      <p>Configure a click to navigate readers to another sheet within the same dashboard. Pair this with a parameter to "deep link" â e.g., click a region on the overview sheet, jump to the regional detail sheet pre-filtered to that region.</p>
+
+      <div class="callout callout-tip">
+        <h4>ð¡ Less interactivity, more focus</h4>
+        <p>Just because every visual <em>can</em> filter every other visual doesn't mean it should. Pick 1â2 "primary filter" visuals (usually KPI cards or summary bars) and let readers drive the dashboard from those. Too many click-to-filter targets confuse readers.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m3-s7"></div>
+    `
+  },
+  {
+    id: 8,
+    title: 'Lab 3 â Build a Regional Sales Dashboard',
+    badge: 'essential',
+    content: `
+      <h3>ð¯ What you'll build</h3>
+      <p>A 4-visual sheet on the SF Sales + Customers dataset from Lab 2, with KPI, time series, regional breakdown, and product detail. You'll wire up cross-filtering so clicking a region cascades to the others.</p>
+
+      <div class="lab">
+        <h4>ð§ª Lab 3: Regional sales dashboard</h4>
+        <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~25 minutes. Prerequisite: Lab 2 (the SF Sales + Customers SPICE dataset must exist).</p>
+        <ol>
+          <li>Open the SF Sales + Customers dataset â click <strong>Use in analysis</strong>. A new analysis opens with one empty sheet.</li>
+          <li>Rename the sheet <strong>Regional Sales</strong> by double-clicking the tab.</li>
+
+          <li><strong>Visual 1 â Total Revenue KPI:</strong>
+            <ul>
+              <li>From the visual-type row, pick <strong>KPI</strong></li>
+              <li>Drag <code>revenue</code> into <strong>Value</strong> well</li>
+              <li>Drag <code>order_date</code> into <strong>Trend group</strong> â sparkline appears</li>
+              <li>Format â set Currency, USD, abbreviate (so $24M shows instead of $24,000,000)</li>
+              <li>Title: <strong>Total Revenue</strong></li>
+            </ul>
+          </li>
+
+          <li><strong>Visual 2 â Revenue Over Time (line):</strong>
+            <ul>
+              <li>Add visual â <strong>Line chart</strong></li>
+              <li>X-axis: <code>order_date</code> aggregated to <strong>Month</strong></li>
+              <li>Value: <code>revenue</code></li>
+              <li>Color: <code>region</code></li>
+              <li>Title: <strong>Monthly Revenue by Region</strong></li>
+            </ul>
+          </li>
+
+          <li><strong>Visual 3 â Region Bar:</strong>
+            <ul>
+              <li>Add visual â <strong>Vertical bar</strong></li>
+              <li>X-axis: <code>region</code></li>
+              <li>Value: <code>revenue</code></li>
+              <li>Sort by Value descending</li>
+              <li>Title: <strong>Revenue by Region</strong></li>
+            </ul>
+          </li>
+
+          <li><strong>Visual 4 â Product Profit Pivot:</strong>
+            <ul>
+              <li>Add visual â <strong>Pivot table</strong></li>
+              <li>Rows: <code>category</code>, then <code>product</code></li>
+              <li>Columns: <code>region</code></li>
+              <li>Values: <code>profit</code> (Sum), <code>profit_margin</code> (Avg)</li>
+              <li>Apply gradient conditional formatting on <code>profit_margin</code>: red &lt; 30%, green &gt; 60%</li>
+              <li>Title: <strong>Product Profit Detail</strong></li>
+            </ul>
+          </li>
+
+          <li>Arrange the four visuals: KPI top-left, Region bar top-right, Line chart middle full-width, Pivot bottom full-width.</li>
+
+          <li><strong>Wire up cross-filtering:</strong>
+            <ul>
+              <li>Click <strong>Visual 3 (Region Bar)</strong> â menu (...) â <strong>Actions</strong></li>
+              <li>Add filter action â "Filter same-sheet visuals" â select Visuals 1, 2, and 4 as targets</li>
+              <li>Save</li>
+            </ul>
+          </li>
+
+          <li>Test: click the EMEA bar in Visual 3 â Visuals 1, 2, 4 should now show EMEA-only numbers. Click the bar again to clear.</li>
+
+          <li>Save the analysis as <strong>SF Regional Sales â Practice</strong>.</li>
+        </ol>
+        <div class="lab-expected">
+          <strong>Expected outcome:</strong> A 4-visual dashboard where the KPI shows ~$24-30M total revenue, the line chart shows monthly trends across 4 regions, the bar shows North America as the tallest bar, and clicking a region in the bar filters all other visuals. The pivot bottom shows products Ã regions with margin percentages colour-coded red (low) to green (high).
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <h4>ð¡ Save it â you'll publish it in Module 6</h4>
+        <p>Don't delete this analysis. In Module 6 (Sharing, Security & Governance) you'll publish it as a dashboard, share it, and add row-level security. We're building a real artefact module by module.</p>
+      </div>
+
+      <div class="quiz-placeholder" data-quiz="m3-s8"></div>
+    `
+  }
+];
+const SQ=typeof SECTION_QUESTIONS!=='undefined'?SECTION_QUESTIONS:{};
+function revLoad(){try{return JSON.parse(localStorage.getItem(REV_KEY))||{};}catch(e){return {};}}
+function revSave(s){localStorage.setItem(REV_KEY,JSON.stringify(s));if(typeof sfWrite==='function')sfWrite(s);}
+
+function allSectionsComplete(){
+  return SECTIONS.every(s=>revLoad()['section_complete_'+s.id]===true);
+}
+
+function updateModuleCompleteBtn(){
+  const btn=document.getElementById('module-complete-btn');
+  const hint=document.getElementById('module-complete-hint');
+  if(!btn)return;
+  const state=revLoad();
+  if(state.completed){
+    btn.textContent='✓ Module Review Submitted';
+    btn.classList.add('unlocked');
+    btn.disabled=true;
+    if(hint)hint.textContent='Review submitted on '+new Date(state.completedAt).toLocaleString();
+    return;
+  }
+  const done=SECTIONS.filter(s=>state['section_complete_'+s.id]===true).length;
+  const total=SECTIONS.length;
+  if(done===total){
+    btn.classList.add('unlocked');
+    if(hint)hint.textContent='All '+total+' sections complete. You may now submit your module review.';
+  } else {
+    btn.classList.remove('unlocked');
+    if(hint)hint.textContent=done+' of '+total+' sections complete. Complete all sections to unlock.';
+  }
+}
+
+function buildQuestionBlock(secId,questions){
+  if(!questions||!questions.length)return '';
+  const keys=['A','B','C','D'];
+  const state=revLoad();
+  const secDone=state['section_complete_'+secId]===true;
+  let html='<div class="section-questions">';
+  questions.forEach((q,qi)=>{
+    const answered=state['sq_'+secId+'_'+qi+'_correct']===true;
+    html+='<div class="section-question-item'+(answered?' answered-correct':'')+'" id="sq-item-'+secId+'-'+qi+'">';
+    html+='<div class="sq-text">'+(qi+1)+'. '+q.q.replace(/</g,'&lt;')+'</div>';
+    html+='<div class="sq-options" id="sq-opts-'+secId+'-'+qi+'">';
+    q.o.forEach((opt,oi)=>{
+      html+='<div class="sq-option" data-sec="'+secId+'" data-q="'+qi+'" data-i="'+oi+'" onclick="sqSelect(this)"><span class="sq-option-key">'+keys[oi]+'</span><span>'+opt.replace(/</g,'&lt;')+'</span></div>';
+    });
+    html+='</div>';
+    html+='<div class="sq-feedback" id="sq-fb-'+secId+'-'+qi+'"></div>';
+    html+='<button class="sq-check-btn" id="sq-btn-'+secId+'-'+qi+'" onclick="sqCheck('+secId+','+qi+','+q.c+')" '+(answered?'disabled':'')+'>Check Answer</button>';
+    html+='</div>';
+  });
+  html+='</div>';
+  const allAnswered=questions.every((_,qi)=>revLoad()['sq_'+secId+'_'+qi+'_correct']===true);
+  html+='<button class="section-complete-btn'+(allAnswered||secDone?' unlocked':'')+' '+(secDone?'done':'')+'" id="sec-complete-btn-'+secId+'" onclick="sectionComplete('+secId+')" '+(secDone?'disabled':(allAnswered?'':'disabled'))+'>'+(secDone?'✓ Section Reviewed':'Mark Section as Reviewed')+'</button>';
+  return html;
+}
+
+window.sqSelect=function(el){
+  const secId=el.dataset.sec,qi=el.dataset.q;
+  document.querySelectorAll('[data-sec="'+secId+'"][data-q="'+qi+'"]').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+};
+
+window.sqCheck=function(secId,qi,correctIdx){
+  const selected=document.querySelector('[data-sec="'+secId+'"][data-q="'+qi+'"].selected');
+  if(!selected){alert('Please select an answer first.');return;}
+  const chosenIdx=parseInt(selected.dataset.i);
+  const isCorrect=(chosenIdx===correctIdx);
+  const fb=document.getElementById('sq-fb-'+secId+'-'+qi);
+  const btn=document.getElementById('sq-btn-'+secId+'-'+qi);
+  const item=document.getElementById('sq-item-'+secId+'-'+qi);
+  if(isCorrect){
+    selected.classList.add('correct');
+    if(fb){fb.textContent='✓ Correct!';fb.className='sq-feedback correct';}
+    if(btn)btn.disabled=true;
+    if(item)item.classList.add('answered-correct');
+    const st=revLoad();st['sq_'+secId+'_'+qi+'_correct']=true;revSave(st);
+    const secQs=SQ[secId]||[];
+    const allCorrect=secQs.every((_,i)=>revLoad()['sq_'+secId+'_'+i+'_correct']===true);
+    const secBtn=document.getElementById('sec-complete-btn-'+secId);
+    if(allCorrect&&secBtn){secBtn.classList.add('unlocked');secBtn.removeAttribute('disabled');}
+  } else {
+    selected.classList.add('wrong');
+    if(fb){fb.textContent='✗ Incorrect — please try again.';fb.className='sq-feedback wrong';}
+    setTimeout(()=>{
+      selected.classList.remove('wrong','selected');
+      if(fb){fb.textContent='';fb.className='sq-feedback';}
+    },1500);
+  }
+};
+
+window.sectionComplete=function(secId){
+  const btn=document.getElementById('sec-complete-btn-'+secId);
+  if(!btn||!btn.classList.contains('unlocked'))return;
+  btn.classList.add('done');btn.disabled=true;btn.textContent='✓ Section Reviewed';
+  const st=revLoad();st['section_complete_'+secId]=true;st['section_completed_at_'+secId]=new Date().toISOString();revSave(st);
+  updateModuleCompleteBtn();
+};
+
+window.toggleSection=(id)=>{const body=document.getElementById('body-'+id);const toggle=document.getElementById('toggle-'+id);const isOpen=body.classList.contains('open');document.querySelectorAll('.section-body').forEach(b=>b.classList.remove('open'));document.querySelectorAll('.section-toggle').forEach(t=>t.classList.remove('open'));if(!isOpen){body.classList.add('open');toggle.classList.add('open');}};
+window.copyCode=(btn)=>{const text=btn.parentElement.innerText.replace('Copy','').trim();navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);});};
+
+function renderAll(){
+  const sec=document.getElementById('sections-container');if(!sec)return;sec.innerHTML='';
+  const s0=revLoad();
+  SECTIONS.forEach(s=>{
+    const secDone=s0['section_complete_'+s.id]===true;
+    const sd=document.createElement('div');sd.className='section-block';
+    const badgeTxt=BADGES[s.badge]||s.badge||'';
+    const questions=SQ[s.id]||[];
+    const qBlock=buildQuestionBlock(s.id,questions);
+    sd.innerHTML='<div class="section-header" onclick="toggleSection('+s.id+')"><span class="section-num">'+s.id+'.</span><span class="section-title">'+s.title+'</span>'+(badgeTxt?'<span style="font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;background:#e8f1fb;color:#1a6eb5;font-family:Source Code Pro,monospace;">'+badgeTxt+'</span>':'')+(secDone?'<span style="font-size:12px;margin-left:4px;">✅</span>':'')+'<span class="section-toggle" id="toggle-'+s.id+'">▼</span></div><div class="section-body" id="body-'+s.id+'">'+s.content+'</div>';
+    sec.appendChild(sd);
+    if(qBlock){const bodyEl=document.getElementById('body-'+s.id);if(bodyEl)bodyEl.insertAdjacentHTML('beforeend',qBlock);}
+  });
+  updateModuleCompleteBtn();
+}
+
+const moduleCommentEl=document.getElementById('module-comment');
+if(moduleCommentEl){
+  const s=revLoad();if(s.moduleComment)moduleCommentEl.value=s.moduleComment;
+  moduleCommentEl.addEventListener('input',()=>{const s=revLoad();s.moduleComment=moduleCommentEl.value;revSave(s);});
+}
+renderAll();
+</script>
+<script>
+(function(){var scripts=['https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js','https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js'];function loadNext(i){if(i>=scripts.length){window._sfFirebaseReady=true;initRevFirebase();return;}var s=document.createElement('script');s.src=scripts[i];s.onload=function(){loadNext(i+1);};s.onerror=function(){window._sfFirebaseReady=false;};document.head.appendChild(s);}loadNext(0);})();
+</script>
+<script>
+function initRevFirebase(){
+  const SF_CONFIG={apiKey:"AIzaSyA-8fatW5D7uR69rcuGFPH54IFqrz0PhU0",authDomain:"sfcertification-grafana.firebaseapp.com",projectId:"sfcertification-grafana",storageBucket:"sfcertification-grafana.firebasestorage.app",messagingSenderId:"227322696511",appId:"1:227322696511:web:12e7ced7dd3d45fa06798a"};
+  if(!firebase.apps.length)firebase.initializeApp(SF_CONFIG);
+  window.sfAuth=firebase.auth();window.sfDb=firebase.firestore();
+  const REV_KEY_FB='reviewer_quicksight-essentials_module-3';
+  const COURSE_ID='E6LTgyyfu779VtlpALjO';
+  function sfDocRef(){if(!window.sfReviewerUid)return null;return window.sfDb.collection('reviewerSessions').doc(window.sfReviewerUid).collection('quicksight-essentials').doc('module-3');}
+  function sfInitSession(){const local=revLoad();if(!local.startedAt){local.startedAt=new Date().toISOString();localStorage.setItem(REV_KEY,JSON.stringify(local));}if(!window._sfFirebaseReady||!window.sfReviewerUid)return;sfDocRef().set({email:window.sfReviewerEmail,moduleId:'module-3',courseId:COURSE_ID,startedAt:local.startedAt,lastUpdated:firebase.firestore.FieldValue.serverTimestamp(),reviewComplete:local.reviewComplete||false,attemptCount:local.attemptCount||0},{merge:true}).catch(e=>console.warn('SF init:',e.message));}
+  window.sfInitSession=sfInitSession;
+  window.sfWrite=function(extra){if(!window._sfFirebaseReady||!window.sfReviewerUid)return;const ref=sfDocRef();if(!ref)return;const local=revLoad();const payload=Object.assign({},local,extra,{email:window.sfReviewerEmail,moduleId:'module-3',courseId:COURSE_ID,lastUpdated:firebase.firestore.FieldValue.serverTimestamp()});ref.set(payload,{merge:true}).catch(e=>console.warn('SF write:',e.message));};
+  window.sfFetchAndMerge=async function(){const ref=sfDocRef();if(!ref)return;try{const snap=await ref.get();if(!snap.exists)return;const remote=snap.data();const local=revLoad();const merged=Object.assign({},local,remote);delete merged.email;delete merged.lastUpdated;localStorage.setItem(REV_KEY,JSON.stringify(merged));if(typeof renderAll==='function'){renderAll();}if(typeof updateCompleteBar==='function')updateCompleteBar();}catch(e){console.warn('SF fetch:',e.message);}};
+  function sfHideOverlayFB(user){window.sfReviewerEmail=user.email;window.sfReviewerUid=user.uid;const ov=document.getElementById('sfSigninOverlay');if(ov)ov.classList.add('hidden');const bar=document.getElementById('sfSignedInBar');const lbl=document.getElementById('sfSignedInEmail');if(bar)bar.classList.remove('hidden');if(lbl)lbl.textContent='Signed in as '+user.email;sfInitSession();window.sfFetchAndMerge();}
+  window.sfAuth.onAuthStateChanged(user=>{if(user){sfHideOverlayFB(user);}else{document.getElementById('sfSigninOverlay').classList.remove('hidden');}});
+}
+</script>
+</body>
+</html>
