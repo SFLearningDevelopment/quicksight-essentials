@@ -889,5 +889,949 @@ window.QS_QUESTION_BANK = {
       }
     ]
   }
+,
+
+  // ============ MODULE 4 ============
+  m4: {
+    s1: [
+      {
+        id: 'qs-m4-s1-i1',
+        q: 'Field references in QuickSight expressions are wrapped in which characters?',
+        options: [
+          'Square brackets [field]',
+          'Curly braces {field}',
+          'Single quotes \'field\'',
+          'Backticks `field`'
+        ],
+        correctIndex: 1,
+        explanation: 'Curly braces are required for any field reference: {revenue}, {order_date}, etc.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m4-s1-i2',
+        q: 'You wrote an expression with three errors and clicked Validate. QuickSight points to one error. What is the most efficient next step?',
+        options: [
+          'Fix all three at once based on memory',
+          'Fix the first error reported, revalidate; cascading errors often disappear',
+          'Delete the expression and start over',
+          'Switch to Custom SQL instead'
+        ],
+        correctIndex: 1,
+        explanation: 'Cascading errors often share a single root cause. Fix the topmost one first and revalidate before chasing the rest.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s1-i3',
+        q: 'Which function category includes sumOver, denseRank, and runningSum?',
+        options: [
+          'Aggregation',
+          'Conditional',
+          'Level-aware',
+          'String'
+        ],
+        correctIndex: 2,
+        explanation: 'sumOver, denseRank, runningSum, and periodOverPeriodDifference are all level-aware (also called table calc) functions.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s1-i4',
+        q: 'In the QuickSight expression editor, what does the Validate button do?',
+        options: [
+          'Runs the expression against the dataset and shows results',
+          'Checks expression syntax and prevents save if invalid',
+          'Optimises the expression for SPICE',
+          'Converts the expression to SQL'
+        ],
+        correctIndex: 1,
+        explanation: 'Validate is a syntax check. It does not execute or preview results — it just blocks invalid expressions from being saved.',
+        difficulty: 'easy'
+      }
+    ],
+    s2: [
+      {
+        id: 'qs-m4-s2-i1',
+        q: 'Which expression will fail validation?',
+        options: [
+          '{revenue} - {profit}',
+          'sum({revenue}) - sum({profit})',
+          'sum({revenue}) - {discount}',
+          'sum({revenue} - {profit})'
+        ],
+        correctIndex: 2,
+        explanation: 'You cannot mix aggregate (sum) with row-level ({discount}) in the same expression. Wrap the row-level value in sum() too, or move the subtraction inside.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s2-i2',
+        q: 'You want the average order value across all orders in a visual. Which aggregation fits best?',
+        options: [
+          'avg({revenue})',
+          'sum({revenue})',
+          'count({revenue})',
+          '{revenue}'
+        ],
+        correctIndex: 0,
+        explanation: 'avg({revenue}) computes the mean across the rows in scope, giving the average order value.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m4-s2-i3',
+        q: 'When are response times skewed by outliers, which aggregation gives a more representative central value than mean?',
+        options: [
+          'sum',
+          'min',
+          'median',
+          'distinct_count'
+        ],
+        correctIndex: 2,
+        explanation: 'Median (50th percentile) is robust to outliers. Means get pulled by extreme values; medians do not.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s2-i4',
+        q: 'A row-level calculated field is evaluated:',
+        options: [
+          'Once per visual interaction',
+          'Once per row at SPICE-import time and cached',
+          'Once when the analysis is saved',
+          'Continuously while the dashboard is open'
+        ],
+        correctIndex: 1,
+        explanation: 'Row-level calcs evaluate per row at import time and are cached in SPICE — that is what makes them fast.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s2-i5',
+        q: 'You want to count unique customers in each region. Which function fits?',
+        options: [
+          'count({customer_id})',
+          'sum({customer_id})',
+          'distinct_count({customer_id})',
+          'avg({customer_id})'
+        ],
+        correctIndex: 2,
+        explanation: 'distinct_count returns the number of unique values. count would count rows (including duplicates).',
+        difficulty: 'easy'
+      }
+    ],
+    s3: [
+      {
+        id: 'qs-m4-s3-i1',
+        q: 'In an ifelse expression, what is the role of the final argument (the one without a paired condition)?',
+        options: [
+          'It is ignored',
+          'It is the default returned when no condition matched',
+          'It is the condition for the highest-priority match',
+          'It enables the function'
+        ],
+        correctIndex: 1,
+        explanation: 'The trailing argument in ifelse is the default — returned when none of the conditions evaluated to true.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m4-s3-i2',
+        q: 'You write {region}=\'apac\' but no rows match, even though the data clearly has APAC values. What is the most likely cause?',
+        options: [
+          'QuickSight does not support equality on strings',
+          'String comparison is case-sensitive — \'apac\' does not match \'APAC\'',
+          'You need to use == instead of =',
+          'The dataset needs a refresh'
+        ],
+        correctIndex: 1,
+        explanation: 'String comparisons are case-sensitive. Wrap with toLower() or toUpper() for case-insensitive matches.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s3-i3',
+        q: 'Which expression returns null when revenue is 0, otherwise the revenue value (so it gets excluded from averages)?',
+        options: [
+          'ifelse({revenue}=0, null, {revenue})',
+          'nullIf({revenue}, 0)',
+          'coalesce({revenue}, 0)',
+          'isNull({revenue})'
+        ],
+        correctIndex: 1,
+        explanation: 'nullIf(a, b) returns null when a equals b, otherwise a. nullIf({revenue}, 0) is the canonical pattern for excluding zeros from aggregations.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s3-i4',
+        q: 'switch is preferable to ifelse when:',
+        options: [
+          'The conditions are all "field equals X" — switch reads cleaner for value-equality dispatch',
+          'Performance matters',
+          'You have more than 5 conditions',
+          'You are using a date field'
+        ],
+        correctIndex: 0,
+        explanation: 'switch is purpose-built for value-equality matching against a single field. For range checks or compound conditions, ifelse is more flexible.',
+        difficulty: 'medium'
+      }
+    ],
+    s4: [
+      {
+        id: 'qs-m4-s4-i1',
+        q: 'Which date function returns a date snapped down to the start of a period (e.g., the first of the month)?',
+        options: [
+          'extract',
+          'truncDate',
+          'addDateTime',
+          'dateDiff'
+        ],
+        correctIndex: 1,
+        explanation: 'truncDate(period, date) snaps the date down. truncDate(\'MM\', {order_date}) returns the first of that month.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m4-s4-i2',
+        q: 'How do you get the year out of a date field as a number?',
+        options: [
+          'toString({date})',
+          'extract(\'YYYY\', {date})',
+          'truncDate(\'YYYY\', {date})',
+          'dateDiff({date}, now(), \'YYYY\')'
+        ],
+        correctIndex: 1,
+        explanation: 'extract(\'YYYY\', date) returns the year as a number, e.g., 2026.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m4-s4-i3',
+        q: 'You define a calculated field days_since_order = dateDiff({order_date}, now(), \'DD\'). What happens to its value as the dashboard sits open for hours?',
+        options: [
+          'It freezes at the value computed when you opened the dashboard',
+          'It recomputes on every visual interaction because now() re-evaluates',
+          'It updates exactly once per hour',
+          'It only updates after a SPICE refresh'
+        ],
+        correctIndex: 1,
+        explanation: 'now() re-evaluates on every visual refresh, so days_since_order changes as time passes. This is intended for age calculations but limits SPICE caching benefits.',
+        difficulty: 'hard'
+      },
+      {
+        id: 'qs-m4-s4-i4',
+        q: 'You need a fiscal year that starts in April. Which expression handles this correctly?',
+        options: [
+          'extract(\'YYYY\', {date})',
+          'extract(\'YYYY\', {date}) - 1',
+          'ifelse(extract(\'MM\', {date}) >= 4, extract(\'YYYY\', {date}), extract(\'YYYY\', {date}) - 1)',
+          'truncDate(\'YYYY\', {date})'
+        ],
+        correctIndex: 2,
+        explanation: 'Months April onward count toward the same year; January through March belong to the previous fiscal year. The ifelse handles both cases.',
+        difficulty: 'hard'
+      }
+    ],
+    s5: [
+      {
+        id: 'qs-m4-s5-i1',
+        q: 'You want to extract the email domain from an address like jv.ravichandran@sourcefuse.com. Which expression works?',
+        options: [
+          'split({email}, \'@\', 2)',
+          'substring({email}, locate({email}, \'@\') + 1, strlen({email}))',
+          'replace({email}, \'@\', \'\')',
+          'Both options 1 and 2 work'
+        ],
+        correctIndex: 3,
+        explanation: 'Both split (taking piece 2 after splitting on @) and substring with locate are valid patterns for getting the domain. Either is correct.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s5-i2',
+        q: 'Source data has dates stored as strings in MM/dd/yyyy format. Which conversion expression is correct?',
+        options: [
+          'toString({date_text})',
+          'parseDate({date_text}, \'yyyy-MM-dd\')',
+          'parseDate({date_text}, \'MM/dd/yyyy\')',
+          'parseInt({date_text})'
+        ],
+        correctIndex: 2,
+        explanation: 'parseDate takes the string and a format pattern matching the source format. Year/month/day order in the format must match the source.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s5-i3',
+        q: 'You compare {region}=\'APAC\' but rows that should match do not. Source data has trailing whitespace. What is the cleanest fix?',
+        options: [
+          'Re-export the source CSV',
+          'Wrap the comparison: trim({region})=\'APAC\' (or trim once at dataset level)',
+          'Switch to Custom SQL',
+          'Use locate instead of equality'
+        ],
+        correctIndex: 1,
+        explanation: 'Trim handles whitespace pollution. Doing it once at dataset level is cleanest — every downstream comparison benefits without each calc re-trimming.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s5-i4',
+        q: 'Which function returns the position of one string inside another, or 0 if not found?',
+        options: [
+          'locate',
+          'substring',
+          'split',
+          'concat'
+        ],
+        correctIndex: 0,
+        explanation: 'locate(haystack, needle) returns the 1-indexed position of needle in haystack, or 0 if not found.',
+        difficulty: 'easy'
+      }
+    ],
+    s6: [
+      {
+        id: 'qs-m4-s6-i1',
+        q: 'What does sumOver(sum({revenue}), [{region}], PRE_AGG) compute?',
+        options: [
+          'Total revenue across the dataset',
+          'Total revenue for each region, regardless of how the visual is grouped',
+          'Average revenue per region',
+          'Running total of revenue'
+        ],
+        correctIndex: 1,
+        explanation: 'sumOver with [{region}] partition computes the regional total at the region level — independent of the visual\'s grouping. This is what makes it level-aware.',
+        difficulty: 'hard'
+      },
+      {
+        id: 'qs-m4-s6-i2',
+        q: 'What does periodOverPeriodDifference(sum({revenue}), {order_date}, MONTH, 1) calculate?',
+        options: [
+          'Total revenue this month',
+          'The difference between this month\'s revenue and last month\'s',
+          'Cumulative revenue over months',
+          'Average monthly revenue'
+        ],
+        correctIndex: 1,
+        explanation: 'It computes the change between the current period and the period N (here 1) periods earlier — month-over-month difference.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s6-i3',
+        q: 'You want each row to show its share of the regional total. Which expression?',
+        options: [
+          '{revenue} / sum({revenue})',
+          '{revenue} / sumOver(sum({revenue}), [{region}], PRE_AGG)',
+          'percentOfTotal({revenue})',
+          'avg({revenue}) / sum({revenue})'
+        ],
+        correctIndex: 1,
+        explanation: 'sumOver with [{region}] partitions the total by region; dividing the row\'s revenue by it gives the row\'s share of its region.',
+        difficulty: 'hard'
+      },
+      {
+        id: 'qs-m4-s6-i4',
+        q: 'In Lab 4, the deal_tier calculation classifies orders into 4 tiers (Strategic / Major / Mid / Small). Which function did it use?',
+        options: [
+          'switch',
+          'ifelse',
+          'coalesce',
+          'concat'
+        ],
+        correctIndex: 1,
+        explanation: 'ifelse with cascading thresholds is the right tool when the conditions are range comparisons (>= 50000, >= 10000, etc.).',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m4-s6-i5',
+        q: 'In Lab 4, why does pct_of_region show roughly 100% when summed across deal tiers within a single region?',
+        options: [
+          'Because the values are normalised',
+          'Because sumOver partitions by region, so each row\'s share of its region totals to 1.0 (100%) within the region',
+          'Because of conditional formatting',
+          'Because of the order_date filter'
+        ],
+        correctIndex: 1,
+        explanation: 'Each row\'s pct_of_region equals revenue / regional_total. Adding all rows in a region equals regional_total / regional_total = 100%.',
+        difficulty: 'hard'
+      }
+    ]
+  },
+
+  // ============ MODULE 5 ============
+  m5: {
+    s1: [
+      {
+        id: 'qs-m5-s1-i1',
+        q: 'You set a filter scope to "All visuals across all sheets". What does this mean?',
+        options: [
+          'Only the current sheet is filtered',
+          'Every visual using the dataset on every sheet of the analysis is filtered',
+          'The dataset itself is permanently filtered',
+          'Only published dashboard sheets are filtered'
+        ],
+        correctIndex: 1,
+        explanation: 'The "all visuals across all sheets" scope makes the filter dashboard-wide — every sheet\'s visuals using the dataset get the same filter.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m5-s1-i2',
+        q: 'What is the difference between a row-level filter and an aggregate filter?',
+        options: [
+          'Aggregate filters only work in Direct Query',
+          'Row-level filters apply before aggregation; aggregate filters apply after',
+          'Row-level filters use SPICE; aggregate filters use Direct Query',
+          'They are the same thing'
+        ],
+        correctIndex: 1,
+        explanation: 'Row-level: drops rows before they\'re summed. Aggregate: keeps all rows but only shows groups whose aggregated value clears the bar (e.g., customers whose total revenue > X).',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m5-s1-i3',
+        q: 'A filter scoped to "one visual only" is appropriate when:',
+        options: [
+          'You want to filter the entire dashboard',
+          'You need a Top-N filter on a single ranking chart that should not affect other visuals',
+          'You want a date range across all visuals',
+          'You want RLS'
+        ],
+        correctIndex: 1,
+        explanation: 'Single-visual scope is for visual-specific filters like Top-N, where you want one ranking chart restricted but the rest of the dashboard untouched.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m5-s1-i4',
+        q: 'You filter a dashboard by a hidden field (not visible in any visual). What\'s the risk?',
+        options: [
+          'QuickSight does not allow this',
+          'Future maintainers may not realise the filter exists and be confused by mismatched numbers',
+          'Performance degrades severely',
+          'The dashboard cannot be published'
+        ],
+        correctIndex: 1,
+        explanation: 'Invisible filters are powerful but easy to forget. Document them in the analysis description so future maintainers (or you in 6 months) understand why numbers differ from raw source.',
+        difficulty: 'medium'
+      }
+    ],
+    s2: [
+      {
+        id: 'qs-m5-s2-i1',
+        q: 'A filter exists in your analysis but readers cannot adjust it from the dashboard. What\'s missing?',
+        options: [
+          'The filter must be set to global scope',
+          'A filter control wired to that filter and surfaced on the sheet',
+          'The dashboard must be republished',
+          'The filter must be on a calculated field'
+        ],
+        correctIndex: 1,
+        explanation: 'Filters are silent by default. Readers can only change them if you\'ve added a control (dropdown, slider, date picker, etc.) for them.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m5-s2-i2',
+        q: 'Which control type fits best for a date filter where readers usually pick "last 30 days" or "this quarter"?',
+        options: [
+          'Date picker',
+          'Date range',
+          'Relative date',
+          'Slider'
+        ],
+        correctIndex: 2,
+        explanation: 'Relative date controls have built-in options like "last 30 days", "this quarter", "year to date" — perfect when reader intent is relative to today.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m5-s2-i3',
+        q: 'For a multi-select dropdown filter, what default behaviour is generally best?',
+        options: [
+          'Pre-select the first value alphabetically',
+          'Default to "all values selected" so a fresh dashboard shows everything',
+          'Leave nothing selected so the dashboard is empty',
+          'Pre-select a random value'
+        ],
+        correctIndex: 1,
+        explanation: 'Readers expect a fresh dashboard to show everything. Defaulting to all values selected matches that expectation.',
+        difficulty: 'medium'
+      }
+    ],
+    s3: [
+      {
+        id: 'qs-m5-s3-i1',
+        q: 'What is a parameter in QuickSight?',
+        options: [
+          'A read-only field from the source database',
+          'A named variable whose value can be set by the reader, by URL, or by an action',
+          'An aggregation type',
+          'A type of visual'
+        ],
+        correctIndex: 1,
+        explanation: 'Parameters are variables. They can be wired to controls for reader input, set via URL for deep linking, or set by actions for cross-sheet behaviour.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m5-s3-i2',
+        q: 'When would you choose a parameter over a plain filter?',
+        options: [
+          'Always; parameters are strictly better',
+          'When the same value needs to drive a calculation, a filter, and possibly URL state simultaneously',
+          'When the data is in SPICE',
+          'When you have many readers'
+        ],
+        correctIndex: 1,
+        explanation: 'Parameters are the right call when one value needs to be referenced in multiple places (calc + filter + URL). For simple "let readers pick what they see", a filter + control is enough.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m5-s3-i3',
+        q: 'You created a parameter but readers cannot interact with it on the dashboard. Why?',
+        options: [
+          'Parameters cannot be reader-facing',
+          'You did not add a control for it (right-click parameter → Add control)',
+          'The parameter must be a string type',
+          'You forgot to publish'
+        ],
+        correctIndex: 1,
+        explanation: 'A parameter alone is invisible. You must add a control (dropdown, slider, date picker) so readers can change its value.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m5-s3-i4',
+        q: 'A parameter named commission_rate is referenced in a calculated field. What syntax does the expression use?',
+        options: [
+          '{commission_rate}',
+          '${commission_rate}',
+          '@commission_rate',
+          '%commission_rate%'
+        ],
+        correctIndex: 1,
+        explanation: 'Parameters use ${param} syntax with a $ prefix and curly braces. Field references use {field} without the dollar.',
+        difficulty: 'medium'
+      }
+    ],
+    s4: [
+      {
+        id: 'qs-m5-s4-i1',
+        q: 'A "cascading" or "dependent" filter control is one that:',
+        options: [
+          'Filters multiple datasets at once',
+          'Has its available values restricted by another filter\'s selection (e.g., choose region first, then only customers in that region)',
+          'Updates automatically on a schedule',
+          'Cannot be cleared by readers'
+        ],
+        correctIndex: 1,
+        explanation: 'Cascading controls show only relevant values based on the parent filter\'s selection. Format control → Show relevant values only is where you wire it.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m5-s4-i2',
+        q: 'You want readers to choose how many "Top N" customers appear (5, 10, 25, or 50). What\'s the cleanest pattern?',
+        options: [
+          'Hard-code Top 10 always',
+          'Create three different visuals for 5, 10, 25, 50',
+          'Create a parameter top_n, bind it to a dropdown control, set the Top-N filter to use the parameter',
+          'Use a calculated field with ifelse'
+        ],
+        correctIndex: 2,
+        explanation: 'Parameter + control + Top-N filter referencing the parameter = one visual that adjusts on reader input. Cleanest of the options.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m5-s4-i3',
+        q: 'In a Top-N filter, two records tie for the last spot. What happens by default?',
+        options: [
+          'QuickSight picks one randomly',
+          'Both are included (so the result has N+1 rows)',
+          'Neither is included',
+          'An error is shown'
+        ],
+        correctIndex: 1,
+        explanation: 'QuickSight includes ties by default. To force exactly N, add a secondary sort (tiebreaker) to the filter configuration.',
+        difficulty: 'hard'
+      }
+    ],
+    s5: [
+      {
+        id: 'qs-m5-s5-i1',
+        q: 'A filter action set on Visual A targeting Visual B does what?',
+        options: [
+          'Filters Visual A based on data in Visual B',
+          'Filters Visual B (and any other targets) based on what the reader clicks in Visual A',
+          'Replaces Visual A with Visual B',
+          'Schedules a refresh'
+        ],
+        correctIndex: 1,
+        explanation: 'A filter action propagates the clicked value from the source visual to filter the target visuals on the same sheet.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m5-s5-i2',
+        q: 'A navigation action differs from a filter action because:',
+        options: [
+          'Navigation actions only work on KPIs',
+          'Navigation moves the reader to a different sheet (often setting parameters along the way); filter actions stay on the same sheet',
+          'Navigation actions need Enterprise; filter actions are free',
+          'There is no difference'
+        ],
+        correctIndex: 1,
+        explanation: 'Filter actions stay on the same sheet and filter sibling visuals. Navigation actions jump to another sheet, optionally pre-setting parameters that the target sheet uses.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m5-s5-i3',
+        q: 'A URL action lets you:',
+        options: [
+          'Navigate to another QuickSight dashboard',
+          'Open an external URL in a new tab, optionally injecting field values from the clicked row as URL parameters',
+          'Trigger a SPICE refresh',
+          'Send an email'
+        ],
+        correctIndex: 1,
+        explanation: 'URL actions open external links and can pass clicked-row values as URL parameters — useful for jumping to a Salesforce account or Jira ticket from a dashboard cell.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m5-s5-i4',
+        q: 'In Lab 5, the Region Detail sheet is filtered by which mechanism?',
+        options: [
+          'A filter action from Sheet 1',
+          'A parameter selected_region whose value is set by the navigation action when a region bar is clicked',
+          'RLS',
+          'A hardcoded EMEA filter'
+        ],
+        correctIndex: 1,
+        explanation: 'The navigation action sets selected_region to the clicked region\'s value. Sheet 2 has a filter "region IN selected_region", so it filters dynamically based on what was clicked.',
+        difficulty: 'medium'
+      }
+    ]
+  },
+
+  // ============ MODULE 6 ============
+  m6: {
+    s1: [
+      {
+        id: 'qs-m6-s1-i1',
+        q: 'A reader of a published dashboard wants to add a new visual. Can they?',
+        options: [
+          'Yes, dashboards allow editing',
+          'No — readers can use exposed filters and parameters but cannot add or modify visuals; only authors editing the source analysis can',
+          'Yes, if they have Co-owner permission on the dashboard',
+          'Yes, if they have access to the dataset'
+        ],
+        correctIndex: 1,
+        explanation: 'Adding visuals requires the source analysis. Even Co-owners on the dashboard cannot add visuals via the dashboard view — they\'d need to open the analysis.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m6-s1-i2',
+        q: 'You changed several visuals in your analysis and saved. The published dashboard still shows the old version. Why?',
+        options: [
+          'Caching delay; it\'ll update in a few hours',
+          'Republishing is explicit — go to Share → Publish dashboard → Replace existing',
+          'You need to refresh the SPICE dataset',
+          'The dashboard is broken'
+        ],
+        correctIndex: 1,
+        explanation: 'Dashboard updates are deliberate. You must explicitly Replace existing dashboard to push your analysis changes to readers.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s1-i3',
+        q: 'What does QuickSight\'s Manage versions feature on a dashboard let you do?',
+        options: [
+          'View past published versions, roll back to any of them, and delete old ones',
+          'Edit the analysis history',
+          'Branch the dashboard like git',
+          'Compare two versions side-by-side'
+        ],
+        correctIndex: 0,
+        explanation: 'Each publish creates a version. Manage versions lets you see them, roll back to a prior one, and delete old versions for cleanup.',
+        difficulty: 'medium'
+      }
+    ],
+    s2: [
+      {
+        id: 'qs-m6-s2-i1',
+        q: 'What is the recommended sharing pattern at scale?',
+        options: [
+          'Share with each user individually',
+          'Group users into named groups, share dashboards with groups, manage group membership separately',
+          'Make everything public',
+          'Share only with admins'
+        ],
+        correctIndex: 1,
+        explanation: 'Group-based sharing scales. When someone joins or leaves the team, you update group membership in one place rather than scrambling across many dashboards.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m6-s2-i2',
+        q: 'Sharing a published dashboard with a user — does that automatically share the underlying analysis with them?',
+        options: [
+          'Yes, it\'s a single permission',
+          'No — the dashboard, the analysis, and the dataset each have separate sharing',
+          'Only if the user is an Admin',
+          'Only in Standard edition'
+        ],
+        correctIndex: 1,
+        explanation: 'Each artefact (dashboard, analysis, dataset, folder) has its own sharing. Sharing a dashboard does not grant access to the analysis or dataset behind it.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s2-i3',
+        q: 'A folder shared with a group will:',
+        options: [
+          'Have its name visible but contents hidden',
+          'Allow contents to inherit the folder\'s permissions automatically',
+          'Block all access until granted explicitly per asset',
+          'Trigger a SPICE refresh'
+        ],
+        correctIndex: 1,
+        explanation: 'Folder sharing cascades. Anything placed in a shared folder inherits the folder permissions, which is why folders are excellent for team-level governance.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s2-i4',
+        q: 'The Co-owner permission level on a dashboard allows the recipient to:',
+        options: [
+          'Only view the dashboard',
+          'View, re-share, modify permissions, and (if they are an author) edit the source analysis',
+          'Edit the dashboard visuals directly',
+          'Delete the dataset'
+        ],
+        correctIndex: 1,
+        explanation: 'Co-owners can re-share and modify permissions. They can edit the source analysis only if they themselves are an author with permission on the analysis.',
+        difficulty: 'medium'
+      }
+    ],
+    s3: [
+      {
+        id: 'qs-m6-s3-i1',
+        q: 'Row-Level Security (RLS) in QuickSight is available in:',
+        options: [
+          'Standard edition only',
+          'Enterprise edition only',
+          'Both editions',
+          'Neither — RLS is only at the source database'
+        ],
+        correctIndex: 1,
+        explanation: 'RLS, column-level security, AD/SAML SSO, embedded analytics, VPC connections, and Q are all Enterprise-only.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m6-s3-i2',
+        q: 'What is a "rules dataset" in user-based RLS?',
+        options: [
+          'A backup of your main dataset',
+          'A small dataset mapping users or groups to the values they\'re permitted to see',
+          'A SPICE refresh schedule',
+          'A list of admin users'
+        ],
+        correctIndex: 1,
+        explanation: 'The rules dataset has columns like UserName/GroupName plus columns for each restriction dimension (e.g., region). QuickSight uses it to filter the main dataset per user at query time.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s3-i3',
+        q: 'In an RLS rules dataset, what does a blank cell or * mean for a column?',
+        options: [
+          'Block the user from any data',
+          'No restriction on this column — the user sees all values for it',
+          'Show only nulls',
+          'An error in the rules file'
+        ],
+        correctIndex: 1,
+        explanation: 'Blank or * in a column means "no filter" for that user on that column — they see everything for that dimension.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s3-i4',
+        q: 'How do you test that RLS is working without logging out and signing in as another user?',
+        options: [
+          'Disable RLS temporarily',
+          'Use the dataset\'s "View as" feature to impersonate a user or group',
+          'Republish the dashboard',
+          'Look at the Firestore rules'
+        ],
+        correctIndex: 1,
+        explanation: '"View as" lets you preview the dataset (and any analysis on it) as a specific user — the canonical way to verify RLS rules.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s3-i5',
+        q: 'Column-level security (CLS) hides:',
+        options: [
+          'Specific rows from specific users',
+          'Specific columns from specific users or groups, so they don\'t appear in any analysis',
+          'The dataset itself',
+          'The folder structure'
+        ],
+        correctIndex: 1,
+        explanation: 'CLS removes columns from view for the chosen users/groups. They simply don\'t see those fields when building or viewing analyses on the dataset.',
+        difficulty: 'medium'
+      }
+    ],
+    s4: [
+      {
+        id: 'qs-m6-s4-i1',
+        q: 'A scheduled email report fires:',
+        options: [
+          'Only when a metric crosses a threshold',
+          'On a defined schedule (daily / weekly / monthly), regardless of what the data shows',
+          'Only on weekdays',
+          'When a SPICE refresh completes'
+        ],
+        correctIndex: 1,
+        explanation: 'Scheduled reports are time-based. They send the dashboard (PDF / CSV / sheet) on the cadence you defined — not conditional on data.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m6-s4-i2',
+        q: 'A KPI threshold alert fires:',
+        options: [
+          'On a fixed schedule',
+          'Only when the configured condition (above / below / % change) is met',
+          'Whenever the dashboard is opened',
+          'Whenever the SPICE dataset refreshes'
+        ],
+        correctIndex: 1,
+        explanation: 'Alerts are conditional. They check the KPI on the configured frequency (hourly Enterprise, daily) and fire only when the threshold or comparison condition is met.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m6-s4-i3',
+        q: 'You set up an alert and it fires every day. What does this most likely mean?',
+        options: [
+          'The alert is working perfectly',
+          'The threshold is too loose — this is really a status report; convert it to a scheduled report instead',
+          'You need a faster check frequency',
+          'You should add more recipients'
+        ],
+        correctIndex: 1,
+        explanation: 'Daily-firing alerts cause alert fatigue. If a condition is true daily, it\'s a status, not an alert — push it through scheduled reports.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s4-i4',
+        q: 'Anomaly detection in QuickSight is part of which feature, available in which edition?',
+        options: [
+          'ML Insights, Standard edition',
+          'ML Insights, Enterprise edition only',
+          'SPICE, both editions',
+          'QuickSight Q, Standard edition'
+        ],
+        correctIndex: 1,
+        explanation: 'Anomaly detection is part of ML Insights, available in Enterprise. Standard edition does not include ML Insights.',
+        difficulty: 'medium'
+      }
+    ],
+    s5: [
+      {
+        id: 'qs-m6-s5-i1',
+        q: 'In QuickSight embedded analytics, the "anonymous" embed mode is for:',
+        options: [
+          'Internal SSO users',
+          'Users who do not exist in QuickSight (typically public-facing or B2C apps)',
+          'Anyone who does not pay',
+          'Test environments only'
+        ],
+        correctIndex: 1,
+        explanation: 'Anonymous embed serves users who aren\'t registered in QuickSight. RLS uses session tags passed at embed time instead of a user-based rules table.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s5-i2',
+        q: 'How long is a generated embed URL typically valid?',
+        options: [
+          'Indefinitely',
+          'Short-lived (around 5 minutes), and can be auto-refreshed by the SDK',
+          'One hour',
+          'Until the user logs out'
+        ],
+        correctIndex: 1,
+        explanation: 'Embed URLs are intentionally short-lived for security. The Embedding SDK handles auto-refresh so the iframe stays usable.',
+        difficulty: 'hard'
+      },
+      {
+        id: 'qs-m6-s5-i3',
+        q: 'For embedded dashboards, your backend needs to:',
+        options: [
+          'Authenticate the user, then call GenerateEmbedUrl... API to get a short-lived URL for the frontend to load',
+          'Run QuickSight inside Docker',
+          'Replicate the dashboard data into your app',
+          'Use a custom version of QuickSight'
+        ],
+        correctIndex: 0,
+        explanation: 'Your backend authenticates, calls the embed-URL API (registered or anonymous flavour), and the short-lived URL is what the frontend SDK loads into an iframe.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s5-i4',
+        q: 'For anonymous embed, RLS is enforced via:',
+        options: [
+          'A user-based rules dataset',
+          'Session tags passed at embed time',
+          'IAM policies',
+          'Hardcoded filters'
+        ],
+        correctIndex: 1,
+        explanation: 'Anonymous users don\'t exist in QuickSight, so user-based rules don\'t apply. Session tags carry the security context from your backend into QuickSight at embed time.',
+        difficulty: 'hard'
+      }
+    ],
+    s6: [
+      {
+        id: 'qs-m6-s6-i1',
+        q: 'In Lab 6, the rules dataset uses GroupName instead of UserName. What does this enable?',
+        options: [
+          'Faster queries',
+          'Permissions managed by group membership — adding a user to a group automatically grants the group\'s data scope without rebuilding the rules dataset',
+          'Anonymous embed',
+          'Admin-only access'
+        ],
+        correctIndex: 1,
+        explanation: 'Group-based rules scale better. You manage who sees what by adjusting group membership rather than editing a per-user rules table.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s6-i2',
+        q: 'In Lab 6, the leadership group entry has region = *. What does that do?',
+        options: [
+          'Blocks the leadership group entirely',
+          'Grants the leadership group access to all regions (no row-level restriction on region)',
+          'Filters to a region named "All"',
+          'Causes an error'
+        ],
+        correctIndex: 1,
+        explanation: '* (or blank) means no restriction on that column — leadership sees all regions while the EMEA group sees only EMEA, etc.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'qs-m6-s6-i3',
+        q: 'After applying RLS in Lab 6, what is the canonical way to verify it works correctly?',
+        options: [
+          'Sign out and sign in as another user',
+          'Use the "View as" feature on the dataset to impersonate a different user or group and confirm the visible data narrows accordingly',
+          'Check Firestore rules',
+          'Refresh SPICE'
+        ],
+        correctIndex: 1,
+        explanation: '"View as" is the built-in impersonation tool — far faster than juggling logins, and works for both individual users and groups.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s6-i4',
+        q: 'In Lab 6 you scheduled a weekly Monday report and added a daily revenue-drop alert. Why are these two different mechanisms?',
+        options: [
+          'They\'re actually the same; QuickSight just calls them different names',
+          'Reports send on a schedule regardless of data; alerts only fire when a condition is met. Different intents, different mechanisms.',
+          'Reports are PDF; alerts are CSV',
+          'Reports work in Standard, alerts only Enterprise'
+        ],
+        correctIndex: 1,
+        explanation: 'Time-based delivery (reports) vs condition-based delivery (alerts) are intentionally separate. Use reports for routine awareness, alerts for exceptions.',
+        difficulty: 'medium'
+      },
+      {
+        id: 'qs-m6-s6-i5',
+        q: 'In Lab 6 the dashboard description includes a note saying "Filtered by RLS based on group membership." Why does this matter?',
+        options: [
+          'QuickSight requires it',
+          'It documents the invisible filter so future maintainers and confused users know why their numbers differ from raw source',
+          'It enables the alerts feature',
+          'It speeds up SPICE refresh'
+        ],
+        correctIndex: 1,
+        explanation: 'Invisible filters are powerful but easy to forget. Describing them in the dashboard description is a small habit that saves big confusion later.',
+        difficulty: 'medium'
+      }
+    ]
+  }
 
 };
