@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded',function(){const gb=document.getEle
 </script>
 <script>
 const HUB_URL = 'https://sflearningdevelopment.github.io/sf-knowledge-hub/index.html';
-const SECTION_COUNT = 19642;
+const SECTION_COUNT = 19466;
 const SECTION_QUESTIONS = {"1":[],"2":[],"3":[],"4":[],"5":[],"6":[],"7":[]};
 
 function submitModuleComplete() {
@@ -198,7 +198,7 @@ const SECTIONS=[
     title: 'Data Sources QuickSight Supports',
     badge: 'foundation',
     content: `
-      <h3>ð The full source list (and how to think about it)</h3>
+      <h3>📚 The full source list (and how to think about it)</h3>
       <p>QuickSight supports a wide range of data sources, but they fall into <strong>four mental buckets</strong>. Knowing which bucket your source belongs to tells you almost everything about behaviour, refresh strategy, and security.</p>
 
       <table>
@@ -209,15 +209,15 @@ const SECTIONS=[
         <tr><td><strong>4. SaaS / business apps</strong></td><td>Salesforce, ServiceNow, GitHub, Jira, Adobe Analytics, Twitter</td><td>OAuth or API key auth; refresh frequency limits set by the source vendor</td></tr>
       </table>
 
-      <h3>ð Connection types in QuickSight</h3>
+      <h3>🔌 Connection types in QuickSight</h3>
       <p>Every dataset has a <strong>data source</strong> (the connection itself) and a <strong>dataset</strong> (the query or table on top of it). One data source can power many datasets.</p>
       <ul>
         <li><strong>Personal</strong> data sources are private to the user who created them</li>
-        <li><strong>Shared</strong> data sources are visible to other authors in the same QuickSight account â useful for centrally managed credentials</li>
+        <li><strong>Shared</strong> data sources are visible to other authors in the same QuickSight account — useful for centrally managed credentials</li>
       </ul>
 
       <div class="callout callout-info">
-        <h4>ð¡ Recommended pattern for teams</h4>
+        <h4>💡 Recommended pattern for teams</h4>
         <p>An admin creates <strong>shared data sources</strong> for each production database with read-only credentials. Authors then build <strong>personal datasets</strong> on top. This way credentials live in one place and rotation is a single-step operation.</p>
       </div>
 
@@ -226,24 +226,24 @@ const SECTIONS=[
   },
   {
     id: 2,
-    title: 'SPICE vs Direct Query â Choosing Wisely',
+    title: 'SPICE vs Direct Query — Choosing Wisely',
     badge: 'foundation',
     content: `
-      <h3>âï¸ The choice you make on every dataset</h3>
-      <p>When you create a dataset in QuickSight, you pick one of two query modes. This is a <strong>per-dataset</strong> choice â different datasets in the same analysis can use different modes.</p>
+      <h3>⚖️ The choice you make on every dataset</h3>
+      <p>When you create a dataset in QuickSight, you pick one of two query modes. This is a <strong>per-dataset</strong> choice — different datasets in the same analysis can use different modes.</p>
 
       <table>
         <tr><th>Aspect</th><th>SPICE (Import)</th><th>Direct Query</th></tr>
         <tr><td>Data location</td><td>Copied into QuickSight's in-memory engine</td><td>Query runs against your source on every interaction</td></tr>
-        <tr><td>Latency</td><td>Sub-second</td><td>Depends on source (often 2â30s for complex queries)</td></tr>
-        <tr><td>Freshness</td><td>As fresh as last refresh (scheduled or manual)</td><td>Live â every visual interaction queries source</td></tr>
+        <tr><td>Latency</td><td>Sub-second</td><td>Depends on source (often 2–30s for complex queries)</td></tr>
+        <tr><td>Freshness</td><td>As fresh as last refresh (scheduled or manual)</td><td>Live — every visual interaction queries source</td></tr>
         <tr><td>Source load</td><td>Only during refresh</td><td>Every dashboard interaction</td></tr>
         <tr><td>Cost</td><td>SPICE GB cost</td><td>Source query cost (Athena scans, Redshift compute, etc.)</td></tr>
-        <tr><td>Concurrency</td><td>Excellent â SPICE handles many readers</td><td>Limited by source connection pool</td></tr>
+        <tr><td>Concurrency</td><td>Excellent — SPICE handles many readers</td><td>Limited by source connection pool</td></tr>
         <tr><td>Row limits</td><td>SPICE row limits per dataset (high but not infinite)</td><td>None imposed by QuickSight</td></tr>
       </table>
 
-      <h3>ð¯ The decision rule of thumb</h3>
+      <h3>🎯 The decision rule of thumb</h3>
       <p><strong>Default to SPICE.</strong> Use Direct Query only when you have a specific reason:</p>
       <ul>
         <li>The dashboard must show data that's <strong>seconds-fresh</strong> (operational dashboards, real-time monitoring)</li>
@@ -252,11 +252,11 @@ const SECTIONS=[
         <li>Compliance forbids <strong>copying data</strong> outside the source database</li>
       </ul>
 
-      <h3>ð Switching modes</h3>
+      <h3>🔁 Switching modes</h3>
       <p>You can switch a dataset between SPICE and Direct Query later, but it triggers a re-import (for SPICE) or breaks scheduled refreshes (for Direct Query). Plan the choice up front.</p>
 
       <div class="callout callout-warn">
-        <h4>â ï¸ The hidden cost trap</h4>
+        <h4>⚠️ The hidden cost trap</h4>
         <p>Direct Query against Athena charges per data scanned <em>on every dashboard interaction</em>. A dashboard with 6 visuals viewed by 50 users = 300 Athena scans. SPICE imports once and serves all 50 users at zero further source cost.</p>
       </div>
 
@@ -268,15 +268,15 @@ const SECTIONS=[
     title: 'Connecting to S3, Files, and Databases',
     badge: 'essential',
     content: `
-      <h3>ð Three connection workflows you need to know</h3>
+      <h3>📁 Three connection workflows you need to know</h3>
       <p>Every QuickSight author hits these three patterns within their first week. They behave differently, so build the muscle memory.</p>
 
       <h3>1. Direct file upload (CSV / Excel)</h3>
       <ol>
-        <li><strong>Datasets â New dataset â Upload a file</strong></li>
-        <li>Pick the file from your local machine. QuickSight reads up to a fixed size limit (check current AWS docs â historically 1 GB)</li>
+        <li><strong>Datasets → New dataset → Upload a file</strong></li>
+        <li>Pick the file from your local machine. QuickSight reads up to a fixed size limit (check current AWS docs — historically 1 GB)</li>
         <li>QuickSight infers types. Always verify dates and numerics in the preview before clicking <strong>Next</strong>.</li>
-        <li>Imports straight to SPICE. No refresh option â to update, you re-upload manually.</li>
+        <li>Imports straight to SPICE. No refresh option — to update, you re-upload manually.</li>
       </ol>
       <p>Use this only for one-off analyses or sample data exploration. Production data should never live as a file on someone's laptop.</p>
 
@@ -284,7 +284,7 @@ const SECTIONS=[
       <ol>
         <li>Land your CSV/Parquet/JSON in an S3 bucket</li>
         <li>Create a <strong>manifest file</strong> (JSON) telling QuickSight which S3 paths to include and what format they're in</li>
-        <li>In QuickSight: <strong>New dataset â S3 â upload manifest</strong></li>
+        <li>In QuickSight: <strong>New dataset → S3 → upload manifest</strong></li>
         <li>QuickSight imports to SPICE; you can schedule refresh because the source path is stable</li>
       </ol>
 
@@ -303,19 +303,19 @@ const SECTIONS=[
   }
 }</div>
 
-      <p>For larger or partitioned data, <strong>use Athena instead of raw S3</strong> â you write SQL once, and QuickSight queries Athena which queries S3. Athena handles partitioning, column projection, and Parquet decoding for you.</p>
+      <p>For larger or partitioned data, <strong>use Athena instead of raw S3</strong> — you write SQL once, and QuickSight queries Athena which queries S3. Athena handles partitioning, column projection, and Parquet decoding for you.</p>
 
       <h3>3. Database connection (Redshift / RDS / Snowflake / Postgres / etc.)</h3>
       <ol>
-        <li><strong>Datasets â New dataset â pick the database type</strong></li>
+        <li><strong>Datasets → New dataset → pick the database type</strong></li>
         <li>Provide host, port, database name, and credentials</li>
-        <li>For non-public databases: configure a <strong>VPC connection</strong> (Enterprise only) â QuickSight gets a network path into your VPC without exposing the DB publicly</li>
+        <li>For non-public databases: configure a <strong>VPC connection</strong> (Enterprise only) — QuickSight gets a network path into your VPC without exposing the DB publicly</li>
         <li>Test connection, then either pick a table or write a custom SQL query</li>
         <li>Choose SPICE or Direct Query, finish</li>
       </ol>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Custom SQL beats join editor for complex transforms</h4>
+        <h4>💡 Custom SQL beats join editor for complex transforms</h4>
         <p>If your dataset needs CTEs, window functions, or complex filtering, write it as <strong>Custom SQL</strong> rather than using QuickSight's join editor. The SQL runs in your source database (which is faster than QuickSight's join engine) and is far more flexible.</p>
       </div>
 
@@ -324,35 +324,35 @@ const SECTIONS=[
   },
   {
     id: 4,
-    title: 'Joining Datasets â The Join Editor',
+    title: 'Joining Datasets — The Join Editor',
     badge: 'essential',
     content: `
-      <h3>ð The join editor in 60 seconds</h3>
+      <h3>🔗 The join editor in 60 seconds</h3>
       <p>QuickSight's join editor lets you combine multiple tables visually without writing SQL. You drag tables onto a canvas, click between them to define the join, and pick the join type.</p>
-      <p>Open it from <strong>Datasets â New dataset â pick source â Edit/Preview data â +</strong> button next to the source table.</p>
+      <p>Open it from <strong>Datasets → New dataset → pick source → Edit/Preview data → +</strong> button next to the source table.</p>
 
-      <h3>ð¤ Supported join types</h3>
+      <h3>🤝 Supported join types</h3>
       <table>
-        <tr><th>Join type</th><th>Returns</th><th>Use whenâ¦</th></tr>
+        <tr><th>Join type</th><th>Returns</th><th>Use when…</th></tr>
         <tr><td><strong>Inner</strong></td><td>Only rows where keys match in both tables</td><td>You only want orders that have a matching customer record</td></tr>
         <tr><td><strong>Left</strong></td><td>All left rows; matched right rows or NULL</td><td>You want every order, even orphans where customer_id is missing</td></tr>
         <tr><td><strong>Right</strong></td><td>All right rows; matched left rows or NULL</td><td>You want every customer, even those who never ordered</td></tr>
-        <tr><td><strong>Full outer</strong></td><td>All rows from both sides</td><td>Comprehensive reconciliation â show me both sides regardless of match</td></tr>
+        <tr><td><strong>Full outer</strong></td><td>All rows from both sides</td><td>Comprehensive reconciliation — show me both sides regardless of match</td></tr>
       </table>
 
-      <h3>âï¸ Join clause specifics</h3>
+      <h3>⚖️ Join clause specifics</h3>
       <ul>
-        <li><strong>Equality joins only</strong> â QuickSight does not support inequality (<code>&lt;</code>, <code>&gt;</code>, <code>BETWEEN</code>) joins in the visual editor. Use Custom SQL for those.</li>
-        <li><strong>Multiple keys allowed</strong> â click <strong>+ Add a new join clause</strong> to combine, e.g., region + product as a composite key</li>
-        <li><strong>Type must match</strong> â joining a string to an integer will fail silently with zero rows. Always verify both columns are the same type.</li>
+        <li><strong>Equality joins only</strong> — QuickSight does not support inequality (<code>&lt;</code>, <code>&gt;</code>, <code>BETWEEN</code>) joins in the visual editor. Use Custom SQL for those.</li>
+        <li><strong>Multiple keys allowed</strong> — click <strong>+ Add a new join clause</strong> to combine, e.g., region + product as a composite key</li>
+        <li><strong>Type must match</strong> — joining a string to an integer will fail silently with zero rows. Always verify both columns are the same type.</li>
       </ul>
 
-      <h3>ð Cross-source joins</h3>
+      <h3>🔄 Cross-source joins</h3>
       <p>QuickSight can join tables across sources (e.g. a Redshift table to a CSV upload). Cross-source joins <strong>must be SPICE</strong>; QuickSight can't push a join down to two different databases. This is fine for small lookup tables but expensive for large ones.</p>
 
       <div class="callout callout-warn">
-        <h4>â ï¸ Many-to-many joins inflate row counts</h4>
-        <p>If your join keys aren't unique on at least one side, you'll get a Cartesian-style multiplication. Always verify the row count after a join â if it's larger than the larger of your two source tables, you have a duplicate-key problem to fix at the source.</p>
+        <h4>⚠️ Many-to-many joins inflate row counts</h4>
+        <p>If your join keys aren't unique on at least one side, you'll get a Cartesian-style multiplication. Always verify the row count after a join — if it's larger than the larger of your two source tables, you have a duplicate-key problem to fix at the source.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m2-s4"></div>
@@ -360,10 +360,10 @@ const SECTIONS=[
   },
   {
     id: 5,
-    title: 'Data Prep â Types, Formats, and Calculated Fields',
+    title: 'Data Prep — Types, Formats, and Calculated Fields',
     badge: 'important',
     content: `
-      <h3>ð§¹ Data prep happens at the dataset level</h3>
+      <h3>🧹 Data prep happens at the dataset level</h3>
       <p>QuickSight has <strong>two layers</strong> where you can transform data: the <strong>dataset</strong> (prep time) and the <strong>analysis</strong> (visual time). Get the layering right and your dashboards will be both faster and easier to maintain.</p>
 
       <table>
@@ -375,26 +375,26 @@ const SECTIONS=[
         <tr><td>Geographic role assignments (city, state, country)</td><td>Conditional formatting rules</td></tr>
       </table>
 
-      <h3>ð¢ Data types and what they unlock</h3>
+      <h3>🔢 Data types and what they unlock</h3>
       <ul>
-        <li><strong>Date</strong> â enables date filters, time-series charts, period-over-period analysis</li>
-        <li><strong>Number / Decimal</strong> â enables aggregations (sum, avg, etc.) and arithmetic</li>
-        <li><strong>String</strong> â used for grouping, filtering by category</li>
-        <li><strong>Geographic role</strong> (assigned to a string field) â unlocks map visuals</li>
+        <li><strong>Date</strong> — enables date filters, time-series charts, period-over-period analysis</li>
+        <li><strong>Number / Decimal</strong> — enables aggregations (sum, avg, etc.) and arithmetic</li>
+        <li><strong>String</strong> — used for grouping, filtering by category</li>
+        <li><strong>Geographic role</strong> (assigned to a string field) — unlocks map visuals</li>
       </ul>
       <p>If <code>order_date</code> is sitting as a string, you cannot do anything time-aware with it. Always confirm types in the data prep view.</p>
 
-      <h3>ð§® Calculated fields at prep time</h3>
+      <h3>🧮 Calculated fields at prep time</h3>
       <p>You can create reusable calculated fields right in the dataset. They become "first-class" fields available to every analysis built on this dataset.</p>
       <p>Examples worth defining at dataset level:</p>
       <ul>
-        <li><code>profit_margin = profit / revenue</code> â used everywhere</li>
-        <li><code>order_year = extract('YY', order_date)</code> â used everywhere</li>
-        <li><code>region_short = ifelse(region='North America', 'NA', region)</code> â used in many places</li>
+        <li><code>profit_margin = profit / revenue</code> — used everywhere</li>
+        <li><code>order_year = extract('YY', order_date)</code> — used everywhere</li>
+        <li><code>region_short = ifelse(region='North America', 'NA', region)</code> — used in many places</li>
       </ul>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Naming convention worth adopting</h4>
+        <h4>💡 Naming convention worth adopting</h4>
         <p>Prefix dataset-level calculated fields with a marker like <code>calc_</code> or <code>c_</code> so analysts can tell at a glance which fields are computed versus raw. This pays for itself the first time a downstream report behaves unexpectedly.</p>
       </div>
 
@@ -406,36 +406,36 @@ const SECTIONS=[
     title: 'Refresh Schedules and Incremental Refresh',
     badge: 'important',
     content: `
-      <h3>ð SPICE refresh is what keeps your data current</h3>
-      <p>Direct Query datasets are always live, so refresh doesn't apply. SPICE datasets, on the other hand, are <em>snapshots</em> â you must refresh them or they'll show stale data forever.</p>
+      <h3>🔄 SPICE refresh is what keeps your data current</h3>
+      <p>Direct Query datasets are always live, so refresh doesn't apply. SPICE datasets, on the other hand, are <em>snapshots</em> — you must refresh them or they'll show stale data forever.</p>
 
-      <h3>ð Three ways to refresh SPICE</h3>
+      <h3>📅 Three ways to refresh SPICE</h3>
       <table>
-        <tr><th>Method</th><th>How</th><th>Use whenâ¦</th></tr>
-        <tr><td><strong>Manual</strong></td><td>Datasets list â click dataset â Refresh now</td><td>Ad-hoc updates after a known data change</td></tr>
-        <tr><td><strong>Scheduled (full)</strong></td><td>Dataset â Refresh schedule â set hourly / daily / weekly</td><td>Predictable cadence; data not too large to fully reload</td></tr>
-        <tr><td><strong>Scheduled (incremental)</strong></td><td>Define a date column window (last N days/hours) â only that window is re-imported</td><td>Large datasets where only recent data changes</td></tr>
+        <tr><th>Method</th><th>How</th><th>Use when…</th></tr>
+        <tr><td><strong>Manual</strong></td><td>Datasets list → click dataset → Refresh now</td><td>Ad-hoc updates after a known data change</td></tr>
+        <tr><td><strong>Scheduled (full)</strong></td><td>Dataset → Refresh schedule → set hourly / daily / weekly</td><td>Predictable cadence; data not too large to fully reload</td></tr>
+        <tr><td><strong>Scheduled (incremental)</strong></td><td>Define a date column window (last N days/hours) — only that window is re-imported</td><td>Large datasets where only recent data changes</td></tr>
       </table>
 
-      <h3>â±ï¸ Frequency options</h3>
+      <h3>⏱️ Frequency options</h3>
       <ul>
         <li><strong>Standard edition</strong>: Daily refresh max</li>
         <li><strong>Enterprise edition</strong>: Hourly refresh, with as many as 12 schedules per day</li>
         <li><strong>API / Lambda</strong>: Trigger refreshes from an external system using <code>CreateIngestion</code> for event-driven freshness</li>
       </ul>
 
-      <h3>ð¯ Incremental refresh in detail</h3>
-      <p>Full refresh re-imports the entire dataset every time â wasteful for large historical tables. Incremental refresh only re-imports a sliding window:</p>
+      <h3>🎯 Incremental refresh in detail</h3>
+      <p>Full refresh re-imports the entire dataset every time — wasteful for large historical tables. Incremental refresh only re-imports a sliding window:</p>
       <ul>
         <li>Pick a <strong>date or datetime column</strong> as the reference</li>
         <li>Set the <strong>look-back window</strong> (e.g. last 7 days)</li>
-        <li>QuickSight re-imports only rows where that column falls in the window â older data is preserved</li>
+        <li>QuickSight re-imports only rows where that column falls in the window — older data is preserved</li>
       </ul>
       <p>Catch: incremental refresh assumes <strong>no row updates outside the window</strong>. If your source updates a 6-month-old record, that change won't appear unless you do a full refresh.</p>
 
       <div class="callout callout-warn">
-        <h4>â ï¸ Refresh failures are silent unless you set up alerts</h4>
-        <p>Configure email alerts on dataset refresh failure (Datasets â dataset â Refresh schedule â notification email). Otherwise a failed schedule means your dashboard quietly serves stale data until someone notices.</p>
+        <h4>⚠️ Refresh failures are silent unless you set up alerts</h4>
+        <p>Configure email alerts on dataset refresh failure (Datasets → dataset → Refresh schedule → notification email). Otherwise a failed schedule means your dashboard quietly serves stale data until someone notices.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m2-s6"></div>
@@ -443,25 +443,25 @@ const SECTIONS=[
   },
   {
     id: 7,
-    title: 'Lab 2 â Build a Joined Sales + Customers Dataset',
+    title: 'Lab 2 — Build a Joined Sales + Customers Dataset',
     badge: 'important',
     content: `
-      <h3>ð¯ What you'll build</h3>
+      <h3>🎯 What you'll build</h3>
       <p>A SPICE dataset combining <code>sf-sales-orders.csv</code> and <code>sf-customers.csv</code> with a left join on <code>customer_id</code>. Add a calculated field for profit margin. This dataset becomes the foundation for every visual you build in Modules 3 and beyond.</p>
 
       <div class="lab">
-        <h4>ð§ª Lab 2: Join sales orders to customers</h4>
+        <h4>🧪 Lab 2: Join sales orders to customers</h4>
         <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~15 minutes. Prerequisite: you completed Lab 1 in Module 1.</p>
         <ol>
           <li>Make sure both <code>sf-sales-orders.csv</code> and <code>sf-customers.csv</code> are downloaded from the course dashboard.</li>
-          <li>In QuickSight: <strong>Datasets â New dataset â Upload a file</strong>. Upload <code>sf-sales-orders.csv</code>. Click <strong>Edit/Preview data</strong> (do not click "Visualize" yet).</li>
-          <li>You're now in the data prep view. Click <strong>+ Add data</strong> at the top â <strong>Upload a file</strong> â choose <code>sf-customers.csv</code>.</li>
+          <li>In QuickSight: <strong>Datasets → New dataset → Upload a file</strong>. Upload <code>sf-sales-orders.csv</code>. Click <strong>Edit/Preview data</strong> (do not click "Visualize" yet).</li>
+          <li>You're now in the data prep view. Click <strong>+ Add data</strong> at the top → <strong>Upload a file</strong> → choose <code>sf-customers.csv</code>.</li>
           <li>Two table boxes appear in the canvas. Click the <strong>two interlinked circles</strong> between them. The join configuration panel opens.</li>
           <li>Set <strong>Join clauses</strong>: drag <code>customer_id</code> from the left table and <code>customer_id</code> from the right table.</li>
           <li>Set <strong>Join type</strong> to <strong>Left</strong> (we want every order, even if customer record is missing).</li>
           <li>Click <strong>Apply</strong>. The preview updates.</li>
           <li>You'll see <code>customer_id</code> appears twice. Untick the duplicate from the right table to hide it.</li>
-          <li>Rename the right-table <code>region</code> to <code>customer_region</code> by double-clicking the column header (since the orders table also has region â but they should match for clean joins, so keeping both is useful for QA).</li>
+          <li>Rename the right-table <code>region</code> to <code>customer_region</code> by double-clicking the column header (since the orders table also has region — but they should match for clean joins, so keeping both is useful for QA).</li>
           <li>Click <strong>+ Add calculated field</strong>. Name it <code>profit_margin</code>. Formula:
             <div class="diagram">ifelse(
   {revenue} = 0,
@@ -471,16 +471,16 @@ const SECTIONS=[
           </li>
           <li>Click <strong>Save</strong>. Set <strong>Format</strong> to <strong>Percent</strong> with 1 decimal place.</li>
           <li>Rename the dataset to <strong>SF Sales + Customers</strong> at the top of the screen.</li>
-          <li>Click <strong>Save &amp; visualize</strong>. QuickSight imports to SPICE â wait for the green check mark.</li>
+          <li>Click <strong>Save &amp; visualize</strong>. QuickSight imports to SPICE — wait for the green check mark.</li>
         </ol>
         <div class="lab-expected">
-          <strong>Expected outcome:</strong> A new SPICE dataset named "SF Sales + Customers" with ~2,000 rows, 17 columns (12 from orders + 5 from customers, minus the dropped duplicate <code>customer_id</code>, plus 1 calculated field), and a <code>profit_margin</code> field formatted as a percentage. The first row should show a margin in the 20â80% range depending on category.
+          <strong>Expected outcome:</strong> A new SPICE dataset named "SF Sales + Customers" with ~2,000 rows, 17 columns (12 from orders + 5 from customers, minus the dropped duplicate <code>customer_id</code>, plus 1 calculated field), and a <code>profit_margin</code> field formatted as a percentage. The first row should show a margin in the 20–80% range depending on category.
         </div>
       </div>
 
       <div class="callout callout-info">
-        <h4>ð¡ If your row count is wrong</h4>
-        <p>If you get more than 2,000 rows after the join, your customers table has duplicate <code>customer_id</code> values â re-check the source CSV. If you get fewer than 2,000, you accidentally used an inner join instead of left.</p>
+        <h4>💡 If your row count is wrong</h4>
+        <p>If you get more than 2,000 rows after the join, your customers table has duplicate <code>customer_id</code> values — re-check the source CSV. If you get fewer than 2,000, you accidentally used an inner join instead of left.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m2-s7"></div>
