@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded',function(){const gb=document.getEle
 </script>
 <script>
 const HUB_URL = 'https://sflearningdevelopment.github.io/sf-knowledge-hub/index.html';
-const SECTION_COUNT = 17155;
+const SECTION_COUNT = 16915;
 const SECTION_QUESTIONS = {"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]};
 
 function submitModuleComplete() {
@@ -198,11 +198,11 @@ const SECTIONS=[
     title: 'Publishing Dashboards from Analyses',
     badge: 'foundation',
     content: `
-      <h3>ð The publish workflow</h3>
+      <h3>🚀 The publish workflow</h3>
       <p>An analysis is private to its creator (and explicit collaborators). To make it consumable by readers, you publish it as a dashboard.</p>
 
       <ol>
-        <li>Open the analysis. Top right: <strong>Share â Publish dashboard</strong>.</li>
+        <li>Open the analysis. Top right: <strong>Share → Publish dashboard</strong>.</li>
         <li>Pick: <strong>Publish new dashboard</strong> (creates a new one) or <strong>Replace existing dashboard</strong> (updates the published version of one you've published before).</li>
         <li>Set the dashboard name (visible to readers).</li>
         <li>Optionally allow <strong>ad-hoc filtering</strong>, <strong>CSV export</strong>, and <strong>email reports</strong>. Toggle these per-dashboard.</li>
@@ -210,7 +210,7 @@ const SECTIONS=[
         <li>Share it with users / groups in the next step.</li>
       </ol>
 
-      <h3>ð Versions and rollback</h3>
+      <h3>📑 Versions and rollback</h3>
       <p>Each publish creates a version. From the dashboard's <strong>Manage versions</strong> menu you can:</p>
       <ul>
         <li>See all past versions with timestamps and the user who published</li>
@@ -218,22 +218,22 @@ const SECTIONS=[
         <li>Delete old versions to clean up</li>
       </ul>
 
-      <h3>ð What readers can do (and can't)</h3>
+      <h3>🔒 What readers can do (and can't)</h3>
       <table>
         <tr><th>Capability</th><th>Reader</th><th>Author</th></tr>
-        <tr><td>View visuals</td><td>â</td><td>â</td></tr>
-        <tr><td>Use exposed filters and parameter controls</td><td>â</td><td>â</td></tr>
-        <tr><td>Drill down via configured drill paths</td><td>â</td><td>â</td></tr>
-        <tr><td>Export to CSV / PDF (if enabled)</td><td>â (if enabled)</td><td>â</td></tr>
-        <tr><td>Ad-hoc filter (filter beyond what's exposed)</td><td>â (if enabled)</td><td>â</td></tr>
-        <tr><td>Edit visual definitions</td><td>â</td><td>â</td></tr>
-        <tr><td>Add new visuals</td><td>â</td><td>â</td></tr>
-        <tr><td>See the underlying analysis</td><td>â</td><td>â</td></tr>
+        <tr><td>View visuals</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Use exposed filters and parameter controls</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Drill down via configured drill paths</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Export to CSV / PDF (if enabled)</td><td>✅ (if enabled)</td><td>✅</td></tr>
+        <tr><td>Ad-hoc filter (filter beyond what's exposed)</td><td>✅ (if enabled)</td><td>✅</td></tr>
+        <tr><td>Edit visual definitions</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Add new visuals</td><td>❌</td><td>✅</td></tr>
+        <tr><td>See the underlying analysis</td><td>❌</td><td>✅</td></tr>
       </table>
 
       <div class="callout callout-warn">
-        <h4>â ï¸ Re-publishing is not automatic</h4>
-        <p>Iterating on the analysis does not change the dashboard. You must republish (Share â Publish dashboard â Replace existing). This is a feature: it protects readers from in-progress edits.</p>
+        <h4>⚠️ Re-publishing is not automatic</h4>
+        <p>Iterating on the analysis does not change the dashboard. You must republish (Share → Publish dashboard → Replace existing). This is a feature: it protects readers from in-progress edits.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m6-s1"></div>
@@ -244,42 +244,42 @@ const SECTIONS=[
     title: 'Users, Groups, and Sharing',
     badge: 'foundation',
     content: `
-      <h3>ð¥ Users and groups</h3>
-      <p>QuickSight has individual users and groups. Groups are collections of users â share with the group once, every member gets access. Manage from <strong>Manage QuickSight â Manage users â Manage groups</strong>.</p>
+      <h3>👥 Users and groups</h3>
+      <p>QuickSight has individual users and groups. Groups are collections of users — share with the group once, every member gets access. Manage from <strong>Manage QuickSight → Manage users → Manage groups</strong>.</p>
 
       <p>Group examples that scale:</p>
       <ul>
-        <li><code>sales-leadership</code> â VPs and directors</li>
-        <li><code>regional-managers-emea</code> â region-scoped managers</li>
-        <li><code>finance-readers</code> â anyone in finance who consumes dashboards</li>
-        <li><code>finance-authors</code> â finance team members who build dashboards</li>
+        <li><code>sales-leadership</code> — VPs and directors</li>
+        <li><code>regional-managers-emea</code> — region-scoped managers</li>
+        <li><code>finance-readers</code> — anyone in finance who consumes dashboards</li>
+        <li><code>finance-authors</code> — finance team members who build dashboards</li>
       </ul>
 
-      <h3>ð Sharing dashboards</h3>
-      <p>From a published dashboard: <strong>Share â Share dashboard</strong>. For each user or group, set the permission level:</p>
+      <h3>🔄 Sharing dashboards</h3>
+      <p>From a published dashboard: <strong>Share → Share dashboard</strong>. For each user or group, set the permission level:</p>
       <ul>
-        <li><strong>Viewer</strong> â read-only access</li>
-        <li><strong>Co-owner</strong> â can re-share, modify permissions, and (if they're an author) edit the source analysis</li>
+        <li><strong>Viewer</strong> — read-only access</li>
+        <li><strong>Co-owner</strong> — can re-share, modify permissions, and (if they're an author) edit the source analysis</li>
       </ul>
 
-      <h3>ð Sharing datasets and analyses</h3>
+      <h3>🔄 Sharing datasets and analyses</h3>
       <p>Sharing the dashboard does not automatically share the underlying dataset or analysis. If you want collaborators to be able to build on top, you need to explicitly share each artefact:</p>
       <ul>
-        <li><strong>Datasets</strong> â share with view (use in their own analyses) or owner permission</li>
-        <li><strong>Analyses</strong> â share with view (see but not edit) or co-owner</li>
-        <li><strong>Folders</strong> â share a folder, all contents inherit the permissions</li>
+        <li><strong>Datasets</strong> — share with view (use in their own analyses) or owner permission</li>
+        <li><strong>Analyses</strong> — share with view (see but not edit) or co-owner</li>
+        <li><strong>Folders</strong> — share a folder, all contents inherit the permissions</li>
       </ul>
 
-      <h3>ð Folders for governance</h3>
+      <h3>📁 Folders for governance</h3>
       <p>Use folders to organise assets and apply consistent permissions:</p>
       <ul>
-        <li><strong>Personal folders</strong> â only the owner sees them</li>
-        <li><strong>Shared folders</strong> â visible to anyone the folder is shared with; all contents inherit folder permissions</li>
+        <li><strong>Personal folders</strong> — only the owner sees them</li>
+        <li><strong>Shared folders</strong> — visible to anyone the folder is shared with; all contents inherit folder permissions</li>
       </ul>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Group everything, share to groups</h4>
-        <p>Sharing to individual users seems faster but creates a maintenance nightmare â the moment someone joins or leaves the team, you scramble. Always share to groups; manage group membership separately.</p>
+        <h4>💡 Group everything, share to groups</h4>
+        <p>Sharing to individual users seems faster but creates a maintenance nightmare — the moment someone joins or leaves the team, you scramble. Always share to groups; manage group membership separately.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m6-s2"></div>
@@ -290,15 +290,15 @@ const SECTIONS=[
     title: 'Row-Level Security (RLS)',
     badge: 'essential',
     content: `
-      <h3>ð¡ï¸ What RLS solves</h3>
+      <h3>🛡️ What RLS solves</h3>
       <p>RLS ensures that different users see different rows of the same dataset. The classic example: regional managers each see only their own region's data, even though all regions live in the same dataset.</p>
       <p>RLS is <strong>Enterprise edition only</strong>. Without it, anyone with access to the dataset sees all rows.</p>
 
-      <h3>ð§± The two RLS approaches</h3>
+      <h3>🧱 The two RLS approaches</h3>
 
       <h4>1. User-based RLS (rules dataset)</h4>
       <ol>
-        <li>Build a <strong>rules dataset</strong> â a small table mapping users (or groups) to permitted values:
+        <li>Build a <strong>rules dataset</strong> — a small table mapping users (or groups) to permitted values:
           <table>
             <tr><th>UserName</th><th>region</th></tr>
             <tr><td>jv.ravichandran@sourcefuse.com</td><td>EMEA,APAC</td></tr>
@@ -307,14 +307,14 @@ const SECTIONS=[
           </table>
         </li>
         <li>Upload it to QuickSight as a separate dataset</li>
-        <li>On the main dataset: <strong>Permissions â Set up row-level security â Choose rules dataset</strong></li>
+        <li>On the main dataset: <strong>Permissions → Set up row-level security → Choose rules dataset</strong></li>
         <li>QuickSight enforces filtering at query time based on the logged-in user</li>
       </ol>
 
       <h4>2. Tag-based RLS (for embedded use cases)</h4>
       <p>For embedded dashboards where the embedding application sets the user context, you pass <strong>session tags</strong> at embed time. The dataset filters by tag values rather than a rules table.</p>
 
-      <h3>ð¯ RLS rules â wildcards and multi-value</h3>
+      <h3>🎯 RLS rules — wildcards and multi-value</h3>
       <ul>
         <li>A blank cell or <code>*</code> = "no restriction on this column" (sees everything)</li>
         <li>Comma-separated values = multi-value match: <code>EMEA,APAC</code> means user sees both</li>
@@ -322,12 +322,12 @@ const SECTIONS=[
         <li>Multiple rows for the same user = OR logic: row visible if any of the user's rules match</li>
       </ul>
 
-      <h3>ð§ Column-level security (CLS) â bonus</h3>
-      <p>CLS hides specific columns from specific users/groups. From the dataset's permissions: <strong>Restrict access to certain fields</strong> â pick fields and users/groups. They simply don't see the field at all in any analysis built on the dataset.</p>
+      <h3>🧊 Column-level security (CLS) — bonus</h3>
+      <p>CLS hides specific columns from specific users/groups. From the dataset's permissions: <strong>Restrict access to certain fields</strong> → pick fields and users/groups. They simply don't see the field at all in any analysis built on the dataset.</p>
 
       <div class="callout callout-warn">
-        <h4>â ï¸ Test RLS as a real user</h4>
-        <p>Use the <strong>View as</strong> feature in the dataset menu to see the dataset as a specific user â confirms your rules behave correctly before sharing.</p>
+        <h4>⚠️ Test RLS as a real user</h4>
+        <p>Use the <strong>View as</strong> feature in the dataset menu to see the dataset as a specific user — confirms your rules behave correctly before sharing.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m6-s3"></div>
@@ -338,10 +338,10 @@ const SECTIONS=[
     title: 'Subscriptions, Alerts, and Email Reports',
     badge: 'important',
     content: `
-      <h3>ð¬ Email reports â push dashboards to inboxes</h3>
+      <h3>📬 Email reports — push dashboards to inboxes</h3>
       <p>Readers can subscribe to a dashboard so it arrives in their inbox on a schedule. As an author, you set up the schedule:</p>
       <ol>
-        <li>Open the dashboard â <strong>Schedule â Create new schedule</strong></li>
+        <li>Open the dashboard → <strong>Schedule → Create new schedule</strong></li>
         <li>Set frequency: daily, weekly (pick days), monthly (pick day of month)</li>
         <li>Set time and timezone</li>
         <li>Pick what to send: full dashboard PDF, one specific sheet, or a tabular CSV</li>
@@ -349,10 +349,10 @@ const SECTIONS=[
         <li>Add an optional email subject and body</li>
       </ol>
 
-      <h3>ð¨ Threshold alerts (KPI/Insights)</h3>
-      <p>Different from scheduled reports â alerts fire <em>only when a condition is met</em>. They run on KPI visuals.</p>
+      <h3>🚨 Threshold alerts (KPI/Insights)</h3>
+      <p>Different from scheduled reports — alerts fire <em>only when a condition is met</em>. They run on KPI visuals.</p>
       <ol>
-        <li>Open a KPI visual on a dashboard â context menu (...) â <strong>Create alert</strong></li>
+        <li>Open a KPI visual on a dashboard → context menu (...) → <strong>Create alert</strong></li>
         <li>Set the condition: above / below / equal to a value, or % change vs prior period</li>
         <li>Set the check frequency: hourly (Enterprise) or daily</li>
         <li>Recipient receives an email only when the condition triggers</li>
@@ -365,12 +365,12 @@ const SECTIONS=[
         <li>SPICE refresh failure count &gt; 0 in the last 24 hours</li>
       </ul>
 
-      <h3>â ï¸ Anomaly detection (ML Insights)</h3>
-      <p>Enterprise edition only. Add an Insight visual to your analysis â ML Insights â Anomaly detection. Configure the metric, dimensions, and a confidence threshold. QuickSight learns the baseline and surfaces anomalies in narrative form ("Revenue in EMEA was 38% below expected on April 22") and can be wired to alerts.</p>
+      <h3>⚠️ Anomaly detection (ML Insights)</h3>
+      <p>Enterprise edition only. Add an Insight visual to your analysis → ML Insights → Anomaly detection. Configure the metric, dimensions, and a confidence threshold. QuickSight learns the baseline and surfaces anomalies in narrative form ("Revenue in EMEA was 38% below expected on April 22") and can be wired to alerts.</p>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Less is more on alerts</h4>
-        <p>Alert fatigue kills attention. Set thresholds that fire rarely (a few times a quarter). If an alert fires daily, it's a status report, not an alert â convert it to a scheduled report instead.</p>
+        <h4>💡 Less is more on alerts</h4>
+        <p>Alert fatigue kills attention. Set thresholds that fire rarely (a few times a quarter). If an alert fires daily, it's a status report, not an alert — convert it to a scheduled report instead.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m6-s4"></div>
@@ -381,17 +381,17 @@ const SECTIONS=[
     title: 'Embedding QuickSight in Applications',
     badge: 'important',
     content: `
-      <h3>ðª Why embed?</h3>
-      <p>Sometimes you don't want users to log into QuickSight at all. They use your application; the analytics should appear seamlessly inside it. QuickSight Enterprise supports embedding for exactly this â and the embedding flow has changed enough over the years that it's worth knowing the current model.</p>
+      <h3>🪟 Why embed?</h3>
+      <p>Sometimes you don't want users to log into QuickSight at all. They use your application; the analytics should appear seamlessly inside it. QuickSight Enterprise supports embedding for exactly this — and the embedding flow has changed enough over the years that it's worth knowing the current model.</p>
 
-      <h3>ð§± Two embedding modes</h3>
+      <h3>🧱 Two embedding modes</h3>
       <table>
         <tr><th>Mode</th><th>Who sees it</th><th>Auth model</th></tr>
         <tr><td><strong>Registered user</strong></td><td>Users who exist in QuickSight (typically a B2B internal app)</td><td>QuickSight identifies them by their registered email/username</td></tr>
         <tr><td><strong>Anonymous</strong></td><td>Users who do not exist in QuickSight (typically a public-facing or B2C app)</td><td>Your backend assumes a session role; QuickSight uses session tags for security</td></tr>
       </table>
 
-      <h3>ð The embed flow (high level)</h3>
+      <h3>🔑 The embed flow (high level)</h3>
       <ol>
         <li>Your backend authenticates the user (whatever way your app does that)</li>
         <li>Your backend calls QuickSight's <code>GenerateEmbedUrlForRegisteredUser</code> or <code>GenerateEmbedUrlForAnonymousUser</code> API</li>
@@ -400,24 +400,24 @@ const SECTIONS=[
         <li>The SDK handles resize, theme overrides, parameter passing, and event callbacks</li>
       </ol>
 
-      <h3>ð Security model</h3>
+      <h3>🔐 Security model</h3>
       <ul>
-        <li>The embed URL is single-use and short-lived â even if leaked, it expires quickly</li>
+        <li>The embed URL is single-use and short-lived — even if leaked, it expires quickly</li>
         <li>For anonymous embed, RLS uses <strong>session tags</strong> (passed at embed time) instead of a user-based rules table</li>
-        <li>Your backend must whitelist the embedding domain in QuickSight settings â embed URLs only render in approved origins</li>
+        <li>Your backend must whitelist the embedding domain in QuickSight settings — embed URLs only render in approved origins</li>
       </ul>
 
-      <h3>ð¨ Embed customisation options via the SDK</h3>
+      <h3>🎨 Embed customisation options via the SDK</h3>
       <ul>
         <li>Toggle the QuickSight UI chrome (top bar, footer)</li>
-        <li>Pass parameter values at load â pre-filter the dashboard</li>
+        <li>Pass parameter values at load — pre-filter the dashboard</li>
         <li>Apply a theme (Q, custom theme, or inherit your app's CSS variables)</li>
         <li>Listen to events: filter changes, sheet changes, errors</li>
       </ul>
 
       <div class="callout callout-info">
-        <h4>ð¡ Always check the current docs before implementing embed</h4>
-        <p>The embedding API has gone through several iterations (1-click, registered user, anonymous, Q embedding). Always cross-check parameter names and SDK methods against the current AWS docs at <code>docs.aws.amazon.com/quicksight</code> â examples in older blogs are often stale.</p>
+        <h4>💡 Always check the current docs before implementing embed</h4>
+        <p>The embedding API has gone through several iterations (1-click, registered user, anonymous, Q embedding). Always cross-check parameter names and SDK methods against the current AWS docs at <code>docs.aws.amazon.com/quicksight</code> — examples in older blogs are often stale.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m6-s5"></div>
@@ -425,20 +425,20 @@ const SECTIONS=[
   },
   {
     id: 6,
-    title: 'Lab 6 â Publish, Secure, Share',
+    title: 'Lab 6 — Publish, Secure, Share',
     badge: 'essential',
     content: `
-      <h3>ð¯ What you'll build</h3>
+      <h3>🎯 What you'll build</h3>
       <p>You'll publish the SF Regional Sales analysis as a dashboard, configure who can access it, set up row-level security so each region only sees its own data, and schedule a weekly email report. The full author-to-reader pipeline in one lab.</p>
 
       <div class="lab">
-        <h4>ð§ª Lab 6: Full publish + secure + share</h4>
-        <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~30 minutes. Prerequisite: Lab 5 â the SF Regional Sales analysis with controls, top-N, and Region Detail sheet.</p>
+        <h4>🧪 Lab 6: Full publish + secure + share</h4>
+        <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~30 minutes. Prerequisite: Lab 5 — the SF Regional Sales analysis with controls, top-N, and Region Detail sheet.</p>
 
         <ol>
-          <li><strong>Publish:</strong> Open the SF Regional Sales analysis â Share â Publish dashboard. Name it <strong>SF Regional Sales â Live</strong>. Allow CSV export and email reports. Click Publish.</li>
+          <li><strong>Publish:</strong> Open the SF Regional Sales analysis → Share → Publish dashboard. Name it <strong>SF Regional Sales — Live</strong>. Allow CSV export and email reports. Click Publish.</li>
 
-          <li><strong>Create test groups:</strong> Manage QuickSight â Manage groups â Create:
+          <li><strong>Create test groups:</strong> Manage QuickSight → Manage groups → Create:
             <ul>
               <li><code>sf-bi-test-na</code></li>
               <li><code>sf-bi-test-emea</code></li>
@@ -455,15 +455,15 @@ sf-bi-test-leadership,*</div>
             Upload to QuickSight as a new dataset (SPICE).
           </li>
 
-          <li><strong>Apply RLS:</strong> Open the SF Sales + Customers dataset â Permissions â Set up row-level security â User-based â choose <code>sf-rls-rules</code> as the rules dataset â Save.</li>
+          <li><strong>Apply RLS:</strong> Open the SF Sales + Customers dataset → Permissions → Set up row-level security → User-based → choose <code>sf-rls-rules</code> as the rules dataset → Save.</li>
 
-          <li><strong>Test RLS:</strong> Open the dashboard â top right â "View as" â pick a member of <code>sf-bi-test-emea</code>. Confirm only EMEA data appears in every visual. Switch to <code>sf-bi-test-leadership</code> â all regions should appear.</li>
+          <li><strong>Test RLS:</strong> Open the dashboard → top right → "View as" → pick a member of <code>sf-bi-test-emea</code>. Confirm only EMEA data appears in every visual. Switch to <code>sf-bi-test-leadership</code> — all regions should appear.</li>
 
-          <li><strong>Share the dashboard:</strong> Share â Share dashboard â add the three groups as Viewers. (Optionally add yourself as Co-owner.)</li>
+          <li><strong>Share the dashboard:</strong> Share → Share dashboard → add the three groups as Viewers. (Optionally add yourself as Co-owner.)</li>
 
-          <li><strong>Schedule a weekly report:</strong> Schedule â Create new schedule â Weekly, Monday 09:00 AM IST â Send PDF of full dashboard â Recipients: <code>sf-bi-test-leadership</code>. Subject: "Weekly SF Regional Sales".</li>
+          <li><strong>Schedule a weekly report:</strong> Schedule → Create new schedule → Weekly, Monday 09:00 AM IST → Send PDF of full dashboard → Recipients: <code>sf-bi-test-leadership</code>. Subject: "Weekly SF Regional Sales".</li>
 
-          <li><strong>Add a KPI alert:</strong> On Sheet 1 â Total Revenue KPI â ... menu â Create alert â Condition: revenue drops &gt; 20% week-over-week â Recipient: yourself â Frequency: daily check.</li>
+          <li><strong>Add a KPI alert:</strong> On Sheet 1 → Total Revenue KPI → ... menu → Create alert → Condition: revenue drops &gt; 20% week-over-week → Recipient: yourself → Frequency: daily check.</li>
 
           <li><strong>Document it:</strong> In the dashboard description, add a note: "Filtered by RLS based on group membership. Contact L&amp;D to request access for a new region."</li>
 
@@ -475,8 +475,8 @@ sf-bi-test-leadership,*</div>
         </div>
       </div>
 
-      <h3>ð Course wrap-up</h3>
-      <p>You've now walked the full QuickSight pipeline from dataset â analysis â dashboard â published, secured, scheduled, and alerted. The artefact you built across Labs 1â6 (the SF Sales + Customers dataset, the SF Regional Sales analysis, and the SF Regional Sales â Live dashboard) is a real production-shaped deliverable.</p>
+      <h3>🎓 Course wrap-up</h3>
+      <p>You've now walked the full QuickSight pipeline from dataset → analysis → dashboard → published, secured, scheduled, and alerted. The artefact you built across Labs 1–6 (the SF Sales + Customers dataset, the SF Regional Sales analysis, and the SF Regional Sales — Live dashboard) is a real production-shaped deliverable.</p>
 
       <p>Next: head back to the course dashboard and unlock the certification exam. The 40-question test samples from the question bank you've been practising against in every section.</p>
 
