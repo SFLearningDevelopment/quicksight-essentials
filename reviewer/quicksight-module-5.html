@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded',function(){const gb=document.getEle
 </script>
 <script>
 const HUB_URL = 'https://sflearningdevelopment.github.io/sf-knowledge-hub/index.html';
-const SECTION_COUNT = 14103;
+const SECTION_COUNT = 13935;
 const SECTION_QUESTIONS = {"1":[],"2":[],"3":[],"4":[],"5":[]};
 
 function submitModuleComplete() {
@@ -198,34 +198,34 @@ const SECTIONS=[
     title: 'Filter Types and Scopes',
     badge: 'foundation',
     content: `
-      <h3>ðï¸ Three filter scopes â pick the right one</h3>
+      <h3>🎚️ Three filter scopes — pick the right one</h3>
       <p>Every QuickSight filter has a <strong>scope</strong> that determines what it affects. Getting the scope wrong is the most common dashboard bug.</p>
 
       <table>
-        <tr><th>Scope</th><th>Affects</th><th>Use whenâ¦</th></tr>
+        <tr><th>Scope</th><th>Affects</th><th>Use when…</th></tr>
         <tr><td><strong>One visual only</strong></td><td>Just the visual you set it on</td><td>Top-N filter on a single ranking chart; visual-specific exclusions</td></tr>
         <tr><td><strong>Single sheet</strong></td><td>All visuals on the current sheet</td><td>Sheet-level theme (e.g., "this sheet shows only the EMEA region")</td></tr>
         <tr><td><strong>All visuals across all sheets</strong></td><td>Every visual using the dataset, on every sheet</td><td>Dashboard-wide filters (date range, region, segment)</td></tr>
       </table>
 
-      <h3>ð Filter types by data type</h3>
+      <h3>🔍 Filter types by data type</h3>
       <ul>
-        <li><strong>String</strong> filters â Filter list (multi-select), Custom filter (single text input), Top/Bottom N</li>
-        <li><strong>Number</strong> filters â Equality, Comparison (=, â , &gt;, &lt;, between), Top/Bottom N, Aggregate filter (post-aggregation)</li>
-        <li><strong>Date</strong> filters â Range (between), Relative (last 7/30/90 days, this month/quarter/year), Equality</li>
+        <li><strong>String</strong> filters — Filter list (multi-select), Custom filter (single text input), Top/Bottom N</li>
+        <li><strong>Number</strong> filters — Equality, Comparison (=, ≠, &gt;, &lt;, between), Top/Bottom N, Aggregate filter (post-aggregation)</li>
+        <li><strong>Date</strong> filters — Range (between), Relative (last 7/30/90 days, this month/quarter/year), Equality</li>
       </ul>
 
-      <h3>ð·ï¸ Aggregate filters vs row-level filters</h3>
+      <h3>🏷️ Aggregate filters vs row-level filters</h3>
       <p>This trips up newcomers. A row-level filter applies before aggregation; an aggregate filter applies after.</p>
       <ul>
-        <li><strong>Row-level</strong>: "Show only orders where revenue &gt; 1000" â drops individual rows.</li>
-        <li><strong>Aggregate</strong>: "Show only customers whose total revenue &gt; 100000" â keeps all customer rows but only shows customers whose summed revenue clears the bar.</li>
+        <li><strong>Row-level</strong>: "Show only orders where revenue &gt; 1000" — drops individual rows.</li>
+        <li><strong>Aggregate</strong>: "Show only customers whose total revenue &gt; 100000" — keeps all customer rows but only shows customers whose summed revenue clears the bar.</li>
       </ul>
-      <p>To create an aggregate filter, you need an aggregated measure â pick the field, then choose Aggregate from the filter dialog.</p>
+      <p>To create an aggregate filter, you need an aggregated measure — pick the field, then choose Aggregate from the filter dialog.</p>
 
       <div class="callout callout-warn">
-        <h4>â ï¸ Filter on hidden fields</h4>
-        <p>You can filter a dashboard by a field that isn't visible in any visual. This is powerful (use a hidden <code>tenant_id</code> for multi-tenancy) but invisible to your future self â document such filters in the analysis description, or six months from now you'll wonder why a number doesn't match the source.</p>
+        <h4>⚠️ Filter on hidden fields</h4>
+        <p>You can filter a dashboard by a field that isn't visible in any visual. This is powerful (use a hidden <code>tenant_id</code> for multi-tenancy) but invisible to your future self — document such filters in the analysis description, or six months from now you'll wonder why a number doesn't match the source.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m5-s1"></div>
@@ -233,27 +233,27 @@ const SECTIONS=[
   },
   {
     id: 2,
-    title: 'Filter Controls â Surfacing Filters to Readers',
+    title: 'Filter Controls — Surfacing Filters to Readers',
     badge: 'essential',
     content: `
-      <h3>ðï¸ Filters vs filter controls</h3>
+      <h3>🎛️ Filters vs filter controls</h3>
       <p>A <strong>filter</strong> is the underlying rule (e.g., "region in selected list"). A <strong>filter control</strong> is the UI widget readers see to change that rule (a dropdown, a date picker, a slider).</p>
-      <p>By default, filters you create are <em>invisible</em> to dashboard readers â they apply silently. To let readers control a filter, you must add a control for it.</p>
+      <p>By default, filters you create are <em>invisible</em> to dashboard readers — they apply silently. To let readers control a filter, you must add a control for it.</p>
 
-      <h3>ð§° Control types and when to use each</h3>
+      <h3>🧰 Control types and when to use each</h3>
       <table>
         <tr><th>Control</th><th>Best for</th></tr>
         <tr><td><strong>Dropdown (single)</strong></td><td>Picking one value from many (a region, a single segment)</td></tr>
-        <tr><td><strong>Dropdown (multi-select)</strong></td><td>Picking several from a list â most common for categorical filters</td></tr>
-        <tr><td><strong>List</strong></td><td>Always-visible options â useful when you have â¤ 8 values and want them all in view</td></tr>
-        <tr><td><strong>Slider</strong></td><td>Numeric ranges â discount %, threshold</td></tr>
+        <tr><td><strong>Dropdown (multi-select)</strong></td><td>Picking several from a list — most common for categorical filters</td></tr>
+        <tr><td><strong>List</strong></td><td>Always-visible options — useful when you have ≤ 8 values and want them all in view</td></tr>
+        <tr><td><strong>Slider</strong></td><td>Numeric ranges — discount %, threshold</td></tr>
         <tr><td><strong>Date picker</strong></td><td>Single date</td></tr>
-        <tr><td><strong>Date range</strong></td><td>Between two dates â most common for time series</td></tr>
-        <tr><td><strong>Relative date</strong></td><td>Reader picks "last 30 days" / "this quarter" â great for ongoing dashboards</td></tr>
+        <tr><td><strong>Date range</strong></td><td>Between two dates — most common for time series</td></tr>
+        <tr><td><strong>Relative date</strong></td><td>Reader picks "last 30 days" / "this quarter" — great for ongoing dashboards</td></tr>
         <tr><td><strong>Text field</strong></td><td>Free-text search</td></tr>
       </table>
 
-      <h3>ð Control placement</h3>
+      <h3>📍 Control placement</h3>
       <p>Controls live at the top of a sheet by default but can be dragged into the visual area or pinned to a sidebar. Best practice for a top-of-sheet pattern:</p>
       <ol>
         <li>Date range filter on the left</li>
@@ -262,8 +262,8 @@ const SECTIONS=[
       </ol>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Show "All" by default</h4>
-        <p>For multi-select dropdowns, set the default to "All values selected". Readers expect a fresh dashboard to show everything â narrowing first feels broken.</p>
+        <h4>💡 Show "All" by default</h4>
+        <p>For multi-select dropdowns, set the default to "All values selected". Readers expect a fresh dashboard to show everything — narrowing first feels broken.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m5-s2"></div>
@@ -271,10 +271,10 @@ const SECTIONS=[
   },
   {
     id: 3,
-    title: 'Parameters â Variables for Dashboards',
+    title: 'Parameters — Variables for Dashboards',
     badge: 'essential',
     content: `
-      <h3>ð¦ What is a parameter?</h3>
+      <h3>📦 What is a parameter?</h3>
       <p>A parameter is a <strong>named variable</strong> whose value can be changed by readers (via a control), set by URL, or driven by an action. Parameters are used to:</p>
       <ul>
         <li>Drive calculated fields ("commission rate" parameter that downstream calcs reference)</li>
@@ -283,9 +283,9 @@ const SECTIONS=[
         <li>Embed dashboards with pre-set values via URL</li>
       </ul>
 
-      <h3>ð§ Creating a parameter</h3>
+      <h3>🔧 Creating a parameter</h3>
       <ol>
-        <li>Top toolbar â <strong>Parameters â +</strong></li>
+        <li>Top toolbar → <strong>Parameters → +</strong></li>
         <li>Name it (use snake_case: <code>commission_rate</code>, <code>target_region</code>)</li>
         <li>Pick a data type: String, Integer, Decimal, Datetime</li>
         <li>Pick whether it accepts a single value or multiple values</li>
@@ -293,21 +293,21 @@ const SECTIONS=[
         <li>Optionally allow a "dynamic default" that resolves per logged-in user (Enterprise only)</li>
       </ol>
 
-      <h3>ð Wiring a parameter to a control</h3>
-      <p>A parameter on its own is invisible. Right-click the parameter â <strong>Add control</strong> â pick the control type (dropdown, slider, etc.) and supply the values list (static list, or backed by a dataset's distinct values).</p>
+      <h3>🔗 Wiring a parameter to a control</h3>
+      <p>A parameter on its own is invisible. Right-click the parameter → <strong>Add control</strong> → pick the control type (dropdown, slider, etc.) and supply the values list (static list, or backed by a dataset's distinct values).</p>
 
-      <h3>ð§® Using a parameter in a calculated field</h3>
+      <h3>🧮 Using a parameter in a calculated field</h3>
       <p>Parameters appear in expressions wrapped in <code>${'{'}param{'}'}</code> syntax (with a $ prefix and curly braces):</p>
       <div class="diagram">/* commission with a reader-tunable rate */
 {revenue} * <span style="color:#dc2626">${'$'}{commission_rate}</span></div>
 
       <p>If the reader changes <code>commission_rate</code> from 5% to 7% via the slider, every visual using this calc updates instantly.</p>
 
-      <h3>ð Using a parameter in a filter</h3>
+      <h3>🔄 Using a parameter in a filter</h3>
       <p>Create the filter normally, then in the filter type choose <strong>Filter by parameter</strong>. The filter now uses the parameter's current value instead of a hardcoded list.</p>
 
       <div class="callout callout-info">
-        <h4>ð¡ Parameters vs filters â when to use which</h4>
+        <h4>💡 Parameters vs filters — when to use which</h4>
         <p>If readers should choose what data they see, use a <strong>filter</strong> + control. If readers should change a calculation input or you need to share a value across multiple things (filter + calc + URL), use a <strong>parameter</strong>.</p>
       </div>
 
@@ -319,30 +319,30 @@ const SECTIONS=[
     title: 'Cascading Filters and Top-N Patterns',
     badge: 'important',
     content: `
-      <h3>ð Cascading (dependent) filter controls</h3>
+      <h3>🌊 Cascading (dependent) filter controls</h3>
       <p>A cascading filter is one whose available values depend on another filter's selection. Example: a Region dropdown filters a Customer dropdown so you only see customers in the chosen region.</p>
 
-      <h3>ð§ Setting up a cascade</h3>
+      <h3>🔧 Setting up a cascade</h3>
       <ol>
         <li>Create the parent filter control (e.g., Region multi-select)</li>
         <li>Create the child filter control (e.g., Customer)</li>
-        <li>Click the child control â <strong>Format control â Show relevant values only</strong></li>
+        <li>Click the child control → <strong>Format control → Show relevant values only</strong></li>
         <li>Pick the parent control(s) the child should depend on</li>
       </ol>
       <p>Now whenever the reader changes the parent, the child's option list updates.</p>
 
-      <h3>ð Top-N filters â the ranked-list pattern</h3>
+      <h3>🏆 Top-N filters — the ranked-list pattern</h3>
       <p>"Show top 10 customers by revenue" is a Top-N filter. Two ways to set up:</p>
       <ul>
-        <li><strong>Visual-level Top/Bottom N</strong> â quick when you only need it on one chart. Filter dialog â Top/Bottom â pick measure and N.</li>
-        <li><strong>Top-N by parameter</strong> â let the reader pick N (5, 10, 25, 50). Create a parameter <code>top_n</code> (Integer), bind it to a slider control, then in the Top-N filter set N = parameter value.</li>
+        <li><strong>Visual-level Top/Bottom N</strong> — quick when you only need it on one chart. Filter dialog → Top/Bottom → pick measure and N.</li>
+        <li><strong>Top-N by parameter</strong> — let the reader pick N (5, 10, 25, 50). Create a parameter <code>top_n</code> (Integer), bind it to a slider control, then in the Top-N filter set N = parameter value.</li>
       </ul>
 
-      <h3>ð§® Top-N with a tiebreaker</h3>
+      <h3>🧮 Top-N with a tiebreaker</h3>
       <p>If two records tie for last place, QuickSight by default includes both. To force exactly N rows, add a secondary sort (e.g., Top 10 by revenue, ties broken by customer_id).</p>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Top-N + cascading filter is gold</h4>
+        <h4>💡 Top-N + cascading filter is gold</h4>
         <p>Combine "filter by region" with "show top 10 customers" and your readers can drill into ranked detail per region with one dropdown change. This pattern alone solves a huge percentage of executive-dashboard requests.</p>
       </div>
 
@@ -354,40 +354,40 @@ const SECTIONS=[
     title: 'Filter Actions and Lab 5',
     badge: 'essential',
     content: `
-      <h3>ð±ï¸ Filter actions â click-to-filter interactivity (recap and deeper dive)</h3>
+      <h3>🖱️ Filter actions — click-to-filter interactivity (recap and deeper dive)</h3>
       <p>Filter actions were introduced in Module 3. Now we apply them with parameters for richer interactivity.</p>
 
-      <h3>ð Action-driven parameter updates</h3>
-      <p>An action can do more than just filter sibling visuals â it can <strong>set a parameter's value</strong> based on what the reader clicked. That parameter can then drive filters, calcs, navigation, and URL state.</p>
+      <h3>🔁 Action-driven parameter updates</h3>
+      <p>An action can do more than just filter sibling visuals — it can <strong>set a parameter's value</strong> based on what the reader clicked. That parameter can then drive filters, calcs, navigation, and URL state.</p>
 
-      <p><strong>Pattern: click a region bar â pre-filter the next sheet by that region</strong></p>
+      <p><strong>Pattern: click a region bar → pre-filter the next sheet by that region</strong></p>
       <ol>
         <li>Create a parameter <code>selected_region</code> (String, multi-value, default = ALL_VALUES)</li>
-        <li>On Sheet 1's Region bar visual: Actions â Navigation action â Target sheet "Region Detail" â Set parameter <code>selected_region</code> = <code>{region}</code></li>
+        <li>On Sheet 1's Region bar visual: Actions → Navigation action → Target sheet "Region Detail" → Set parameter <code>selected_region</code> = <code>{region}</code></li>
         <li>On Sheet 2: Apply a filter "region IN parameter selected_region" affecting all visuals</li>
         <li>Add a "Back to overview" navigation action on Sheet 2 that resets the parameter</li>
       </ol>
 
-      <h3>ð URL actions â deep-linking outside QuickSight</h3>
+      <h3>🔗 URL actions — deep-linking outside QuickSight</h3>
       <p>URL actions open an external page when the reader clicks. The current row's field values can be passed as URL parameters:</p>
       <div class="diagram">https://salesforce.example.com/lightning/r/Account/view?Name={'{'}customer_name{'}'}</div>
       <p>Useful for jumping to a customer record, ticket, or playbook directly from a dashboard cell.</p>
 
       <div class="lab">
-        <h4>ð§ª Lab 5: Add reader controls and a Region drill-through</h4>
-        <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~25 minutes. Prerequisite: Lab 4 â the SF Regional Sales analysis with calculated fields.</p>
+        <h4>🧪 Lab 5: Add reader controls and a Region drill-through</h4>
+        <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~25 minutes. Prerequisite: Lab 4 — the SF Regional Sales analysis with calculated fields.</p>
         <ol>
-          <li>Open the <strong>SF Regional Sales â Practice</strong> analysis.</li>
-          <li><strong>Add a Date Range filter</strong> on <code>order_date</code>. Set scope to <strong>All visuals â all sheets</strong>. Default range: last 12 months.</li>
-          <li>Right-click the filter â <strong>Add to sheet â Date range control</strong>. Drag the control to the top-left of the sheet.</li>
-          <li><strong>Add a Region multi-select filter</strong>. Scope: All visuals â all sheets. Default: all values selected. Add a multi-select dropdown control for it. Place to the right of the date control.</li>
+          <li>Open the <strong>SF Regional Sales — Practice</strong> analysis.</li>
+          <li><strong>Add a Date Range filter</strong> on <code>order_date</code>. Set scope to <strong>All visuals — all sheets</strong>. Default range: last 12 months.</li>
+          <li>Right-click the filter → <strong>Add to sheet → Date range control</strong>. Drag the control to the top-left of the sheet.</li>
+          <li><strong>Add a Region multi-select filter</strong>. Scope: All visuals — all sheets. Default: all values selected. Add a multi-select dropdown control for it. Place to the right of the date control.</li>
           <li><strong>Add a Top-N parameter:</strong>
             <ul>
-              <li>Parameters â + â Name <code>top_n</code> â Type Integer â Default 10</li>
+              <li>Parameters → + → Name <code>top_n</code> → Type Integer → Default 10</li>
               <li>Add a control: dropdown with values 5, 10, 25, 50</li>
             </ul>
           </li>
-          <li><strong>Add a new visual</strong>: Horizontal bar â Customer by Revenue.
+          <li><strong>Add a new visual</strong>: Horizontal bar — Customer by Revenue.
             <ul>
               <li>Y-axis: <code>customer_name</code></li>
               <li>Value: <code>revenue</code></li>
@@ -395,10 +395,10 @@ const SECTIONS=[
               <li>Title: <strong>Top Customers by Revenue</strong></li>
             </ul>
           </li>
-          <li><strong>Test cascade:</strong> Pick "EMEA" in the Region control. The Top Customers list should refresh to show only EMEA customers. Change <code>top_n</code> to 25 â list expands.</li>
+          <li><strong>Test cascade:</strong> Pick "EMEA" in the Region control. The Top Customers list should refresh to show only EMEA customers. Change <code>top_n</code> to 25 — list expands.</li>
           <li><strong>Add a second sheet:</strong> tab named "Region Detail". On it, add the same KPI and Line chart from Sheet 1, both filtered by a new parameter <code>selected_region</code>.</li>
-          <li><strong>Wire navigation:</strong> On Sheet 1 Region bar â Actions â Navigation action â Target Sheet 2 â Set <code>selected_region</code> = <code>{region}</code>.</li>
-          <li>Save. Test: click an APAC bar on Sheet 1 â jumps to Sheet 2 showing APAC-only KPI and trend.</li>
+          <li><strong>Wire navigation:</strong> On Sheet 1 Region bar → Actions → Navigation action → Target Sheet 2 → Set <code>selected_region</code> = <code>{region}</code>.</li>
+          <li>Save. Test: click an APAC bar on Sheet 1 → jumps to Sheet 2 showing APAC-only KPI and trend.</li>
         </ol>
         <div class="lab-expected">
           <strong>Expected outcome:</strong> A two-sheet dashboard. Sheet 1 has date range, region multi-select, and top-N controls plus a 5-visual layout. Clicking any region bar navigates to Sheet 2 pre-filtered to that region. The top-N control adjusts the customer ranking visual live.
