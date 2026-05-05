@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded',function(){const gb=document.getEle
 </script>
 <script>
 const HUB_URL = 'https://sflearningdevelopment.github.io/sf-knowledge-hub/index.html';
-const SECTION_COUNT = 19326;
+const SECTION_COUNT = 19158;
 const SECTION_QUESTIONS = {"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]};
 
 function submitModuleComplete() {
@@ -198,16 +198,16 @@ const SECTIONS=[
     title: 'Expression Syntax & The Function Library',
     badge: 'foundation',
     content: `
-      <h3>ð£ The four building blocks of any QuickSight expression</h3>
+      <h3>🔣 The four building blocks of any QuickSight expression</h3>
       <p>Every calculated field, no matter how complex, is built from four ingredients:</p>
       <ol>
-        <li><strong>Field references</strong> â wrapped in curly braces: <code>{revenue}</code>, <code>{order_date}</code>. The braces are required for any field name.</li>
-        <li><strong>Literals</strong> â numbers (<code>0.15</code>), strings (<code>'Enterprise'</code>), dates (<code>parseDate('2026-01-01')</code>), booleans (<code>true</code>, <code>false</code>).</li>
-        <li><strong>Operators</strong> â arithmetic (<code>+ - * /</code>), comparison (<code>= != &lt; &gt; &lt;= &gt;=</code>), logical (<code>AND OR NOT</code>).</li>
-        <li><strong>Functions</strong> â call style is <code>functionName(arg1, arg2, ...)</code>. QuickSight ships ~150 functions across categories.</li>
+        <li><strong>Field references</strong> — wrapped in curly braces: <code>{revenue}</code>, <code>{order_date}</code>. The braces are required for any field name.</li>
+        <li><strong>Literals</strong> — numbers (<code>0.15</code>), strings (<code>'Enterprise'</code>), dates (<code>parseDate('2026-01-01')</code>), booleans (<code>true</code>, <code>false</code>).</li>
+        <li><strong>Operators</strong> — arithmetic (<code>+ - * /</code>), comparison (<code>= != &lt; &gt; &lt;= &gt;=</code>), logical (<code>AND OR NOT</code>).</li>
+        <li><strong>Functions</strong> — call style is <code>functionName(arg1, arg2, ...)</code>. QuickSight ships ~150 functions across categories.</li>
       </ol>
 
-      <h3>ð Function categories you'll use most</h3>
+      <h3>📚 Function categories you'll use most</h3>
       <table>
         <tr><th>Category</th><th>Examples</th></tr>
         <tr><td>Aggregation</td><td><code>sum</code>, <code>avg</code>, <code>min</code>, <code>max</code>, <code>count</code>, <code>distinct_count</code>, <code>median</code>, <code>percentile</code>, <code>stdev</code></td></tr>
@@ -219,17 +219,17 @@ const SECTIONS=[
         <tr><td>Level-aware</td><td><code>sumOver</code>, <code>avgOver</code>, <code>denseRank</code>, <code>runningSum</code>, <code>periodOverPeriodDifference</code> (covered in section 6)</td></tr>
       </table>
 
-      <h3>ð¨ The expression editor</h3>
+      <h3>🎨 The expression editor</h3>
       <p>Open it from <strong>+ Add calculated field</strong> in either the dataset prep view or an analysis. Three useful affordances:</p>
       <ul>
-        <li><strong>Function reference panel</strong> â searchable list with inline syntax help</li>
-        <li><strong>Field picker</strong> â click a field name to insert <code>{field_name}</code> with correct braces</li>
-        <li><strong>Validate button</strong> â checks syntax before save; will not let you save an invalid expression</li>
+        <li><strong>Function reference panel</strong> — searchable list with inline syntax help</li>
+        <li><strong>Field picker</strong> — click a field name to insert <code>{field_name}</code> with correct braces</li>
+        <li><strong>Validate button</strong> — checks syntax before save; will not let you save an invalid expression</li>
       </ul>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Read errors top-down</h4>
-        <p>If an expression won't validate, QuickSight points to the first problem it finds â but cascading errors often hide a single root cause earlier in the formula. Fix the topmost error and revalidate before chasing the others.</p>
+        <h4>💡 Read errors top-down</h4>
+        <p>If an expression won't validate, QuickSight points to the first problem it finds — but cascading errors often hide a single root cause earlier in the formula. Fix the topmost error and revalidate before chasing the others.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m4-s1"></div>
@@ -240,17 +240,17 @@ const SECTIONS=[
     title: 'Aggregations and Aggregate Awareness',
     badge: 'essential',
     content: `
-      <h3>â Aggregate vs row-level expressions â the most important distinction</h3>
+      <h3>➕ Aggregate vs row-level expressions — the most important distinction</h3>
       <p>Every QuickSight calculated field is one of two kinds:</p>
       <ul>
-        <li><strong>Row-level</strong> â computed for each individual row in the dataset. Example: <code>{revenue} - {profit}</code> (cost per row)</li>
-        <li><strong>Aggregate</strong> â computed across many rows. Example: <code>sum({revenue}) / sum({quantity})</code> (avg revenue per unit)</li>
+        <li><strong>Row-level</strong> — computed for each individual row in the dataset. Example: <code>{revenue} - {profit}</code> (cost per row)</li>
+        <li><strong>Aggregate</strong> — computed across many rows. Example: <code>sum({revenue}) / sum({quantity})</code> (avg revenue per unit)</li>
       </ul>
-      <p>Mixing them in one expression is illegal. <code>{revenue} / sum({revenue})</code> will not validate â you can't divide a single row by a group total in one step.</p>
+      <p>Mixing them in one expression is illegal. <code>{revenue} / sum({revenue})</code> will not validate — you can't divide a single row by a group total in one step.</p>
 
-      <h3>ð The aggregation functions in detail</h3>
+      <h3>📐 The aggregation functions in detail</h3>
       <table>
-        <tr><th>Function</th><th>What it does</th><th>Use whenâ¦</th></tr>
+        <tr><th>Function</th><th>What it does</th><th>Use when…</th></tr>
         <tr><td><code>sum(x)</code></td><td>Adds all non-null values</td><td>Default for revenue, units, hours</td></tr>
         <tr><td><code>avg(x)</code></td><td>Mean</td><td>Avg deal size, avg rating</td></tr>
         <tr><td><code>median(x)</code></td><td>50th percentile</td><td>When outliers would skew avg (incomes, response times)</td></tr>
@@ -261,16 +261,16 @@ const SECTIONS=[
         <tr><td><code>stdev(x)</code></td><td>Standard deviation</td><td>Variability of returns, error spread</td></tr>
       </table>
 
-      <h3>ð« Common aggregate-mixing errors</h3>
+      <h3>🚫 Common aggregate-mixing errors</h3>
       <p>Three patterns that look reasonable but fail validation:</p>
       <ol>
-        <li><code>sum({revenue}) - {discount}</code> â aggregate minus row-level. Fix: <code>sum({revenue}) - sum({discount})</code> or <code>sum({revenue} - {discount})</code></li>
-        <li><code>ifelse({region}='APAC', sum({revenue}), 0)</code> â row-level condition on aggregate result. Fix: <code>sum(ifelse({region}='APAC', {revenue}, 0))</code></li>
-        <li><code>{revenue} > avg({revenue})</code> in a row-level filter â the avg can only resolve at aggregate time. Use a level-aware function (section 6) or table calc instead.</li>
+        <li><code>sum({revenue}) - {discount}</code> — aggregate minus row-level. Fix: <code>sum({revenue}) - sum({discount})</code> or <code>sum({revenue} - {discount})</code></li>
+        <li><code>ifelse({region}='APAC', sum({revenue}), 0)</code> — row-level condition on aggregate result. Fix: <code>sum(ifelse({region}='APAC', {revenue}, 0))</code></li>
+        <li><code>{revenue} > avg({revenue})</code> in a row-level filter — the avg can only resolve at aggregate time. Use a level-aware function (section 6) or table calc instead.</li>
       </ol>
 
       <div class="callout callout-info">
-        <h4>ð¡ Where the calculation lives matters</h4>
+        <h4>💡 Where the calculation lives matters</h4>
         <p>A <strong>row-level</strong> calc evaluates once per row at SPICE-import time and is cached. An <strong>aggregate</strong> calc evaluates fresh on every visual based on the visual's current grouping. Row-level is faster; aggregate is more flexible. Pick consciously.</p>
       </div>
 
@@ -279,10 +279,10 @@ const SECTIONS=[
   },
   {
     id: 3,
-    title: 'Conditional Logic â ifelse, switch, coalesce',
+    title: 'Conditional Logic — ifelse, switch, coalesce',
     badge: 'essential',
     content: `
-      <h3>ð ifelse â the workhorse</h3>
+      <h3>🔀 ifelse — the workhorse</h3>
       <p>Use <code>ifelse</code> when you have one or more conditions and a fallback. Syntax:</p>
       <div class="diagram">ifelse(
   condition1, result1,
@@ -292,7 +292,7 @@ const SECTIONS=[
 )</div>
       <p>Conditions are evaluated top-down. The first one that's true wins. The final argument (without a paired condition) is the default if nothing matches.</p>
 
-      <p><strong>Example â bucket revenue into bands:</strong></p>
+      <p><strong>Example — bucket revenue into bands:</strong></p>
       <div class="diagram">ifelse(
   {revenue} >= 100000, 'Strategic',
   {revenue} >= 25000,  'Major',
@@ -300,7 +300,7 @@ const SECTIONS=[
   'Small'
 )</div>
 
-      <h3>ð switch â cleaner for value-equality dispatch</h3>
+      <h3>🔁 switch — cleaner for value-equality dispatch</h3>
       <p>When all your conditions are "field equals X", <code>switch</code> reads better:</p>
       <div class="diagram">switch(
   {region},
@@ -311,13 +311,13 @@ const SECTIONS=[
   'Other'   /* default */
 )</div>
 
-      <h3>ðª coalesce and nullIf â handling missing data</h3>
+      <h3>🪂 coalesce and nullIf — handling missing data</h3>
       <ul>
-        <li><strong><code>coalesce(a, b, c, ...)</code></strong> â returns the first non-null argument. Useful for fallback chains: <code>coalesce({nickname}, {first_name}, 'Unknown')</code></li>
-        <li><strong><code>nullIf(a, b)</code></strong> â returns null if a equals b, otherwise a. Most common use: <code>nullIf({revenue}, 0)</code> to turn zero revenues into null so they're excluded from averages</li>
+        <li><strong><code>coalesce(a, b, c, ...)</code></strong> — returns the first non-null argument. Useful for fallback chains: <code>coalesce({nickname}, {first_name}, 'Unknown')</code></li>
+        <li><strong><code>nullIf(a, b)</code></strong> — returns null if a equals b, otherwise a. Most common use: <code>nullIf({revenue}, 0)</code> to turn zero revenues into null so they're excluded from averages</li>
       </ul>
 
-      <h3>â ï¸ Boolean logic gotchas</h3>
+      <h3>⚠️ Boolean logic gotchas</h3>
       <ul>
         <li>Use <code>=</code> for equality, not <code>==</code> (single equals, unlike most programming languages)</li>
         <li>String comparison is case-sensitive: <code>{region}='apac'</code> won't match <code>'APAC'</code>. Wrap with <code>toLower()</code> or <code>toUpper()</code> for case-insensitive matches.</li>
@@ -332,28 +332,28 @@ const SECTIONS=[
     title: 'Date Functions and Time Calculations',
     badge: 'essential',
     content: `
-      <h3>ð The five date functions you'll use weekly</h3>
+      <h3>📅 The five date functions you'll use weekly</h3>
       <table>
         <tr><th>Function</th><th>Returns</th><th>Example</th></tr>
-        <tr><td><code>extract(period, date)</code></td><td>The numeric value of a period</td><td><code>extract('YYYY', {order_date})</code> â 2026</td></tr>
-        <tr><td><code>truncDate(period, date)</code></td><td>Date snapped down to start of period</td><td><code>truncDate('MM', {order_date})</code> â 2026-04-01</td></tr>
-        <tr><td><code>dateDiff(start, end, period)</code></td><td>Number of periods between two dates</td><td><code>dateDiff({signup_date}, now(), 'DD')</code> â days since signup</td></tr>
-        <tr><td><code>addDateTime(amount, period, date)</code></td><td>Date offset by N periods</td><td><code>addDateTime(-30, 'DD', now())</code> â 30 days ago</td></tr>
+        <tr><td><code>extract(period, date)</code></td><td>The numeric value of a period</td><td><code>extract('YYYY', {order_date})</code> → 2026</td></tr>
+        <tr><td><code>truncDate(period, date)</code></td><td>Date snapped down to start of period</td><td><code>truncDate('MM', {order_date})</code> → 2026-04-01</td></tr>
+        <tr><td><code>dateDiff(start, end, period)</code></td><td>Number of periods between two dates</td><td><code>dateDiff({signup_date}, now(), 'DD')</code> → days since signup</td></tr>
+        <tr><td><code>addDateTime(amount, period, date)</code></td><td>Date offset by N periods</td><td><code>addDateTime(-30, 'DD', now())</code> → 30 days ago</td></tr>
         <tr><td><code>now()</code></td><td>Current timestamp at evaluation</td><td>Used as today-anchor in age calcs</td></tr>
       </table>
 
-      <h3>ð°ï¸ Period codes</h3>
+      <h3>🕰️ Period codes</h3>
       <p>Most date functions take a period code as a string argument. The valid codes:</p>
       <ul>
-        <li><code>'YYYY'</code> â year (e.g., 2026)</li>
-        <li><code>'Q'</code> â quarter (1â4)</li>
-        <li><code>'MM'</code> â month (1â12)</li>
-        <li><code>'WK'</code> â week of year</li>
-        <li><code>'DD'</code> â day of month</li>
-        <li><code>'HH'</code>, <code>'MI'</code>, <code>'SS'</code> â hour, minute, second</li>
+        <li><code>'YYYY'</code> — year (e.g., 2026)</li>
+        <li><code>'Q'</code> — quarter (1–4)</li>
+        <li><code>'MM'</code> — month (1–12)</li>
+        <li><code>'WK'</code> — week of year</li>
+        <li><code>'DD'</code> — day of month</li>
+        <li><code>'HH'</code>, <code>'MI'</code>, <code>'SS'</code> — hour, minute, second</li>
       </ul>
 
-      <h3>ð·ï¸ Useful date-derived calculated fields</h3>
+      <h3>🏷️ Useful date-derived calculated fields</h3>
       <p>Things worth defining once at dataset level so every analysis can use them:</p>
       <div class="diagram">order_year      = extract('YYYY', {order_date})
 order_quarter   = concat('Q', toString(extract('Q', {order_date})), ' ', toString(extract('YYYY', {order_date})))
@@ -365,8 +365,8 @@ fiscal_year     = ifelse(extract('MM', {order_date}) >= 4,
                          extract('YYYY', {order_date}) - 1)</div>
 
       <div class="callout callout-warn">
-        <h4>â ï¸ now() recomputes on every visual interaction</h4>
-        <p>If you use <code>now()</code> in a calculated field, the field re-evaluates every time the dashboard refreshes. For age-based bucketing (e.g., "deals older than 90 days"), this is what you want. But it does mean SPICE caching gives you less benefit on those fields â they always recompute.</p>
+        <h4>⚠️ now() recomputes on every visual interaction</h4>
+        <p>If you use <code>now()</code> in a calculated field, the field re-evaluates every time the dashboard refreshes. For age-based bucketing (e.g., "deals older than 90 days"), this is what you want. But it does mean SPICE caching gives you less benefit on those fields — they always recompute.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m4-s4"></div>
@@ -377,20 +377,20 @@ fiscal_year     = ifelse(extract('MM', {order_date}) >= 4,
     title: 'String and Type-Conversion Functions',
     badge: 'important',
     content: `
-      <h3>ð¤ The string toolkit</h3>
+      <h3>🔤 The string toolkit</h3>
       <table>
         <tr><th>Function</th><th>Use for</th></tr>
-        <tr><td><code>concat(a, b, ...)</code></td><td>Joining strings â labels, full names, composite keys</td></tr>
+        <tr><td><code>concat(a, b, ...)</code></td><td>Joining strings — labels, full names, composite keys</td></tr>
         <tr><td><code>substring(s, start, length)</code></td><td>Pulling fixed-width chunks (e.g., postcode prefix, year from a coded ID)</td></tr>
         <tr><td><code>locate(s, find)</code></td><td>Finds the position of a substring; returns 0 if not found</td></tr>
-        <tr><td><code>replace(s, find, with)</code></td><td>Substitution â clean up suffixes, normalise variants</td></tr>
+        <tr><td><code>replace(s, find, with)</code></td><td>Substitution — clean up suffixes, normalise variants</td></tr>
         <tr><td><code>split(s, delim, n)</code></td><td>Returns the n-th piece of a delimited string (1-indexed)</td></tr>
         <tr><td><code>trim</code> / <code>ltrim</code> / <code>rtrim</code></td><td>Strip whitespace</td></tr>
-        <tr><td><code>toUpper</code> / <code>toLower</code></td><td>Case normalisation â essential before comparisons</td></tr>
+        <tr><td><code>toUpper</code> / <code>toLower</code></td><td>Case normalisation — essential before comparisons</td></tr>
         <tr><td><code>strlen(s)</code></td><td>Length in characters</td></tr>
       </table>
 
-      <h3>ðªª Useful string-calc patterns</h3>
+      <h3>🪪 Useful string-calc patterns</h3>
       <p><strong>Customer display label combining name and segment:</strong></p>
       <div class="diagram">concat({customer_name}, ' (', {segment}, ')')</div>
 
@@ -400,13 +400,13 @@ fiscal_year     = ifelse(extract('MM', {order_date}) >= 4,
       <p><strong>First word of a multi-word string:</strong></p>
       <div class="diagram">split({customer_name}, ' ', 1)</div>
 
-      <h3>ð Type conversion â when QuickSight needs a hint</h3>
+      <h3>🔄 Type conversion — when QuickSight needs a hint</h3>
       <table>
         <tr><th>Function</th><th>Converts</th><th>Common use</th></tr>
-        <tr><td><code>toString(x)</code></td><td>Number/date â string</td><td>Building labels: <code>concat('Order #', toString({order_id}))</code></td></tr>
-        <tr><td><code>parseInt(s)</code></td><td>String â integer</td><td>Source has numbers stored as text</td></tr>
-        <tr><td><code>parseDecimal(s)</code></td><td>String â decimal</td><td>Currency strings like '1,234.56'</td></tr>
-        <tr><td><code>parseDate(s, fmt)</code></td><td>String â date</td><td>Source dates as text in a known format</td></tr>
+        <tr><td><code>toString(x)</code></td><td>Number/date → string</td><td>Building labels: <code>concat('Order #', toString({order_id}))</code></td></tr>
+        <tr><td><code>parseInt(s)</code></td><td>String → integer</td><td>Source has numbers stored as text</td></tr>
+        <tr><td><code>parseDecimal(s)</code></td><td>String → decimal</td><td>Currency strings like '1,234.56'</td></tr>
+        <tr><td><code>parseDate(s, fmt)</code></td><td>String → date</td><td>Source dates as text in a known format</td></tr>
       </table>
 
       <p><strong>parseDate</strong> requires the format pattern as the second argument:</p>
@@ -414,7 +414,7 @@ fiscal_year     = ifelse(extract('MM', {order_date}) >= 4,
 parseDate({date_text}, 'MM/dd/yyyy HH:mm:ss')</div>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Always trim before comparing</h4>
+        <h4>💡 Always trim before comparing</h4>
         <p>Source data picked up from CSVs or APIs often has trailing whitespace. <code>{region}='APAC'</code> may silently fail because the actual value is <code>'APAC '</code>. Wrap with <code>trim()</code> in your calc or do it once at dataset level.</p>
       </div>
 
@@ -426,16 +426,16 @@ parseDate({date_text}, 'MM/dd/yyyy HH:mm:ss')</div>
     title: 'Level-Aware Calculations & Lab 4',
     badge: 'important',
     content: `
-      <h3>ðª What "level-aware" means</h3>
-      <p>Standard aggregations roll up to whatever dimension the visual groups by. That's usually fine â but sometimes you need an aggregation at a <em>specific</em> level regardless of how the visual is grouped. That's what level-aware calculations (LAC) are for.</p>
+      <h3>🪜 What "level-aware" means</h3>
+      <p>Standard aggregations roll up to whatever dimension the visual groups by. That's usually fine — but sometimes you need an aggregation at a <em>specific</em> level regardless of how the visual is grouped. That's what level-aware calculations (LAC) are for.</p>
 
       <p>Two flavours, both available in QuickSight:</p>
       <ul>
-        <li><strong>Pre-aggregate (LAC-A)</strong> â aggregates before joins/filters apply, computed once per row group at the chosen level</li>
-        <li><strong>Pre-filter (LAC-W)</strong> â aggregates after joins but before filters, useful for "% of overall" calculations that should ignore filters</li>
+        <li><strong>Pre-aggregate (LAC-A)</strong> — aggregates before joins/filters apply, computed once per row group at the chosen level</li>
+        <li><strong>Pre-filter (LAC-W)</strong> — aggregates after joins but before filters, useful for "% of overall" calculations that should ignore filters</li>
       </ul>
 
-      <h3>ð The level-aware function family</h3>
+      <h3>📊 The level-aware function family</h3>
       <table>
         <tr><th>Function</th><th>What it does</th></tr>
         <tr><td><code>sumOver(measure, [partition_by], pre_agg|post_agg)</code></td><td>Sum at a chosen partition level</td></tr>
@@ -446,7 +446,7 @@ parseDate({date_text}, 'MM/dd/yyyy HH:mm:ss')</div>
         <tr><td><code>periodOverPeriodDifference(measure, date, period, offset)</code></td><td>Change vs prior period</td></tr>
       </table>
 
-      <h3>ð¯ Two patterns to memorise</h3>
+      <h3>🎯 Two patterns to memorise</h3>
 
       <p><strong>1. % of regional total (each row vs its region's sum):</strong></p>
       <div class="diagram">{revenue} / sumOver(sum({revenue}), [{region}], PRE_AGG)</div>
@@ -460,12 +460,12 @@ parseDate({date_text}, 'MM/dd/yyyy HH:mm:ss')</div>
 )</div>
 
       <div class="lab">
-        <h4>ð§ª Lab 4: Add three calculated fields to your sales analysis</h4>
-        <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~20 minutes. Prerequisite: Lab 3 â the SF Regional Sales analysis with the 4-visual sheet.</p>
+        <h4>🧪 Lab 4: Add three calculated fields to your sales analysis</h4>
+        <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~20 minutes. Prerequisite: Lab 3 — the SF Regional Sales analysis with the 4-visual sheet.</p>
         <ol>
-          <li>Open the <strong>SF Regional Sales â Practice</strong> analysis from Lab 3.</li>
-          <li>Click <strong>+ Add â Add calculated field</strong> at the top of the fields list.</li>
-          <li><strong>Field 1 â Deal Tier (row-level conditional):</strong>
+          <li>Open the <strong>SF Regional Sales — Practice</strong> analysis from Lab 3.</li>
+          <li>Click <strong>+ Add → Add calculated field</strong> at the top of the fields list.</li>
+          <li><strong>Field 1 — Deal Tier (row-level conditional):</strong>
             <div class="diagram">ifelse(
   {revenue} >= 50000, 'Strategic',
   {revenue} >= 10000, 'Major',
@@ -474,15 +474,15 @@ parseDate({date_text}, 'MM/dd/yyyy HH:mm:ss')</div>
 )</div>
             Name it <code>deal_tier</code>. Save.
           </li>
-          <li><strong>Field 2 â Pct of Region Revenue (level-aware):</strong>
+          <li><strong>Field 2 — Pct of Region Revenue (level-aware):</strong>
             <div class="diagram">{revenue} / sumOver(sum({revenue}), [{region}], PRE_AGG)</div>
             Name it <code>pct_of_region</code>. Format as Percent, 1 decimal. Save.
           </li>
-          <li><strong>Field 3 â Days Since Order (date arithmetic):</strong>
+          <li><strong>Field 3 — Days Since Order (date arithmetic):</strong>
             <div class="diagram">dateDiff({order_date}, now(), 'DD')</div>
             Name it <code>days_since_order</code>. Save.
           </li>
-          <li><strong>Add a new visual</strong> on the same sheet â Pivot Table.
+          <li><strong>Add a new visual</strong> on the same sheet — Pivot Table.
             <ul>
               <li>Rows: <code>region</code>, <code>deal_tier</code></li>
               <li>Values: <code>revenue</code> (Sum), <code>pct_of_region</code> (Sum)</li>
@@ -498,8 +498,8 @@ parseDate({date_text}, 'MM/dd/yyyy HH:mm:ss')</div>
       </div>
 
       <div class="callout callout-info">
-        <h4>ð¡ LAC functions ignore visual grouping</h4>
-        <p>Even if you add <code>category</code> to the rows of the pivot, <code>pct_of_region</code> still divides by region totals â that's what makes it level-aware. Without LAC, you'd be re-dividing by the row's grouping context.</p>
+        <h4>💡 LAC functions ignore visual grouping</h4>
+        <p>Even if you add <code>category</code> to the rows of the pivot, <code>pct_of_region</code> still divides by region totals — that's what makes it level-aware. Without LAC, you'd be re-dividing by the row's grouping context.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m4-s6"></div>
