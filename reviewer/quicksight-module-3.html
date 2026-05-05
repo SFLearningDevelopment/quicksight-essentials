@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded',function(){const gb=document.getEle
 </script>
 <script>
 const HUB_URL = 'https://sflearningdevelopment.github.io/sf-knowledge-hub/index.html';
-const SECTION_COUNT = 23030;
+const SECTION_COUNT = 22763;
 const SECTION_QUESTIONS = {"1":[],"2":[],"3":[],"4":[],"5":[],"6":[],"7":[],"8":[]};
 
 function submitModuleComplete() {
@@ -195,18 +195,18 @@ const BADGES={foundation:'Foundation',essential:'Essential',important:'Important
 const SECTIONS=[
   {
     id: 1,
-    title: 'The Visual Catalog â When to Use What',
+    title: 'The Visual Catalog — When to Use What',
     badge: 'foundation',
     content: `
-      <h3>ð QuickSight's visual library at a glance</h3>
+      <h3>📊 QuickSight's visual library at a glance</h3>
       <p>QuickSight ships ~30 visual types. Most authors use 6 of them for 90% of dashboards. The rest are situational. Let's map them to the question they answer.</p>
 
       <table>
         <tr><th>Visual</th><th>Answers the question</th><th>Best for</th></tr>
         <tr><td><strong>KPI</strong></td><td>"What's the headline number?"</td><td>Single metric with optional comparison</td></tr>
-        <tr><td><strong>Bar / column</strong></td><td>"How does X compare across categories?"</td><td>Categorical comparison (â¤ 20 categories)</td></tr>
+        <tr><td><strong>Bar / column</strong></td><td>"How does X compare across categories?"</td><td>Categorical comparison (≤ 20 categories)</td></tr>
         <tr><td><strong>Line</strong></td><td>"How is X trending over time?"</td><td>Time series, multiple series allowed</td></tr>
-        <tr><td><strong>Pie / donut</strong></td><td>"What's the share of total?"</td><td>2â6 categories, parts of a whole</td></tr>
+        <tr><td><strong>Pie / donut</strong></td><td>"What's the share of total?"</td><td>2–6 categories, parts of a whole</td></tr>
         <tr><td><strong>Table</strong></td><td>"What are the exact values?"</td><td>Detailed data, sortable, exportable</td></tr>
         <tr><td><strong>Pivot table</strong></td><td>"What's X by Y by Z?"</td><td>Cross-tabulation with totals/subtotals</td></tr>
         <tr><td><strong>Heat map</strong></td><td>"Where are the hot spots in two dimensions?"</td><td>Density / intensity across a grid</td></tr>
@@ -215,17 +215,17 @@ const SECTIONS=[
         <tr><td><strong>Combo</strong></td><td>"How do two related metrics move together?"</td><td>Bar + line on dual axis</td></tr>
       </table>
 
-      <h3>â Visual mistakes that signal "amateur dashboard"</h3>
+      <h3>❌ Visual mistakes that signal "amateur dashboard"</h3>
       <ul>
-        <li>Pie chart with 12 slices â eyes can't compare angles past ~6</li>
-        <li>Line chart with categorical x-axis â lines imply continuity, categories don't have it</li>
-        <li>3D bars â adds nothing, distorts comparison</li>
-        <li>Stacked bar without a clear total story â readers can't compare middle segments</li>
-        <li>Tables when a chart would do â readers shouldn't have to mentally sort numbers</li>
+        <li>Pie chart with 12 slices — eyes can't compare angles past ~6</li>
+        <li>Line chart with categorical x-axis — lines imply continuity, categories don't have it</li>
+        <li>3D bars — adds nothing, distorts comparison</li>
+        <li>Stacked bar without a clear total story — readers can't compare middle segments</li>
+        <li>Tables when a chart would do — readers shouldn't have to mentally sort numbers</li>
       </ul>
 
       <div class="callout callout-info">
-        <h4>ð¡ The 5-second rule</h4>
+        <h4>💡 The 5-second rule</h4>
         <p>If a stakeholder can't get the main message of a visual within 5 seconds, the visual type is wrong. Switch to KPI cards, simpler bar charts, or annotated callouts.</p>
       </div>
 
@@ -237,11 +237,11 @@ const SECTIONS=[
     title: 'AutoGraph and Field Wells',
     badge: 'foundation',
     content: `
-      <h3>â¨ AutoGraph â QuickSight's smart starter</h3>
-      <p>When you drag fields onto a blank visual, QuickSight uses AutoGraph to pick the most likely chart type based on the field types you dropped. It's surprisingly good â usually right within 80% â but you should know what it's doing so you can override it consciously.</p>
+      <h3>✨ AutoGraph — QuickSight's smart starter</h3>
+      <p>When you drag fields onto a blank visual, QuickSight uses AutoGraph to pick the most likely chart type based on the field types you dropped. It's surprisingly good — usually right within 80% — but you should know what it's doing so you can override it consciously.</p>
 
       <table>
-        <tr><th>You dropâ¦</th><th>AutoGraph picksâ¦</th></tr>
+        <tr><th>You drop…</th><th>AutoGraph picks…</th></tr>
         <tr><td>1 dimension only</td><td>Vertical bar chart with count of records</td></tr>
         <tr><td>1 measure only</td><td>KPI</td></tr>
         <tr><td>1 dimension + 1 measure</td><td>Vertical bar chart</td></tr>
@@ -251,7 +251,7 @@ const SECTIONS=[
         <tr><td>3+ measures</td><td>Combo or stacked chart</td></tr>
       </table>
 
-      <h3>ð§± Field wells â the controls under the hood</h3>
+      <h3>🧱 Field wells — the controls under the hood</h3>
       <p>Every visual has <strong>field wells</strong> shown at the top of the canvas. They're labelled by role and tell you what each field is doing in the visual. Different visual types have different wells.</p>
 
       <table>
@@ -263,11 +263,11 @@ const SECTIONS=[
         <tr><td>Map</td><td>Geospatial, Size, Color</td></tr>
       </table>
 
-      <h3>ð Switching visual types preserves your fields</h3>
-      <p>Click a different visual type from the visual-type icon row, and QuickSight maps your existing fields to the new visual's wells where it can. You don't lose work â you just adjust.</p>
+      <h3>🔄 Switching visual types preserves your fields</h3>
+      <p>Click a different visual type from the visual-type icon row, and QuickSight maps your existing fields to the new visual's wells where it can. You don't lose work — you just adjust.</p>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Aggregation type lives in the field well</h4>
+        <h4>💡 Aggregation type lives in the field well</h4>
         <p>Click a measure in its field well to change aggregation: Sum, Average, Min, Max, Count, Distinct count, Median, Percentile, Standard deviation. Default is Sum for numeric fields. Picking the wrong default is one of the most common dashboarding bugs.</p>
       </div>
 
@@ -276,34 +276,34 @@ const SECTIONS=[
   },
   {
     id: 3,
-    title: 'Daily-Driver Visuals â Bar, Line, Pie, KPI',
+    title: 'Daily-Driver Visuals — Bar, Line, Pie, KPI',
     badge: 'essential',
     content: `
-      <h3>ð The four visuals you'll build most</h3>
+      <h3>📊 The four visuals you'll build most</h3>
       <p>If you only learned four QuickSight visual types, these would be them. Master the field wells and formatting for each.</p>
 
       <h3>1. Bar / column charts</h3>
       <ul>
-        <li><strong>Horizontal bar</strong> â when category labels are long (default for &gt; 5 categories)</li>
-        <li><strong>Vertical column</strong> â when categories are short (months, regions, statuses)</li>
-        <li><strong>Stacked</strong> â when you want to show composition; only works if total is also a meaningful number</li>
-        <li><strong>Stacked 100%</strong> â when comparing proportions, ignoring absolute size</li>
-        <li><strong>Clustered (side-by-side)</strong> â comparing 2â4 measures across the same categories</li>
+        <li><strong>Horizontal bar</strong> — when category labels are long (default for &gt; 5 categories)</li>
+        <li><strong>Vertical column</strong> — when categories are short (months, regions, statuses)</li>
+        <li><strong>Stacked</strong> — when you want to show composition; only works if total is also a meaningful number</li>
+        <li><strong>Stacked 100%</strong> — when comparing proportions, ignoring absolute size</li>
+        <li><strong>Clustered (side-by-side)</strong> — comparing 2–4 measures across the same categories</li>
       </ul>
 
       <h3>2. Line charts</h3>
       <ul>
         <li>X-axis must be <strong>continuous</strong> (date or numeric); never categorical</li>
-        <li>Use <strong>Color (group/color)</strong> well to overlay multiple series â keep â¤ 5 series or it becomes spaghetti</li>
-        <li><strong>Aggregation by date granularity</strong> â Sum/Avg auto-rolls up by day, week, month, quarter, year. Configure in the field well.</li>
-        <li>Add <strong>reference lines</strong> for goals or thresholds (Format â Reference lines)</li>
+        <li>Use <strong>Color (group/color)</strong> well to overlay multiple series — keep ≤ 5 series or it becomes spaghetti</li>
+        <li><strong>Aggregation by date granularity</strong> — Sum/Avg auto-rolls up by day, week, month, quarter, year. Configure in the field well.</li>
+        <li>Add <strong>reference lines</strong> for goals or thresholds (Format → Reference lines)</li>
       </ul>
 
       <h3>3. Pie / donut</h3>
       <ul>
-        <li>â¤ 6 slices, otherwise switch to a horizontal bar</li>
-        <li>Donut variant frees up the centre for a total â better than a regular pie 90% of the time</li>
-        <li>Sort slices by size for readability (Format â Sort)</li>
+        <li>≤ 6 slices, otherwise switch to a horizontal bar</li>
+        <li>Donut variant frees up the centre for a total — better than a regular pie 90% of the time</li>
+        <li>Sort slices by size for readability (Format → Sort)</li>
       </ul>
 
       <h3>4. KPI</h3>
@@ -311,11 +311,11 @@ const SECTIONS=[
         <li>Single primary value with optional <strong>target</strong> or <strong>trend</strong></li>
         <li>Add <strong>conditional formatting</strong> on the primary value to show traffic-light colours based on threshold</li>
         <li>Use the <strong>trend group</strong> well to add sparkline-style trend underneath</li>
-        <li>Comparison label uses period-over-period â set the comparison via the calculation type setting</li>
+        <li>Comparison label uses period-over-period — set the comparison via the calculation type setting</li>
       </ul>
 
       <div class="callout callout-tip">
-        <h4>ð¡ KPI sparkline trick</h4>
+        <h4>💡 KPI sparkline trick</h4>
         <p>To show a trend line under a KPI, drop a date field into the trend-group field well. You get an instant sparkline that scales with the value. Combined with conditional formatting on the headline number, this makes for compact executive dashboards.</p>
       </div>
 
@@ -327,45 +327,45 @@ const SECTIONS=[
     title: 'Tables vs Pivot Tables',
     badge: 'essential',
     content: `
-      <h3>ð Two table types, very different uses</h3>
+      <h3>🆚 Two table types, very different uses</h3>
       <p>QuickSight has both a regular table and a pivot table. They look similar; they behave very differently.</p>
 
       <table>
         <tr><th>Feature</th><th>Table</th><th>Pivot Table</th></tr>
         <tr><td>Layout</td><td>Flat: one row per record (or aggregated row)</td><td>Cross-tabulation with rows and columns</td></tr>
         <tr><td>Subtotals / totals</td><td>Optional row totals at bottom</td><td>Subtotals at every level + grand total</td></tr>
-        <tr><td>Drill-down</td><td>No</td><td>Yes â collapse / expand row hierarchies</td></tr>
+        <tr><td>Drill-down</td><td>No</td><td>Yes — collapse / expand row hierarchies</td></tr>
         <tr><td>Sorting</td><td>Per column</td><td>Per row group, per column group, by measure</td></tr>
         <tr><td>Conditional formatting</td><td>Per column</td><td>Per measure cell, with heat-map style colour scales</td></tr>
         <tr><td>Best for</td><td>Detail listings, exports</td><td>Multi-dimensional analysis, exec summaries</td></tr>
       </table>
 
-      <h3>ð When to pick a regular table</h3>
+      <h3>📋 When to pick a regular table</h3>
       <ul>
         <li>Showing transaction-level detail (orders, tickets, line items)</li>
         <li>Users will export to Excel for further work</li>
         <li>Stakeholders want to "see all the data" not summarise it</li>
-        <li>Combining text and numbers â names + amounts</li>
+        <li>Combining text and numbers — names + amounts</li>
       </ul>
 
-      <h3>ð When to pick a pivot table</h3>
+      <h3>📐 When to pick a pivot table</h3>
       <ul>
         <li>You have 2+ dimensions and want to see them crossed</li>
         <li>You need subtotals at multiple grouping levels</li>
         <li>The measure varies meaningfully across both axes</li>
-        <li>Common patterns: <code>region Ã month â revenue</code>, <code>product Ã segment â margin</code></li>
+        <li>Common patterns: <code>region × month → revenue</code>, <code>product × segment → margin</code></li>
       </ul>
 
-      <h3>ð¡ï¸ Conditional formatting on tables</h3>
-      <p>Both table types support conditional formatting, but pivots really shine here. Click a measure â <strong>Conditional formatting</strong> â choose:</p>
+      <h3>🌡️ Conditional formatting on tables</h3>
+      <p>Both table types support conditional formatting, but pivots really shine here. Click a measure → <strong>Conditional formatting</strong> → choose:</p>
       <ul>
-        <li><strong>Solid colour</strong> â discrete thresholds (red &lt; 0, yellow &lt; 100, green &gt;= 100)</li>
-        <li><strong>Gradient</strong> â continuous colour scale (blue â red)</li>
-        <li><strong>Bars</strong> â in-cell horizontal bars showing relative value</li>
+        <li><strong>Solid colour</strong> — discrete thresholds (red &lt; 0, yellow &lt; 100, green &gt;= 100)</li>
+        <li><strong>Gradient</strong> — continuous colour scale (blue → red)</li>
+        <li><strong>Bars</strong> — in-cell horizontal bars showing relative value</li>
       </ul>
 
       <div class="callout callout-warn">
-        <h4>â ï¸ Pivot table performance</h4>
+        <h4>⚠️ Pivot table performance</h4>
         <p>Pivots that span thousands of unique values in either axis become slow and unreadable. Cap your dimensions: top-N filters, region rollups, or date bucketing usually solves this before users notice.</p>
       </div>
 
@@ -377,7 +377,7 @@ const SECTIONS=[
     title: 'Maps and Geospatial Visuals',
     badge: 'important',
     content: `
-      <h3>ðºï¸ QuickSight's three map flavours</h3>
+      <h3>🗺️ QuickSight's three map flavours</h3>
       <table>
         <tr><th>Map type</th><th>What it shows</th><th>Field well</th></tr>
         <tr><td><strong>Points on map</strong></td><td>Each location as a pin or bubble; size or colour can encode a measure</td><td>Latitude, Longitude, Size, Color</td></tr>
@@ -385,20 +385,20 @@ const SECTIONS=[
         <tr><td><strong>Cluster map</strong></td><td>Many close-together points clustered into bubbles by zoom level</td><td>Latitude, Longitude</td></tr>
       </table>
 
-      <h3>ð Geographic roles</h3>
-      <p>Before you can map a string field, you must assign it a <strong>geographic role</strong> in the dataset. Click the field â Edit â set role to one of: Country, State, County, City, ZIP / Postcode, Latitude, Longitude.</p>
-      <p>QuickSight then uses Amazon Location Service or built-in geocoding to plot it. You don't need actual lat/long for filled maps â just the place name with the right role.</p>
+      <h3>📍 Geographic roles</h3>
+      <p>Before you can map a string field, you must assign it a <strong>geographic role</strong> in the dataset. Click the field → Edit → set role to one of: Country, State, County, City, ZIP / Postcode, Latitude, Longitude.</p>
+      <p>QuickSight then uses Amazon Location Service or built-in geocoding to plot it. You don't need actual lat/long for filled maps — just the place name with the right role.</p>
 
-      <h3>ð§ Custom regions and supported countries</h3>
+      <h3>🔧 Custom regions and supported countries</h3>
       <ul>
-        <li>Filled maps work out of the box for ~120 countries â full list in AWS docs</li>
+        <li>Filled maps work out of the box for ~120 countries — full list in AWS docs</li>
         <li>For sub-national admin boundaries (US states, UK counties, Indian states), QuickSight has built-in support</li>
         <li>For custom geographies (sales territories, store regions), you need lat/long pairs and the points-on-map visual</li>
       </ul>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Geocoding caveat</h4>
-        <p>If your data has city names without country/state context (just "Springfield"), QuickSight may pick the wrong one. Always pair geographic fields with their parent â Country &amp; State &amp; City â and assign roles to all of them.</p>
+        <h4>💡 Geocoding caveat</h4>
+        <p>If your data has city names without country/state context (just "Springfield"), QuickSight may pick the wrong one. Always pair geographic fields with their parent — Country &amp; State &amp; City — and assign roles to all of them.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m3-s5"></div>
@@ -409,42 +409,42 @@ const SECTIONS=[
     title: 'Formatting and Conditional Formatting',
     badge: 'important',
     content: `
-      <h3>ð¨ The Format menu and what's in it</h3>
+      <h3>🎨 The Format menu and what's in it</h3>
       <p>Every visual has a <strong>Format visual</strong> menu (right-side panel). The exact options vary by visual type, but you'll always see categories like:</p>
       <ul>
-        <li><strong>Title and subtitle</strong> â visual name and description</li>
-        <li><strong>Legend</strong> â show/hide, position</li>
-        <li><strong>Data labels</strong> â show values on bars/points; format as currency, percent, or custom</li>
-        <li><strong>Axes</strong> â labels, scale (linear/log), tick formats</li>
-        <li><strong>Colors</strong> â per-series colour overrides, theme palette</li>
-        <li><strong>Tooltip</strong> â what hover info shows</li>
-        <li><strong>Reference lines</strong> â fixed value or computed (avg, median, percentile)</li>
+        <li><strong>Title and subtitle</strong> — visual name and description</li>
+        <li><strong>Legend</strong> — show/hide, position</li>
+        <li><strong>Data labels</strong> — show values on bars/points; format as currency, percent, or custom</li>
+        <li><strong>Axes</strong> — labels, scale (linear/log), tick formats</li>
+        <li><strong>Colors</strong> — per-series colour overrides, theme palette</li>
+        <li><strong>Tooltip</strong> — what hover info shows</li>
+        <li><strong>Reference lines</strong> — fixed value or computed (avg, median, percentile)</li>
       </ul>
 
-      <h3>ð± Number formatting</h3>
-      <p>Right-click any measure â <strong>Format</strong> â choose currency, percent, number, or custom. Setting it once on the field uses that format everywhere it appears in the analysis.</p>
+      <h3>💱 Number formatting</h3>
+      <p>Right-click any measure → <strong>Format</strong> → choose currency, percent, number, or custom. Setting it once on the field uses that format everywhere it appears in the analysis.</p>
       <ul>
-        <li><strong>Currency</strong> â pick currency code, decimal places, abbreviate large numbers (1.2M)</li>
-        <li><strong>Percent</strong> â decimal places, optional sign</li>
-        <li><strong>Number</strong> â thousands separator, decimal places, abbreviation</li>
+        <li><strong>Currency</strong> — pick currency code, decimal places, abbreviate large numbers (1.2M)</li>
+        <li><strong>Percent</strong> — decimal places, optional sign</li>
+        <li><strong>Number</strong> — thousands separator, decimal places, abbreviation</li>
       </ul>
 
-      <h3>ð¦ Conditional formatting on cells, KPIs, and gauges</h3>
+      <h3>🚦 Conditional formatting on cells, KPIs, and gauges</h3>
       <p>Conditional formatting lets you encode meaning in colour. Apply to:</p>
       <ul>
-        <li><strong>Table / pivot cells</strong> â colour cells by value (gradient or thresholds)</li>
-        <li><strong>KPI primary value</strong> â green / amber / red on the headline number</li>
-        <li><strong>Bars in a bar chart</strong> â bars over target are green, under are red</li>
+        <li><strong>Table / pivot cells</strong> — colour cells by value (gradient or thresholds)</li>
+        <li><strong>KPI primary value</strong> — green / amber / red on the headline number</li>
+        <li><strong>Bars in a bar chart</strong> — bars over target are green, under are red</li>
       </ul>
 
       <p>Define rules with operators (greater than, between, equal to) and pair with a colour. Use the <strong>conditional</strong> tab inside Format visual.</p>
 
-      <h3>ð¨ Themes</h3>
-      <p>QuickSight ships with a few default themes (Classic, Midnight, Seaside, Rainier). For brand consistency, create a <strong>custom theme</strong>: Themes â Create â set primary colour, font, data colour palette. Apply it to any analysis.</p>
+      <h3>🎨 Themes</h3>
+      <p>QuickSight ships with a few default themes (Classic, Midnight, Seaside, Rainier). For brand consistency, create a <strong>custom theme</strong>: Themes → Create → set primary colour, font, data colour palette. Apply it to any analysis.</p>
 
       <div class="callout callout-info">
-        <h4>ð¡ Less colour, more meaning</h4>
-        <p>The temptation is to colour everything. The reality: every colour you add must <em>encode information</em>. Random colours are noise. A well-designed dashboard uses 2â3 brand colours plus traffic-light tones for conditional formatting.</p>
+        <h4>💡 Less colour, more meaning</h4>
+        <p>The temptation is to colour everything. The reality: every colour you add must <em>encode information</em>. Random colours are noise. A well-designed dashboard uses 2–3 brand colours plus traffic-light tones for conditional formatting.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m3-s6"></div>
@@ -455,11 +455,11 @@ const SECTIONS=[
     title: 'Drill-Down, Tooltips, and Visual Interactivity',
     badge: 'important',
     content: `
-      <h3>â¬ï¸ Drill-down â the click-to-detail pattern</h3>
+      <h3>⬇️ Drill-down — the click-to-detail pattern</h3>
       <p>Drill-down lets readers click a visual element to "go deeper". QuickSight supports two drill flavours:</p>
 
       <h3>1. Hierarchical drill (within a visual)</h3>
-      <p>Add multiple fields to the same field well â for example, drop both <code>region</code> and <code>category</code> into the X-axis. QuickSight creates a hierarchy. Readers click a region bar to drill into that region's category breakdown.</p>
+      <p>Add multiple fields to the same field well — for example, drop both <code>region</code> and <code>category</code> into the X-axis. QuickSight creates a hierarchy. Readers click a region bar to drill into that region's category breakdown.</p>
       <ul>
         <li>Works on bar, column, line, pie, donut, treemap</li>
         <li>Hierarchy levels show as breadcrumbs at the top of the visual</li>
@@ -467,32 +467,32 @@ const SECTIONS=[
       </ul>
 
       <h3>2. Date hierarchies</h3>
-      <p>Date fields automatically support drill: Year â Quarter â Month â Day â Hour. Click a year bar, drill to quarters; click a quarter, drill to months. No setup required.</p>
+      <p>Date fields automatically support drill: Year → Quarter → Month → Day → Hour. Click a year bar, drill to quarters; click a quarter, drill to months. No setup required.</p>
 
-      <h3>ð¬ Custom tooltips</h3>
+      <h3>💬 Custom tooltips</h3>
       <p>Hover over any data point and QuickSight shows a default tooltip with the dimension and measure. You can override this:</p>
       <ol>
-        <li>Format visual â <strong>Tooltip</strong></li>
+        <li>Format visual → <strong>Tooltip</strong></li>
         <li>Toggle <strong>Type</strong>: Primary (defaults), Detailed, or Hidden</li>
-        <li>For Detailed, drag fields into the <strong>Tooltip</strong> field well â they appear in hover</li>
+        <li>For Detailed, drag fields into the <strong>Tooltip</strong> field well — they appear in hover</li>
         <li>You can include calculated fields, dimensions not on the visual, even narrative-style strings</li>
       </ol>
 
-      <h3>ð Filter actions â click one visual, filter another</h3>
+      <h3>🔗 Filter actions — click one visual, filter another</h3>
       <p>The most powerful interactivity in QuickSight. Click a region bar in Visual A, and Visuals B, C, D all filter to that region. Setup:</p>
       <ol>
-        <li>Click the source visual â menu (...) â <strong>Actions</strong></li>
-        <li><strong>Filter same-sheet visuals</strong> on click â choose target visuals</li>
+        <li>Click the source visual → menu (...) → <strong>Actions</strong></li>
+        <li><strong>Filter same-sheet visuals</strong> on click → choose target visuals</li>
         <li>Save</li>
       </ol>
-      <p>You can also configure <strong>URL actions</strong> to open external pages with the clicked value as a parameter â useful for jumping to a customer record in Salesforce or a ticket in Jira.</p>
+      <p>You can also configure <strong>URL actions</strong> to open external pages with the clicked value as a parameter — useful for jumping to a customer record in Salesforce or a ticket in Jira.</p>
 
-      <h3>ð Navigation actions</h3>
-      <p>Configure a click to navigate readers to another sheet within the same dashboard. Pair this with a parameter to "deep link" â e.g., click a region on the overview sheet, jump to the regional detail sheet pre-filtered to that region.</p>
+      <h3>🔄 Navigation actions</h3>
+      <p>Configure a click to navigate readers to another sheet within the same dashboard. Pair this with a parameter to "deep link" — e.g., click a region on the overview sheet, jump to the regional detail sheet pre-filtered to that region.</p>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Less interactivity, more focus</h4>
-        <p>Just because every visual <em>can</em> filter every other visual doesn't mean it should. Pick 1â2 "primary filter" visuals (usually KPI cards or summary bars) and let readers drive the dashboard from those. Too many click-to-filter targets confuse readers.</p>
+        <h4>💡 Less interactivity, more focus</h4>
+        <p>Just because every visual <em>can</em> filter every other visual doesn't mean it should. Pick 1–2 "primary filter" visuals (usually KPI cards or summary bars) and let readers drive the dashboard from those. Too many click-to-filter targets confuse readers.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m3-s7"></div>
@@ -500,32 +500,32 @@ const SECTIONS=[
   },
   {
     id: 8,
-    title: 'Lab 3 â Build a Regional Sales Dashboard',
+    title: 'Lab 3 — Build a Regional Sales Dashboard',
     badge: 'essential',
     content: `
-      <h3>ð¯ What you'll build</h3>
+      <h3>🎯 What you'll build</h3>
       <p>A 4-visual sheet on the SF Sales + Customers dataset from Lab 2, with KPI, time series, regional breakdown, and product detail. You'll wire up cross-filtering so clicking a region cascades to the others.</p>
 
       <div class="lab">
-        <h4>ð§ª Lab 3: Regional sales dashboard</h4>
+        <h4>🧪 Lab 3: Regional sales dashboard</h4>
         <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Time: ~25 minutes. Prerequisite: Lab 2 (the SF Sales + Customers SPICE dataset must exist).</p>
         <ol>
-          <li>Open the SF Sales + Customers dataset â click <strong>Use in analysis</strong>. A new analysis opens with one empty sheet.</li>
+          <li>Open the SF Sales + Customers dataset → click <strong>Use in analysis</strong>. A new analysis opens with one empty sheet.</li>
           <li>Rename the sheet <strong>Regional Sales</strong> by double-clicking the tab.</li>
 
-          <li><strong>Visual 1 â Total Revenue KPI:</strong>
+          <li><strong>Visual 1 — Total Revenue KPI:</strong>
             <ul>
               <li>From the visual-type row, pick <strong>KPI</strong></li>
               <li>Drag <code>revenue</code> into <strong>Value</strong> well</li>
-              <li>Drag <code>order_date</code> into <strong>Trend group</strong> â sparkline appears</li>
-              <li>Format â set Currency, USD, abbreviate (so $24M shows instead of $24,000,000)</li>
+              <li>Drag <code>order_date</code> into <strong>Trend group</strong> — sparkline appears</li>
+              <li>Format → set Currency, USD, abbreviate (so $24M shows instead of $24,000,000)</li>
               <li>Title: <strong>Total Revenue</strong></li>
             </ul>
           </li>
 
-          <li><strong>Visual 2 â Revenue Over Time (line):</strong>
+          <li><strong>Visual 2 — Revenue Over Time (line):</strong>
             <ul>
-              <li>Add visual â <strong>Line chart</strong></li>
+              <li>Add visual → <strong>Line chart</strong></li>
               <li>X-axis: <code>order_date</code> aggregated to <strong>Month</strong></li>
               <li>Value: <code>revenue</code></li>
               <li>Color: <code>region</code></li>
@@ -533,9 +533,9 @@ const SECTIONS=[
             </ul>
           </li>
 
-          <li><strong>Visual 3 â Region Bar:</strong>
+          <li><strong>Visual 3 — Region Bar:</strong>
             <ul>
-              <li>Add visual â <strong>Vertical bar</strong></li>
+              <li>Add visual → <strong>Vertical bar</strong></li>
               <li>X-axis: <code>region</code></li>
               <li>Value: <code>revenue</code></li>
               <li>Sort by Value descending</li>
@@ -543,9 +543,9 @@ const SECTIONS=[
             </ul>
           </li>
 
-          <li><strong>Visual 4 â Product Profit Pivot:</strong>
+          <li><strong>Visual 4 — Product Profit Pivot:</strong>
             <ul>
-              <li>Add visual â <strong>Pivot table</strong></li>
+              <li>Add visual → <strong>Pivot table</strong></li>
               <li>Rows: <code>category</code>, then <code>product</code></li>
               <li>Columns: <code>region</code></li>
               <li>Values: <code>profit</code> (Sum), <code>profit_margin</code> (Avg)</li>
@@ -558,23 +558,23 @@ const SECTIONS=[
 
           <li><strong>Wire up cross-filtering:</strong>
             <ul>
-              <li>Click <strong>Visual 3 (Region Bar)</strong> â menu (...) â <strong>Actions</strong></li>
-              <li>Add filter action â "Filter same-sheet visuals" â select Visuals 1, 2, and 4 as targets</li>
+              <li>Click <strong>Visual 3 (Region Bar)</strong> → menu (...) → <strong>Actions</strong></li>
+              <li>Add filter action → "Filter same-sheet visuals" → select Visuals 1, 2, and 4 as targets</li>
               <li>Save</li>
             </ul>
           </li>
 
-          <li>Test: click the EMEA bar in Visual 3 â Visuals 1, 2, 4 should now show EMEA-only numbers. Click the bar again to clear.</li>
+          <li>Test: click the EMEA bar in Visual 3 — Visuals 1, 2, 4 should now show EMEA-only numbers. Click the bar again to clear.</li>
 
-          <li>Save the analysis as <strong>SF Regional Sales â Practice</strong>.</li>
+          <li>Save the analysis as <strong>SF Regional Sales — Practice</strong>.</li>
         </ol>
         <div class="lab-expected">
-          <strong>Expected outcome:</strong> A 4-visual dashboard where the KPI shows ~$24-30M total revenue, the line chart shows monthly trends across 4 regions, the bar shows North America as the tallest bar, and clicking a region in the bar filters all other visuals. The pivot bottom shows products Ã regions with margin percentages colour-coded red (low) to green (high).
+          <strong>Expected outcome:</strong> A 4-visual dashboard where the KPI shows ~$24-30M total revenue, the line chart shows monthly trends across 4 regions, the bar shows North America as the tallest bar, and clicking a region in the bar filters all other visuals. The pivot bottom shows products × regions with margin percentages colour-coded red (low) to green (high).
         </div>
       </div>
 
       <div class="callout callout-info">
-        <h4>ð¡ Save it â you'll publish it in Module 6</h4>
+        <h4>💡 Save it — you'll publish it in Module 6</h4>
         <p>Don't delete this analysis. In Module 6 (Sharing, Security & Governance) you'll publish it as a dashboard, share it, and add row-level security. We're building a real artefact module by module.</p>
       </div>
 
