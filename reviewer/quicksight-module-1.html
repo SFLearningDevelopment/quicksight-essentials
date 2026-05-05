@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded',function(){const gb=document.getEle
 </script>
 <script>
 const HUB_URL = 'https://sflearningdevelopment.github.io/sf-knowledge-hub/index.html';
-const SECTION_COUNT = 15142;
+const SECTION_COUNT = 14519;
 const SECTION_QUESTIONS = {"1":[],"2":[],"3":[],"4":[],"5":[]};
 
 function submitModuleComplete() {
@@ -198,20 +198,20 @@ const SECTIONS=[
     title: 'What is Amazon QuickSight?',
     badge: 'foundation',
     content: `
-      <h3>ð The 30-second definition</h3>
-      <p>Amazon QuickSight is AWS's <strong>fully managed, serverless business intelligence (BI) service</strong>. You connect to data, build interactive dashboards, and share them with users â without provisioning servers, managing software updates, or worrying about scale.</p>
+      <h3>📊 The 30-second definition</h3>
+      <p>Amazon QuickSight is AWS's <strong>fully managed, serverless business intelligence (BI) service</strong>. You connect to data, build interactive dashboards, and share them with users — without provisioning servers, managing software updates, or worrying about scale.</p>
       <p>Think of it as the AWS-native answer to Tableau and Power BI: a cloud BI tool that lives close to your AWS data sources (S3, Redshift, RDS, Athena) and pays per usage rather than per seat.</p>
 
-      <h3>ð¯ Why QuickSight exists</h3>
+      <h3>🎯 Why QuickSight exists</h3>
       <p>Before QuickSight, AWS customers who wanted dashboards typically pulled data into a third-party BI tool, which meant managing connectors, network rules, and another vendor relationship. QuickSight collapses that into a single AWS service that:</p>
       <ul>
-        <li><strong>Authenticates with IAM</strong> â your existing AWS identity setup applies</li>
-        <li><strong>Reads AWS sources natively</strong> â no JDBC drivers to install for Redshift, Athena, or S3</li>
-        <li><strong>Scales automatically</strong> â no servers, no licensing tiers based on user count for readers</li>
-        <li><strong>Bills usage-based</strong> â Enterprise readers can be billed per session, not per seat</li>
+        <li><strong>Authenticates with IAM</strong> — your existing AWS identity setup applies</li>
+        <li><strong>Reads AWS sources natively</strong> — no JDBC drivers to install for Redshift, Athena, or S3</li>
+        <li><strong>Scales automatically</strong> — no servers, no licensing tiers based on user count for readers</li>
+        <li><strong>Bills usage-based</strong> — Enterprise readers can be billed per session, not per seat</li>
       </ul>
 
-      <h3>ð§  How QuickSight thinks about analytics</h3>
+      <h3>🧠 How QuickSight thinks about analytics</h3>
       <p>QuickSight is opinionated about three things you should internalise early:</p>
       <ol>
         <li><strong>Datasets are reusable.</strong> You build a dataset once and use it across many analyses and dashboards.</li>
@@ -220,8 +220,8 @@ const SECTIONS=[
       </ol>
 
       <div class="callout callout-info">
-        <h4>ð¡ Mental model</h4>
-        <p><strong>Dataset â Analysis â Dashboard.</strong> Data flows in, you build in an analysis, you publish a dashboard. This pipeline is the spine of every QuickSight workflow you'll ever touch.</p>
+        <h4>💡 Mental model</h4>
+        <p><strong>Dataset → Analysis → Dashboard.</strong> Data flows in, you build in an analysis, you publish a dashboard. This pipeline is the spine of every QuickSight workflow you'll ever touch.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m1-s1"></div>
@@ -232,48 +232,48 @@ const SECTIONS=[
     title: 'Editions, Architecture & SPICE',
     badge: 'foundation',
     content: `
-      <h3>ð³ Standard vs Enterprise edition</h3>
+      <h3>💳 Standard vs Enterprise edition</h3>
       <p>QuickSight has two editions. Pick wrong and you'll either overpay or hit walls early.</p>
       <table>
         <tr><th>Capability</th><th>Standard</th><th>Enterprise</th></tr>
         <tr><td>Author price</td><td>$9 / user / month</td><td>$18 / user / month</td></tr>
         <tr><td>Reader pricing</td><td>Same as authors</td><td>Per-session ($0.30, capped at $5/month)</td></tr>
-        <tr><td>Row-level security (RLS)</td><td>â</td><td>â</td></tr>
-        <tr><td>Column-level security</td><td>â</td><td>â</td></tr>
-        <tr><td>Active Directory / SAML SSO</td><td>â</td><td>â</td></tr>
-        <tr><td>Embedded analytics</td><td>â</td><td>â</td></tr>
-        <tr><td>QuickSight Q (NLQ)</td><td>â</td><td>â (add-on)</td></tr>
-        <tr><td>VPC connections</td><td>â</td><td>â</td></tr>
+        <tr><td>Row-level security (RLS)</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Column-level security</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Active Directory / SAML SSO</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Embedded analytics</td><td>❌</td><td>✅</td></tr>
+        <tr><td>QuickSight Q (NLQ)</td><td>❌</td><td>✅ (add-on)</td></tr>
+        <tr><td>VPC connections</td><td>❌</td><td>✅</td></tr>
       </table>
-      <p>Most enterprise rollouts use Enterprise edition. Standard is a starter tier â fine for small teams without security or embedding requirements.</p>
+      <p>Most enterprise rollouts use Enterprise edition. Standard is a starter tier — fine for small teams without security or embedding requirements.</p>
 
-      <h3>ðï¸ The architecture in one picture</h3>
-      <div class="diagram">ââââââââââââââââââââ       âââââââââââââââââââ       ââââââââââââââââââ
-â  Data Sources    â       â   QuickSight    â       â     Users      â
-â  ââââââââââââââ  â       â  âââââââââââââ  â       â âââââââââââââ  â
-â  S3 / Athena     â       â                 â       â                â
-â  Redshift / RDS  ââââââââ¶â  Datasets       â       â  Authors       â
-â  Aurora          â       â   â             â       â   (build)      â
-â  Salesforce      â       â  SPICE / Direct ââââââââ¶â                â
-â  CSV / Excel     â       â   â             â       â  Readers       â
-â  ServiceNow      â       â  Analyses       â       â   (consume)    â
-â  Snowflake       â       â   â             â       â                â
-â  Jira (etc.)     â       â  Dashboards     â       â  Embedded      â
-ââââââââââââââââââââ       âââââââââââââââââââ       ââââââââââââââââââ</div>
+      <h3>🏗️ The architecture in one picture</h3>
+      <div class="diagram">┌──────────────────┐       ┌─────────────────┐       ┌────────────────┐
+│  Data Sources    │       │   QuickSight    │       │     Users      │
+│  ──────────────  │       │  ─────────────  │       │ ─────────────  │
+│  S3 / Athena     │       │                 │       │                │
+│  Redshift / RDS  │──────▶│  Datasets       │       │  Authors       │
+│  Aurora          │       │   ↓             │       │   (build)      │
+│  Salesforce      │       │  SPICE / Direct │──────▶│                │
+│  CSV / Excel     │       │   ↓             │       │  Readers       │
+│  ServiceNow      │       │  Analyses       │       │   (consume)    │
+│  Snowflake       │       │   ↓             │       │                │
+│  Jira (etc.)     │       │  Dashboards     │       │  Embedded      │
+└──────────────────┘       └─────────────────┘       └────────────────┘</div>
 
-      <h3>â¡ SPICE â the secret sauce</h3>
+      <h3>⚡ SPICE — the secret sauce</h3>
       <p>SPICE stands for <strong>Super-fast, Parallel, In-memory Calculation Engine</strong>. It's QuickSight's built-in columnar in-memory store. When you import a dataset to SPICE, QuickSight copies it into compressed columnar memory dedicated to your account.</p>
       <p>Why it matters:</p>
       <ul>
-        <li><strong>Sub-second query response</strong> â no round-trip to your source database</li>
-        <li><strong>Source database is unburdened</strong> â analytics queries don't hit your production OLTP</li>
-        <li><strong>Concurrent users scale</strong> â SPICE handles many readers simultaneously without spawning more DB connections</li>
+        <li><strong>Sub-second query response</strong> — no round-trip to your source database</li>
+        <li><strong>Source database is unburdened</strong> — analytics queries don't hit your production OLTP</li>
+        <li><strong>Concurrent users scale</strong> — SPICE handles many readers simultaneously without spawning more DB connections</li>
       </ul>
-      <p>The trade-off: SPICE data is a snapshot. You schedule refreshes (hourly to daily) or trigger them via the API. <strong>Direct Query</strong> mode skips SPICE and queries the source live â fresher data, but slower and harder on your source system.</p>
+      <p>The trade-off: SPICE data is a snapshot. You schedule refreshes (hourly to daily) or trigger them via the API. <strong>Direct Query</strong> mode skips SPICE and queries the source live — fresher data, but slower and harder on your source system.</p>
 
       <div class="callout callout-tip">
-        <h4>ð¡ SPICE capacity</h4>
-        <p>Each Enterprise account gets some SPICE included; beyond that you pay per GB. Always check current pricing at <code>aws.amazon.com/quicksight/pricing</code> â don't assume the numbers in this course stay current.</p>
+        <h4>💡 SPICE capacity</h4>
+        <p>Each Enterprise account gets some SPICE included; beyond that you pay per GB. Always check current pricing at <code>aws.amazon.com/quicksight/pricing</code> — don't assume the numbers in this course stay current.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m1-s2"></div>
@@ -284,35 +284,35 @@ const SECTIONS=[
     title: 'First Sign-In and Account Setup',
     badge: 'essential',
     content: `
-      <h3>ð Before you click "Sign up"</h3>
+      <h3>🔑 Before you click "Sign up"</h3>
       <p>QuickSight is per-AWS-account. Setting it up requires three decisions you need to make consciously, because changing them later is painful:</p>
       <ol>
-        <li><strong>Edition</strong> â Standard or Enterprise (covered in the previous section). Picking Standard and upgrading later is fine; downgrading is not supported.</li>
-        <li><strong>Authentication method</strong> â IAM, IAM + email, or Active Directory / IAM Identity Center (Enterprise only). Switching auth methods means re-onboarding users.</li>
-        <li><strong>Region</strong> â QuickSight runs in specific AWS regions. Pick the region closest to your data sources to minimise query latency. Cross-region data access works but is slower and may incur transfer costs.</li>
+        <li><strong>Edition</strong> — Standard or Enterprise (covered in the previous section). Picking Standard and upgrading later is fine; downgrading is not supported.</li>
+        <li><strong>Authentication method</strong> — IAM, IAM + email, or Active Directory / IAM Identity Center (Enterprise only). Switching auth methods means re-onboarding users.</li>
+        <li><strong>Region</strong> — QuickSight runs in specific AWS regions. Pick the region closest to your data sources to minimise query latency. Cross-region data access works but is slower and may incur transfer costs.</li>
       </ol>
 
-      <h3>ðª The sign-up flow</h3>
+      <h3>🚪 The sign-up flow</h3>
       <ol>
         <li>Sign in to the AWS Console as a user with permission to create QuickSight (typically an admin).</li>
         <li>Navigate to <strong>QuickSight</strong> in the console.</li>
         <li>Click <strong>Sign up for QuickSight</strong>.</li>
         <li>Pick edition, account name (must be globally unique), notification email, and region.</li>
-        <li>Choose which AWS services QuickSight can access â typically S3 buckets, Athena, Redshift. You can change these later but giving access upfront avoids surprises.</li>
+        <li>Choose which AWS services QuickSight can access — typically S3 buckets, Athena, Redshift. You can change these later but giving access upfront avoids surprises.</li>
         <li>Click <strong>Finish</strong>. The QuickSight workspace opens directly.</li>
       </ol>
 
-      <h3>ð¥ Adding users</h3>
+      <h3>👥 Adding users</h3>
       <p>QuickSight has three user roles:</p>
       <ul>
-        <li><strong>Admin</strong> â manages the QuickSight account, billing, and other users</li>
-        <li><strong>Author</strong> â builds datasets, analyses, and dashboards</li>
-        <li><strong>Reader</strong> â views shared dashboards (Enterprise only â Standard treats everyone as an author)</li>
+        <li><strong>Admin</strong> — manages the QuickSight account, billing, and other users</li>
+        <li><strong>Author</strong> — builds datasets, analyses, and dashboards</li>
+        <li><strong>Reader</strong> — views shared dashboards (Enterprise only — Standard treats everyone as an author)</li>
       </ul>
-      <p>Add users from <strong>Manage QuickSight â Manage users â Invite users</strong>. They receive an email with a sign-in link.</p>
+      <p>Add users from <strong>Manage QuickSight → Manage users → Invite users</strong>. They receive an email with a sign-in link.</p>
 
       <div class="callout callout-warn">
-        <h4>â ï¸ Region pitfall</h4>
+        <h4>⚠️ Region pitfall</h4>
         <p>QuickSight users are scoped to the region you signed up in. If you sign up in <code>us-east-1</code> and a colleague tries to invite users from <code>us-west-2</code>, they'll see a different (empty) QuickSight account. Always confirm the region in the top-right of the console before adding users.</p>
       </div>
 
@@ -324,11 +324,11 @@ const SECTIONS=[
     title: 'Workspace Tour',
     badge: 'essential',
     content: `
-      <h3>ðºï¸ The five things in your left nav</h3>
-      <p>When you open QuickSight, the left navigation shows five core areas. Memorise these â they map directly to the workflow you'll repeat every day.</p>
+      <h3>🗺️ The five things in your left nav</h3>
+      <p>When you open QuickSight, the left navigation shows five core areas. Memorise these — they map directly to the workflow you'll repeat every day.</p>
 
       <table>
-        <tr><th>Area</th><th>What lives here</th><th>You go here whenâ¦</th></tr>
+        <tr><th>Area</th><th>What lives here</th><th>You go here when…</th></tr>
         <tr><td><strong>Datasets</strong></td><td>Saved data sources, joins, prep work, calculated fields defined at dataset level</td><td>You need to add or refresh data</td></tr>
         <tr><td><strong>Analyses</strong></td><td>Your work-in-progress dashboards (private until published)</td><td>You're building or iterating on visuals</td></tr>
         <tr><td><strong>Dashboards</strong></td><td>Published dashboards shared with readers</td><td>You're consuming a shared dashboard</td></tr>
@@ -336,21 +336,21 @@ const SECTIONS=[
         <tr><td><strong>Folders</strong></td><td>Organising assets (datasets, analyses, dashboards) by team or project</td><td>You're cleaning up shared assets</td></tr>
       </table>
 
-      <h3>ð§­ The author canvas</h3>
+      <h3>🧭 The author canvas</h3>
       <p>When you open or create an analysis, the canvas has four working zones:</p>
       <ul>
-        <li><strong>Fields list (left)</strong> â every field in the active dataset, grouped by data type. Drag from here onto the canvas.</li>
-        <li><strong>Visuals area (centre)</strong> â your sheets, like tabs in a workbook. Each sheet holds visuals.</li>
-        <li><strong>Properties panel (right)</strong> â formatting, field wells, filter targets for the selected visual</li>
-        <li><strong>Top toolbar</strong> â share, publish, refresh, undo, parameter controls, filter pane toggle</li>
+        <li><strong>Fields list (left)</strong> — every field in the active dataset, grouped by data type. Drag from here onto the canvas.</li>
+        <li><strong>Visuals area (centre)</strong> — your sheets, like tabs in a workbook. Each sheet holds visuals.</li>
+        <li><strong>Properties panel (right)</strong> — formatting, field wells, filter targets for the selected visual</li>
+        <li><strong>Top toolbar</strong> — share, publish, refresh, undo, parameter controls, filter pane toggle</li>
       </ul>
 
-      <h3>ð Switching between author and reader views</h3>
-      <p>An analysis is the author's view. Once you're happy, click <strong>Share â Publish dashboard</strong> to create a dashboard. Readers receive the dashboard and never see the underlying analysis â they can't accidentally change visual definitions, only interact with filters and parameters you've exposed.</p>
+      <h3>🔄 Switching between author and reader views</h3>
+      <p>An analysis is the author's view. Once you're happy, click <strong>Share → Publish dashboard</strong> to create a dashboard. Readers receive the dashboard and never see the underlying analysis — they can't accidentally change visual definitions, only interact with filters and parameters you've exposed.</p>
 
       <div class="callout callout-tip">
-        <h4>ð¡ Re-publishing</h4>
-        <p>Iterating on an analysis doesn't automatically update the published dashboard. You have to explicitly <strong>Replace dashboard</strong> after making changes. This is intentional â readers are protected from in-progress edits.</p>
+        <h4>💡 Re-publishing</h4>
+        <p>Iterating on an analysis doesn't automatically update the published dashboard. You have to explicitly <strong>Replace dashboard</strong> after making changes. This is intentional — readers are protected from in-progress edits.</p>
       </div>
 
       <div class="quiz-placeholder" data-quiz="m1-s4"></div>
@@ -361,38 +361,38 @@ const SECTIONS=[
     title: 'Sample Data Orientation & Lab 1',
     badge: 'important',
     content: `
-      <h3>ð The three datasets you'll use throughout this course</h3>
-      <p>This course uses three SF-themed CSV datasets. Download all three from the course dashboard now â every module's labs reference these files.</p>
+      <h3>📁 The three datasets you'll use throughout this course</h3>
+      <p>This course uses three SF-themed CSV datasets. Download all three from the course dashboard now — every module's labs reference these files.</p>
       <table>
         <tr><th>File</th><th>What's in it</th><th>Rows</th></tr>
-        <tr><td><code>sf-sales-orders.csv</code></td><td>Sales transactions for SF product line â order, customer, region, segment, product, revenue, profit</td><td>2,000</td></tr>
-        <tr><td><code>sf-customers.csv</code></td><td>Customer master data â customer ID, name, segment, region, signup date, lifetime value</td><td>500</td></tr>
-        <tr><td><code>sf-marketing-spend.csv</code></td><td>Marketing campaign spend by channel and region â date, channel, campaign, spend, impressions, clicks, conversions</td><td>1,000</td></tr>
+        <tr><td><code>sf-sales-orders.csv</code></td><td>Sales transactions for SF product line — order, customer, region, segment, product, revenue, profit</td><td>2,000</td></tr>
+        <tr><td><code>sf-customers.csv</code></td><td>Customer master data — customer ID, name, segment, region, signup date, lifetime value</td><td>500</td></tr>
+        <tr><td><code>sf-marketing-spend.csv</code></td><td>Marketing campaign spend by channel and region — date, channel, campaign, spend, impressions, clicks, conversions</td><td>1,000</td></tr>
       </table>
 
-      <h3>ð How the datasets relate</h3>
+      <h3>🔗 How the datasets relate</h3>
       <p><strong>sf-sales-orders</strong> joins to <strong>sf-customers</strong> on <code>customer_id</code>. <strong>sf-marketing-spend</strong> is independent (analysed by date and region rather than by customer). You'll join the first two in Module 2 and analyse all three together in Modules 3 and beyond.</p>
 
       <div class="lab">
-        <h4>ð§ª Lab 1: Upload your first dataset and create a sheet</h4>
+        <h4>🧪 Lab 1: Upload your first dataset and create a sheet</h4>
         <p style="margin:0 0 10px;color:var(--text2);font-size:14px">Goal: get sf-sales-orders.csv into QuickSight as a SPICE dataset, open it in an analysis, and confirm the data is queryable.</p>
         <ol>
           <li>From the course dashboard, download <code>sf-sales-orders.csv</code> to your machine.</li>
-          <li>In QuickSight, click <strong>Datasets â New dataset â Upload a file</strong>.</li>
-          <li>Choose <code>sf-sales-orders.csv</code>. QuickSight auto-detects column types â verify <code>order_date</code> is parsed as <strong>Date</strong>, not String.</li>
-          <li>Click <strong>Next â Visualize</strong>. QuickSight imports to SPICE and opens a new analysis.</li>
+          <li>In QuickSight, click <strong>Datasets → New dataset → Upload a file</strong>.</li>
+          <li>Choose <code>sf-sales-orders.csv</code>. QuickSight auto-detects column types — verify <code>order_date</code> is parsed as <strong>Date</strong>, not String.</li>
+          <li>Click <strong>Next → Visualize</strong>. QuickSight imports to SPICE and opens a new analysis.</li>
           <li>In the fields list, drag <code>region</code> onto the canvas. QuickSight's AutoGraph picks a horizontal bar chart by default.</li>
-          <li>Drag <code>revenue</code> onto the same visual. The bars now show count Ã revenue per region.</li>
-          <li>Rename the sheet <strong>Lab 1 â Region Revenue</strong> by double-clicking the tab name.</li>
-          <li>Click <strong>Save</strong> (icon top-right) â the analysis is saved automatically but giving it a name keeps your workspace tidy. Name it <strong>SF Sales â Practice</strong>.</li>
+          <li>Drag <code>revenue</code> onto the same visual. The bars now show count × revenue per region.</li>
+          <li>Rename the sheet <strong>Lab 1 — Region Revenue</strong> by double-clicking the tab name.</li>
+          <li>Click <strong>Save</strong> (icon top-right) — the analysis is saved automatically but giving it a name keeps your workspace tidy. Name it <strong>SF Sales — Practice</strong>.</li>
         </ol>
         <div class="lab-expected">
-          <strong>Expected outcome:</strong> A horizontal bar chart titled "Sum of revenue by region" showing 4 regions (North America, EMEA, APAC, LATAM) with North America the tallest bar â roughly $20-30M depending on the random seed of the data.
+          <strong>Expected outcome:</strong> A horizontal bar chart titled "Sum of revenue by region" showing 4 regions (North America, EMEA, APAC, LATAM) with North America the tallest bar — roughly $20-30M depending on the random seed of the data.
         </div>
       </div>
 
       <div class="callout callout-info">
-        <h4>ð¡ If the upload fails</h4>
+        <h4>💡 If the upload fails</h4>
         <p>The most common issue is QuickSight inferring <code>order_date</code> as a string. If that happens, click <strong>Edit dataset</strong> after upload, click the column header for <code>order_date</code>, and change the type to <strong>Date</strong> with format <code>yyyy-MM-dd</code>.</p>
       </div>
 
