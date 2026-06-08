@@ -262,6 +262,12 @@ code,pre,.mono{font-family:var(--font-mono)}
 
     <div id="sections-container"></div>
 
+    <div id="module-complete-bar" style="margin:24px 0;padding:18px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;text-align:center;">
+      <button id="mark-module-btn" class="nav-btn primary" style="opacity:.5;pointer-events:none;" onclick="window.markModuleComplete()">Mark module as complete</button>
+      <button id="redo-module-btn" class="nav-btn" style="display:none;" onclick="window.redoModule()">Redo module</button>
+      <div id="module-complete-hint" style="font-size:12px;color:#64748b;margin-top:8px;">Complete all sections to enable.</div>
+    </div>
+
     <div class="nav-footer">
       <a href="quicksight-module-2.html?v=2026-05-01-v1" class="nav-btn">← Module 2</a>
       <a href="quicksight-module-4.html?v=2026-05-01-v1" class="nav-btn primary">Module 4: Calculated Fields →</a>
@@ -859,10 +865,120 @@ window.markComplete = async function(id){
   }
 };
 
+// ---------- courseProgress: module-level completion ----------
+const CP_COURSE_ID  = 'E6LTgyyfu779VtlpALjO';
+const CP_MODULE_KEY = 'quicksight-module-3';  // filename minus .html (matches courses catalog + admin reader)
+
+function cpAllSectionsDone(progress){
+  const completed = (progress && progress[MODULE_KEY]) || [];
+  return SECTIONS.every(s => completed.includes(s.id));
+}
+
+function cpNow(){
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  return {
+    date: d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),
+    time: pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())
+  };
+}
+
+// Enable/disable the module-complete control based on section completion + existing courseProgress state.
+async function cpUpdateModuleCompleteUI(progress){
+  const bar = document.getElementById('module-complete-bar');
+  if(!bar) return;
+  const markBtn = document.getElementById('mark-module-btn');
+  const redoBtn = document.getElementById('redo-module-btn');
+  const hint    = document.getElementById('module-complete-hint');
+
+  const allDone = cpAllSectionsDone(progress);
+
+  // Reflect already-recorded completion from courseProgress (so the control shows the right state on load).
+  let alreadyComplete = false;
+  try {
+    if(currentUser && !currentUser._isEmail){
+      const cpRef = doc(db,'courseProgress',currentUser.uid);
+      const cpSnap = await getDoc(cpRef);
+      const data = cpSnap.exists() ? (cpSnap.data()||{}) : {};
+      const courseObj = (data.courses && data.courses[CP_COURSE_ID]) || {};
+      const mods = courseObj.modules || {};
+      alreadyComplete = !!(mods[CP_MODULE_KEY] && mods[CP_MODULE_KEY].completedOn);
+    }
+  } catch(e) {}
+
+  if(alreadyComplete){
+    markBtn.textContent = '\u2705 Module completed';
+    markBtn.style.opacity = '1';
+    markBtn.style.pointerEvents = 'none';
+    redoBtn.style.display = 'inline-block';
+    hint.textContent = '';
+  } else if(allDone){
+    markBtn.textContent = 'Mark module as complete';
+    markBtn.style.opacity = '1';
+    markBtn.style.pointerEvents = 'auto';
+    redoBtn.style.display = 'none';
+    hint.textContent = '';
+  } else {
+    markBtn.textContent = 'Mark module as complete';
+    markBtn.style.opacity = '.5';
+    markBtn.style.pointerEvents = 'none';
+    redoBtn.style.display = 'none';
+    hint.textContent = 'Complete all sections to enable.';
+  }
+}
+
+// Write module completion to courseProgress (real Firebase users), matching the established schema.
+window.markModuleComplete = async function(){
+  if(!currentUser || currentUser._isEmail) return;
+  const t = cpNow();
+  const ref = doc(db,'courseProgress',currentUser.uid);
+  const snap = await getDoc(ref);
+  const data = snap.exists() ? (snap.data()||{}) : {};
+  const courseObj = (data.courses && data.courses[CP_COURSE_ID]) || {};
+  const mods = courseObj.modules || {};
+
+  const update = {
+    email: currentUser.email || null,
+    name:  currentUser.displayName || currentUser.email || null,
+    courses: {}
+  };
+  const courseUpdate = { modules: {} };
+  // course start (set once if absent)
+  if(!courseObj.courseStartedOn){ courseUpdate.courseStartedOn = t.date; courseUpdate.courseStartedAt = t.time; }
+  // this module's completion (set once if absent)
+  if(!mods[CP_MODULE_KEY] || !mods[CP_MODULE_KEY].completedOn){
+    courseUpdate.modules[CP_MODULE_KEY] = { completedOn: t.date, completedAt: t.time };
+  }
+  update.courses[CP_COURSE_ID] = courseUpdate;
+
+  try {
+    await setDoc(ref, update, { merge: true });
+  } catch(e) { console.warn('[courseProgress] module complete write failed:', e.message); }
+
+  // reflect completed state in UI
+  const markBtn = document.getElementById('mark-module-btn');
+  const redoBtn = document.getElementById('redo-module-btn');
+  const hint    = document.getElementById('module-complete-hint');
+  if(markBtn){ markBtn.textContent = '\u2705 Module completed'; markBtn.style.pointerEvents = 'none'; }
+  if(redoBtn){ redoBtn.style.display = 'inline-block'; }
+  if(hint){ hint.textContent = ''; }
+};
+
+// Redo: UI-only toggle. Re-enables the mark button; does NOT modify courseProgress.
+window.redoModule = function(){
+  const markBtn = document.getElementById('mark-module-btn');
+  const redoBtn = document.getElementById('redo-module-btn');
+  const hint    = document.getElementById('module-complete-hint');
+  if(markBtn){ markBtn.textContent = 'Mark module as complete'; markBtn.style.opacity = '1'; markBtn.style.pointerEvents = 'auto'; }
+  if(redoBtn){ redoBtn.style.display = 'none'; }
+  if(hint){ hint.textContent = ''; }
+};
+
 function refresh(progress){
   renderNav(progress);
   renderSections(progress);
   updateProgressBar(progress);
+  cpUpdateModuleCompleteUI(progress);
 }
 // Render quizzes after sections are (re)built
 function _renderQuizzesAfterRefresh(){ if(window.renderQuizzes) setTimeout(window.renderQuizzes, 0); }
